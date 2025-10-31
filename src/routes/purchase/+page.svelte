@@ -1,6 +1,6 @@
 <script>
   import Navbar from "../../components/Navbar.svelte";
-  import eye from "../../assets/Eye.svg";
+  import eye from "../../assets/eye.svg";
   import arrowleft from "../../assets/ArrowLeft.svg";
   import purplecheck from "../../assets/purple-check.svg";
   import MobileBackBtn from "../../components/MobileBackBtn.svelte";

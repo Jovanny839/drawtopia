@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import eye from "../assets/Eye.svg";
+  import eye from "../assets/eye.svg";
   import download from "../assets/DownloadSimple-black.svg";
   import play from "../assets/Play-outline.svg";
   import share from "../assets/ShareFat.svg";

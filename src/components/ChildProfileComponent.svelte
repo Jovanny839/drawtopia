@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import eye from "../assets/Eye.svg";
+  import eye from "../assets/eye.svg";
 
   export let name: string = "Emma";
   export let ageLabel: string = "6 Years Old";

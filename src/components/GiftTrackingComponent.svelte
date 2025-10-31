@@ -4,7 +4,7 @@
   import draft from "../assets/draft.svg";
   import failed from "../assets/failed.svg";
   import basket from "../assets/Basket.svg";
-  import eye from "../assets/Eye.svg";
+  import eye from "../assets/eye.svg";
   import PaperPlaneTilt from "../assets/PaperPlaneTilt.svg";
   import ArrowsClockwise from "../assets/ArrowsClockwise.svg";
   import ArrowsCounterClockwise from "../assets/ArrowsCounterClockwise.svg";
