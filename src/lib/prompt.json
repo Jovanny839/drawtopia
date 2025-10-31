@@ -1,0 +1,39 @@
+{
+  "3d" : {
+    "initial" : "Generate a very rough and low-quality 3D illustration in the style of kids' favorite Pixar or Disney animated movies. Keep the shapes simple, the colors flat, and the shading minimal, as if it were an early draft or test render. The result should feel playful, unfinished, and childlike rather than polished.",
+    "minimal" : "Lightly enhance this sketch into a soft 3D Pixar-inspired style. Keep the hand-drawn charm with gentle cleanup, flat colors, and simple shading. The result should look playful, childlike, and perfect for very young kids ages 3–6.",
+    "normal" : "Enhance this sketch into a polished Pixar-style 3D artwork. Add smooth coloring, clean outlines, and balanced shading while preserving the character’s personality. The result should feel like professional storybook quality, suitable for all ages.",
+    "high" : "Transform this sketch into a fully rendered Pixar-inspired 3D illustration with cinematic lighting, advanced shading, and polished textures. The result should be professional, publication-ready artwork perfect for keepsakes and gifts."
+  },
+  "cartoon" : {
+    "initial" : "Create a low-quality classic storybook cartoon illustration. Keep the lines rough, coloring uneven, and shading almost absent, like an old sketchbook draft. The image should feel vintage, simple, and imperfect, resembling an unfinished page from a timeless children’s storybook.",
+    "minimal" : "Lightly enhance this sketch into a classic storybook cartoon style. Keep the hand-drawn charm with soft cleanup, gentle coloring, and minimal shading. The result should feel warm, playful, and timeless, ideal for children ages 3–6.",
+    "normal" : "Enhance this sketch into professional-quality storybook cartoon art. Add clean lines, smooth colors, and balanced polish while maintaining character personality. The result should be bright, friendly, and perfect for storybook adventures for all ages.",
+    "high" : "Transform this sketch into a fully rendered, publication-ready storybook cartoon illustration. Use vivid colors, detailed shading, and polished outlines to create professional-quality artwork with a timeless feel, perfect for keepsakes or printed books."
+  },
+  "anime" : {
+    "initial" : "Produce a rough, low-quality Japanese anime style illustration. Use sketchy outlines, flat colors, and minimal details as if it were an unfinished animation frame or manga draft. The result should look playful and incomplete rather than polished, giving the charm of raw anime concept art.",
+    "minimal" : "Lightly enhance this sketch into a Japanese anime style. Keep sketch-like outlines with soft coloring and minimal shading to preserve the hand-drawn charm. The result should look playful, simple, and friendly for young kids ages 3–6.",
+    "normal" : "Enhance this sketch into a polished Japanese anime illustration. Add clean outlines, cel-shading, and expressive anime-style features while keeping a balanced, approachable design. The result should look like professional anime artwork suitable for all ages.",
+    "high" : "Transform this sketch into a fully rendered Japanese anime-style artwork with advanced shading, glowing highlights, and cinematic detail. The result should be professional, publication-ready anime illustration perfect for gifts or high-quality prints."
+  },
+  "environment" : {
+    "forest" : "Enhance the sketch into a colorful illustration set in an enchanted forest. Keep the character’s original style and quality intact while placing them in a magical woodland filled with glowing plants, talking animals, and hidden treasures. Preserve the hand-drawn charm and enhanced level of the character while making the background vibrant and storybook-like.",
+    "underwater" : "Enhance the sketch into a lively underwater kingdom setting. Keep the character’s original style and enhancement level while surrounding them with coral reefs, shimmering fish, and mysterious underwater ruins. Maintain the character’s look while enriching the background with magical aquatic details.",
+    "outerspace" : "Enhance the sketch into a vibrant illustration set in outer space. Keep the character’s style and quality unchanged while placing them among distant planets, glowing stars, and friendly alien creatures. The character should retain its enhanced level while the environment is expanded with cosmic colors and a sense of exploration."
+  },
+  "adventure" : {
+    "outerspace" : {
+      "helpfriend" : "Enhance this character image into a friendly space adventure while keeping the character’s original features, personality, and quality. In outer space, the character helps a friend in need, such as repairing a small alien’s ship or guiding them safely across a planet. Focus on kindness, cooperation, and using their talents for good, surrounded by glowing stars and friendly aliens.",
+      "treasurehunt" : "Enhance this character image into an outer space adventure while preserving the character’s style, personality, and quality. The character explores distant planets, glowing stars, and asteroid ruins on a treasure hunt. They search for a legendary treasure among cosmic mysteries, showing perseverance and discovery. Keep the character authentic while expanding the cosmic background with colorful alien worlds."
+    },
+    "underwater" : {
+      "helpfriend" : "Enhance this character image into an underwater kingdom adventure while keeping the character’s style, personality, and quality intact. The character uses their special ability to help a sea creature friend in need, perhaps freeing them from coral or guiding them to safety. Focus on kindness, cooperation, and talents for good while surrounding them with coral reefs, shimmering fish, and glowing aquatic scenery.",
+      "treasurehunt" : "Enhance this character image into an underwater kingdom scene while preserving the character’s original style, features, and quality. The character dives among coral reefs, glowing fish, and mysterious ruins on a treasure hunt. They search for a legendary treasure chest with perseverance, discovery, and problem-solving. Keep the character authentic while enriching the aquatic world with magical underwater details."
+    },
+    "forest" : {
+      "helpfriend" : "Enhance this character image into a magical enchanted forest scene while keeping the character’s style, features, and quality intact. The character helps a friend in need, using their special ability to free or protect a woodland creature. Focus on kindness, cooperation, and using talents for good, with glowing plants and talking animals enriching the background.",
+      "treasurehunt" : "Enhance this character image into a vibrant enchanted forest adventure while keeping the character’s original style, features, and quality. The character is on a treasure hunt, exploring glowing plants, talking animals, and hidden ruins. They search for a legendary treasure with problem-solving, discovery, and perseverance. Preserve the character’s personality and functionality while enriching the magical woodland background."
+    }
+  }
+}

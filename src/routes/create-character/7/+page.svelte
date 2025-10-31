@@ -1,0 +1,1526 @@
+<script lang="ts">
+  import StarEmoticon from "../../../components/StarEmoticon.svelte";
+  import ProgressBar from "../../../components/ProgressBar.svelte";
+  import arrowLeft from "../../../assets/ArrowLeft.svg";
+  import shieldStar from "../../../assets/ShieldStar.svg";
+  import { goto } from "$app/navigation";
+  import MobileBackBtn from "../../../components/MobileBackBtn.svelte";
+  import MobileStepProgressBar from "../../../components/MobileStepProgressBar.svelte";
+  import { browser } from "$app/environment";
+  import { onMount } from "svelte";
+  import small from "../../../assets/small.png";
+  import classic from "../../../assets/classic.png";
+  import { storyCreation } from "../../../lib/stores/storyCreation";
+  import { getSelectedImageUrl } from "../../../lib/imageGeneration";
+
+  let isMobile = false;
+  let characterName = "";
+  let selectedImageFromStep6 = "";
+  
+  // Selection state variables - these will be updated with the character name
+  let selectedTitle = "The Great Addventure [Your Name]";
+  let selectedCoverDesign = "Classic Storybook";
+
+  // Title options with character name
+  let titleOptions: string[] = [];
+
+  $: if (browser) {
+    isMobile = window.innerWidth < 800;
+  }
+
+  // Retrieve character data from sessionStorage on component mount
+  onMount(() => {
+    if (browser) {
+      const storedCharacterName = sessionStorage.getItem('characterName');
+      if (storedCharacterName) {
+        characterName = storedCharacterName;
+        // Update title options with character name
+        titleOptions = [
+          `The Great Addventure ${characterName}`,
+          `The Amazing of Journey ${characterName}`,
+          `${characterName} and the Space Adventure`
+        ];
+        // Update selected title with character name
+        selectedTitle = titleOptions[0];
+      } else {
+        // Fallback titles with placeholder
+        titleOptions = [
+          "The Great Addventure [Your Name]",
+          "The Amazing of Journey [Your Name]",
+          "[Your Name] and the Space Adventure"
+        ];
+      }
+      
+      // Get the selected image from step 6
+      const step6Image = getSelectedImageUrl('6');
+      if (step6Image) {
+        selectedImageFromStep6 = step6Image;
+      }
+    }
+  });
+
+  // Title selection handler
+  function selectTitle(title: string) {
+    selectedTitle = title;
+  }
+
+  // Cover design selection handler
+  function selectCoverDesign(design: string) {
+    selectedCoverDesign = design;
+  }
+
+  // Handle preview story button click
+  const handlePreviewStory = () => {
+    // Update story creation store with final story presentation data
+    storyCreation.setStoryPresentation(selectedTitle, selectedCoverDesign);
+    
+    // Navigate to preview page
+    goto("/create-character/7/preview");
+  };
+</script>
+
+<div class="character-creation-default">
+  <div class="navbar">
+    <div class="logo-text-full">
+      <div class="logo-img"></div>
+    </div>
+  </div>
+  <MobileBackBtn backRoute="/create-character/6" />
+  <div class="frame-1410103818">
+    <div class="heading">
+      <div class="create-your-character">
+        <span class="createyourcharacter_span">Here your Magical Story</span>
+      </div>
+      <div class="upload-your-drawing-or-draw-your-own-character-right-here">
+        <span class="uploadyourdrawingordrawyourowncharacterrighthere_span"
+          >Your character is now part of their very own adventure!</span
+        >
+      </div>
+      <div class="tag">
+        <div class="shieldstar">
+          <img src={shieldStar} alt="star" />
+        </div>
+        <div>
+          <span class="ffreepagepreview_span">2 Free Page Preview</span>
+        </div>
+      </div>
+    </div>
+    <MobileStepProgressBar currentStep={7} />
+    <ProgressBar currentStep={7} />
+    <div class="frame-1410104027">
+      <div class="star-container">
+        <StarEmoticon />
+      </div>
+      <div class="message-container">
+        <div class="polygon-1"></div>
+        <div class="message-content">
+          <div
+            class="lets-bring-your-character-to-life-upload-a-drawing-or-photo"
+          >
+            <span class="letsbringyourcharactertolifeuploadadrawingorphoto_span"
+              >Let's design the perfect cover for your story!</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-1410104031">
+      <div class="frame-8">
+        <div class="frame-1410104034">
+          <div class="cover-book-preview">
+            <span class="coverbookpreview_span">Cover Book Preview</span>
+          </div>
+        </div>
+        <img
+          class="image"
+          src={selectedImageFromStep6 || small}
+          alt="image_card_1"
+        />
+      </div>
+      <div class="frame-9">
+        <div class="information-cover">
+          <span class="informationcover_span">Information Cover</span>
+        </div>
+        <div class="form">
+          <div class="form_01">
+            <div><span class="titleselection_span">TItle Selection</span></div>
+            <div class="frame-1410103942">
+              <div 
+                class="selected" 
+                class:selected={selectedTitle === (titleOptions[0] || "The Great Addventure [Your Name]")}
+                class:selected_01={selectedTitle !== (titleOptions[0] || "The Great Addventure [Your Name]")}
+                on:click={() => selectTitle(titleOptions[0] || "The Great Addventure [Your Name]")}
+                on:keydown={(e) => e.key === 'Enter' && selectTitle(titleOptions[0] || "The Great Addventure [Your Name]")}
+                tabindex="0"
+                role="button"
+                aria-label="Select The Great Adventure title"
+              >
+                <div class="frame-1410103940">
+                  <div class="frame-1410103939">
+                    <div>
+                      <span class="thegreataddventureyourname_span"
+                        >{titleOptions[0] || "The Great Addventure [Your Name]"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="ellipse-13"></div> -->
+                {#if selectedTitle === (titleOptions[0] || "The Great Addventure [Your Name]")}
+                  <div class="frame-1410104043">
+                    <div class="ellipse-14"></div>
+                    <div class="ellipse-13_01"></div>
+                  </div>
+                {:else}
+                  <div class="ellipse-13"></div>
+                {/if}
+              </div>
+              <div 
+                class="selected_01" 
+                class:selected={selectedTitle === (titleOptions[1] || "The Amazing of Journey [Your Name]")}
+                class:selected_01={selectedTitle !== (titleOptions[1] || "The Amazing of Journey [Your Name]")}
+                on:click={() => selectTitle(titleOptions[1] || "The Amazing of Journey [Your Name]")}
+                on:keydown={(e) => e.key === 'Enter' && selectTitle(titleOptions[1] || "The Amazing of Journey [Your Name]")}
+                tabindex="0"
+                role="button"
+                aria-label="Select The Amazing Journey title"
+              >
+                <div class="frame-1410103940_01">
+                  <div class="frame-1410103939_01">
+                    <div>
+                      <span class="theamazingofjourneyyourname_span"
+                        >{titleOptions[1] || "The Amazing of Journey [Your Name]"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {#if selectedTitle === (titleOptions[1] || "The Amazing of Journey [Your Name]")}
+                  <div class="frame-1410104043">
+                    <div class="ellipse-14"></div>
+                    <div class="ellipse-13_01"></div>
+                  </div>
+                {:else}
+                  <div class="ellipse-13_02"></div>
+                {/if}
+              </div>
+              <div 
+                class="selected_02" 
+                class:selected={selectedTitle === (titleOptions[2] || "[Your Name] and the Space Adventure")}
+                class:selected_02={selectedTitle !== (titleOptions[2] || "[Your Name] and the Space Adventure")}
+                on:click={() => selectTitle(titleOptions[2] || "[Your Name] and the Space Adventure")}
+                on:keydown={(e) => e.key === 'Enter' && selectTitle(titleOptions[2] || "[Your Name] and the Space Adventure")}
+                tabindex="0"
+                role="button"
+                aria-label="Select Space Adventure title"
+              >
+                <div class="frame-1410103940_02">
+                  <div class="frame-1410103939_02">
+                    <div>
+                      <span class="yournameandthespaceadventure_span"
+                        >{titleOptions[2] || "[Your Name] and the Space Adventure"}</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                {#if selectedTitle === (titleOptions[2] || "[Your Name] and the Space Adventure")}
+                  <div class="frame-1410104043">
+                    <div class="ellipse-14"></div>
+                    <div class="ellipse-13_01"></div>
+                  </div>
+                {:else}
+                  <div class="ellipse-13_03"></div>
+                {/if}
+              </div>
+              <div 
+                class="selected_03" 
+                class:selected={selectedTitle === "Custom Title"}
+                class:selected_03={selectedTitle !== "Custom Title"}
+                on:click={() => selectTitle("Custom Title")}
+                on:keydown={(e) => e.key === 'Enter' && selectTitle("Custom Title")}
+                tabindex="0"
+                role="button"
+                aria-label="Select Custom Title"
+              >
+                <div class="frame-1410104084">
+                  <div class="frame-1410103940_03">
+                    <div class="frame-1410103939_03">
+                      <div>
+                        <span class="customtitle_span">Custom Title</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {#if selectedTitle === "Custom Title"}
+                  <div class="frame-1410104043">
+                    <div class="ellipse-14"></div>
+                    <div class="ellipse-13_01"></div>
+                  </div>
+                {:else}
+                  <div class="ellipse-13_04"></div>
+                {/if}
+              </div>
+            </div>
+          </div>
+          <div class="form_02">
+            <div class="select-your-book-cover-design">
+              <span class="selectyourbookcoverdesign_span"
+                >Select your Book Cover Design</span
+              >
+            </div>
+            <div class="frame-1410103942_01">
+              <div 
+                class="selected_04" 
+                class:selected_04={selectedCoverDesign === "Classic Storybook"}
+                class:selected_05={selectedCoverDesign !== "Classic Storybook"}
+                on:click={() => selectCoverDesign("Classic Storybook")}
+                on:keydown={(e) => e.key === 'Enter' && selectCoverDesign("Classic Storybook")}
+                tabindex="0"
+                role="button"
+                aria-label="Select Classic Storybook cover design"
+              >
+                <img
+                  class="frame-1410104088"
+                  src={selectedImageFromStep6 || classic}
+                  alt="image_card_2"
+                />
+                <div class="frame-1410103940_04">
+                  <div class="frame-1410103939_04">
+                    <div>
+                      <span class="classicstorybook_span"
+                        >Classic Storybook</span
+                      >
+                    </div>
+                    <div>
+                      <span class="ornateborderwithtraditionalcharm_span"
+                        >Ornate border with traditional charm</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                {#if selectedCoverDesign === "Classic Storybook"}
+                  <div class="frame-1410104043_01">
+                    <div class="ellipse-14_01"></div>
+                    <div class="ellipse-13_06"></div>
+                  </div>
+                {:else}
+                  <div class="ellipse-13_05"></div>
+                {/if}
+              </div>
+              <div 
+                class="selected_05" 
+                class:selected_04={selectedCoverDesign === "Modern Minimalist"}
+                class:selected_05={selectedCoverDesign !== "Modern Minimalist"}
+                on:click={() => selectCoverDesign("Modern Minimalist")}
+                on:keydown={(e) => e.key === 'Enter' && selectCoverDesign("Modern Minimalist")}
+                tabindex="0"
+                role="button"
+                aria-label="Select Modern Minimalist cover design"
+              >
+                <div class="frame-1410103940_05">
+                  <img
+                    class="frame-1410104088_01"
+                    src={selectedImageFromStep6 || small}
+                    alt="image_card_3"
+                  />
+                  <div class="frame-1410103939_05">
+                    <div>
+                      <span class="modernminimalist_span"
+                        >Modern Minimalist</span
+                      >
+                    </div>
+                    <div>
+                      <span class="characterfocuswithcleandesign_span"
+                        >Character focus with clean design</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                {#if selectedCoverDesign === "Modern Minimalist"}
+                  <div class="frame-1410104043_01">
+                    <div class="ellipse-14_01"></div>
+                    <div class="ellipse-13_06"></div>
+                  </div>
+                {:else}
+                  <div class="ellipse-13_07"></div>
+                {/if}
+              </div>
+              <div 
+                class="selected_06" 
+                class:selected_04={selectedCoverDesign === "Adventure Theme"}
+                class:selected_06={selectedCoverDesign !== "Adventure Theme"}
+                on:click={() => selectCoverDesign("Adventure Theme")}
+                on:keydown={(e) => e.key === 'Enter' && selectCoverDesign("Adventure Theme")}
+                tabindex="0"
+                role="button"
+                aria-label="Select Adventure Theme cover design"
+              >
+                <div class="frame-1410103940_06">
+                  <img
+                    class="frame-1410104088_02"
+                    src={selectedImageFromStep6 || small}
+                    alt="image_card_4"
+                  />
+                  <div class="frame-1410103939_06">
+                    <div>
+                      <span class="adventuretheme_span">Adventure Theme</span>
+                    </div>
+                    <div>
+                      <span class="worldelementsanddynamiclayout_span"
+                        >World elements and dynamic layout</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                {#if selectedCoverDesign === "Adventure Theme"}
+                  <div class="frame-1410104043_01">
+                    <div class="ellipse-14_01"></div>
+                    <div class="ellipse-13_06"></div>
+                  </div>
+                {:else}
+                  <div class="ellipse-13_08"></div>
+                {/if}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="display: flex; justify-content: {isMobile
+        ? 'center'
+        : 'space-between'}; width: 100%;"
+    >
+      {#if !isMobile}
+        <button class="button_01" on:click={() => goto("/create-character/6")}>
+          <div class="arrowleft">
+            <img src={arrowLeft} alt="arrowLeft" />
+          </div>
+          <div class="back-to-step">
+            <span class="backtostep_span">Back To Step</span>
+          </div>
+        </button>
+      {/if}
+      <button
+        class="button-fill"
+        class:mobile-full-width={isMobile}
+        on:click={handlePreviewStory}
+      >
+        <div class="continue-to-style-selection">
+          <span class="continuetostyleselection_span">Preview Your Story</span>
+        </div>
+      </button>
+    </div>
+  </div>
+  <div class="frame-1410103821">
+    <div class="contact-us-hellodrawtopiacom">
+      <span class="contactushellodrawtopiacom_span"
+        >Contact us: hello@drawtopia.com</span
+      >
+    </div>
+    <div class="rectangle-34"></div>
+    <div class="frame-1410103820">
+      <div class="privacy-policy">
+        <span class="privacypolicy_span">Privacy Policy</span>
+      </div>
+      <div class="terms-of-service">
+        <span class="termsofservice_span">Terms of Service</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .createyourcharacter_span {
+    color: #121212;
+    font-size: 48px;
+    font-family: Quicksand;
+    font-weight: 700;
+    line-height: 67.2px;
+    word-wrap: break-word;
+  }
+
+  .create-your-character {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .uploadyourdrawingordrawyourowncharacterrighthere_span {
+    color: #666d80;
+    font-size: 18px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 21.6px;
+    word-wrap: break-word;
+  }
+
+  .upload-your-drawing-or-draw-your-own-character-right-here {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .ffreepagepreview_span {
+    color: #438bff;
+    font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 600;
+    word-wrap: break-word;
+  }
+
+  .polygon-1 {
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 12px solid transparent;
+    /* border-bottom: 12px solid transparent; */
+    border-right: 18px solid #d9eaff;
+  }
+
+  .letsbringyourcharactertolifeuploadadrawingorphoto_span {
+    color: black;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.2px;
+    word-wrap: break-word;
+  }
+
+  .lets-bring-your-character-to-life-upload-a-drawing-or-photo {
+    width: 417px;
+  }
+
+  .backtostep_span {
+    color: black;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.2px;
+    word-wrap: break-word;
+  }
+
+  .back-to-step {
+    text-align: center;
+  }
+
+  .contactushellodrawtopiacom_span {
+    color: #141414;
+    font-size: 18px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 25.2px;
+    word-wrap: break-word;
+  }
+
+  .contact-us-hellodrawtopiacom {
+    text-align: center;
+  }
+
+  .rectangle-34 {
+    align-self: stretch;
+    height: 1px;
+    background: #ededed;
+  }
+
+  .privacypolicy_span {
+    color: #141414;
+    font-size: 18px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 25.2px;
+    word-wrap: break-word;
+  }
+
+  .privacy-policy {
+    text-align: center;
+  }
+
+  .termsofservice_span {
+    color: #141414;
+    font-size: 18px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 25.2px;
+    word-wrap: break-word;
+  }
+
+  .terms-of-service {
+    text-align: center;
+  }
+
+  .frame-1410103820 {
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 24px;
+    display: inline-flex;
+  }
+
+  .shieldstar {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    overflow: hidden;
+    top: -2px;
+  }
+
+  .arrowleft {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .star-container {
+    flex-shrink: 0;
+    width: 88px;
+    height: 88px;
+  }
+
+  .message-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 12px;
+  }
+
+  .message-content {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #d9eaff;
+    border-radius: 24px;
+    margin-left: 22px;
+    max-width: 446px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .frame-1410103821 {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .navbar {
+    align-self: stretch;
+    height: 79px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 24px;
+    padding-right: 12px;
+    border-radius: 20px;
+    justify-content: space-between;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  .tag {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 12px;
+    background: #eef6ff;
+    border-radius: 99px;
+    outline: 1px #438bff solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 4px;
+    display: inline-flex;
+  }
+
+  .button_01 {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
+    border-radius: 20px;
+    outline: 1px #dcdcdc solid;
+    outline-offset: -1px;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+    width: 200px;
+  }
+
+  .heading {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    display: flex;
+  }
+
+  .frame-1410104027 {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 100%;
+  }
+
+  .frame-1410103818 {
+    width: 100%;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 24px;
+    display: flex;
+  }
+
+  .character-creation-default {
+    width: 100%;
+    height: 100%;
+    padding-top: 24px;
+    padding-bottom: 80px;
+    padding-left: 100px;
+    padding-right: 100px;
+    background: white;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    display: inline-flex;
+  }
+  .logo-text-full {
+    width: 203.32px;
+    height: 38px;
+    min-height: 38px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-img {
+    background-image: url("../../../assets/logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .continuetostyleselection_span {
+    color: white;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.2px;
+    word-wrap: break-word;
+  }
+
+  .continue-to-style-selection {
+    text-align: center;
+  }
+
+  .button-fill {
+    width: 300px;
+    height: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #438bff;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+  }
+
+  .image {
+    position: relative;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+
+  .coverbookpreview_span {
+    color: black;
+    font-size: 20px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 28px;
+    word-wrap: break-word;
+  }
+
+  .cover-book-preview {
+    text-align: center;
+  }
+
+  .image {
+    align-self: stretch;
+    height: 837px;
+    position: relative;
+    border-radius: 12px;
+  }
+
+  .informationcover_span {
+    color: #141414;
+    font-size: 20px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 28px;
+    word-wrap: break-word;
+  }
+
+  .information-cover {
+    align-self: stretch;
+  }
+
+  .titleselection_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .thegreataddventureyourname_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse-13 {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 1px #ededed solid;
+  }
+
+  .ellipse-14 {
+    width: 24px;
+    height: 24px;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    border-radius: 9999px;
+    border: 1px #438bff solid;
+  }
+
+  .ellipse-13_01 {
+    width: 12px;
+    height: 12px;
+    left: 6px;
+    top: 6px;
+    position: absolute;
+    background: #438bff;
+    border-radius: 9999px;
+    border: 1px #438bff solid;
+  }
+
+  .theamazingofjourneyyourname_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse-13_02 {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 2px #ededed solid;
+  }
+
+  .yournameandthespaceadventure_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse-13_03 {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 2px #ededed solid;
+  }
+
+  .customtitle_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse-13_04 {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 2px #ededed solid;
+  }
+
+  .selectyourbookcoverdesign_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .select-your-book-cover-design {
+    align-self: stretch;
+  }
+
+  .frame-1410104088 {
+    width: 80px;
+    height: 91px;
+    position: relative;
+    background: white;
+    border-radius: 4px;
+  }
+
+  .classicstorybook_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 500;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ornateborderwithtraditionalcharm_span {
+    color: #666d80;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse-13_05 {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 1px #ededed solid;
+  }
+
+  .ellipse-14_01 {
+    width: 24px;
+    height: 24px;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    border-radius: 9999px;
+    border: 1px #438bff solid;
+  }
+
+  .ellipse-13_06 {
+    width: 12px;
+    height: 12px;
+    left: 6px;
+    top: 6px;
+    position: absolute;
+    background: #438bff;
+    border-radius: 9999px;
+    border: 1px #438bff solid;
+  }
+
+  .frame-1410104088_01 {
+    width: 80px;
+    height: 91px;
+    position: relative;
+    background: white;
+    border-radius: 4px;
+  }
+
+  .modernminimalist_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 500;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .characterfocuswithcleandesign_span {
+    color: #666d80;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse-13_07 {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 1px #ededed solid;
+  }
+
+  .frame-1410104088_02 {
+    width: 80px;
+    height: 91px;
+    position: relative;
+    background: white;
+    border-radius: 4px;
+  }
+
+  .adventuretheme_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 500;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .worldelementsanddynamiclayout_span {
+    color: #666d80;
+    font-size: 16px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse-13_08 {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    border: 1px #ededed solid;
+  }
+
+  .frame-1410104034 {
+    align-self: stretch;
+    padding: 8px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+  }
+
+  .frame-1410103939 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    display: inline-flex;
+  }
+
+  .frame-1410103939_01 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    display: inline-flex;
+  }
+
+  .frame-1410103939_02 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    display: inline-flex;
+  }
+
+  .frame-1410103939_03 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    display: inline-flex;
+  }
+
+  .frame-1410103939_04 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    display: inline-flex;
+  }
+
+  .frame-1410103939_05 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    display: inline-flex;
+  }
+
+  .frame-1410103939_06 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    display: inline-flex;
+  }
+
+  .frame-1410104043 {
+    width: 24px;
+    height: 24px;
+    position: relative;
+  }
+
+  .frame-1410104043_01 {
+    width: 24px;
+    height: 24px;
+    position: relative;
+  }
+
+  .frame-8 {
+    flex: 1 1 0;
+    padding: 10px;
+    background: white;
+    border-radius: 20px;
+    outline: 1px #dcdcdc solid;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    display: inline-flex;
+  }
+
+  .frame-1410103940 {
+    flex: 1 1 0;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410103940_01 {
+    flex: 1 1 0;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410103940_02 {
+    flex: 1 1 0;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410103940_03 {
+    align-self: stretch;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+  }
+
+  .frame-1410103940_04 {
+    flex: 1 1 0;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410103940_05 {
+    flex: 1 1 0;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410103940_06 {
+    flex: 1 1 0;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .selected {
+    align-self: stretch;
+    padding: 12px;
+    background: #eef6ff;
+    border-radius: 12px;
+    outline: 1px #438bff solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .selected:hover {
+    background: #d9eaff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(67, 139, 255, 0.15);
+  }
+
+  .selected_01 {
+    align-self: stretch;
+    padding: 12px;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .selected_01:hover {
+    background: #f8f9fa;
+    outline: 1px #c0c0c0 solid;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .selected_02 {
+    align-self: stretch;
+    padding: 12px;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .selected_02:hover {
+    background: #f8f9fa;
+    outline: 1px #c0c0c0 solid;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .frame-1410104084 {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 4px;
+    display: inline-flex;
+  }
+
+  .selected_04 {
+    align-self: stretch;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 12px;
+    background: #eef6ff;
+    border-radius: 12px;
+    outline: 1px #438bff solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .selected_04:hover {
+    background: #d9eaff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(67, 139, 255, 0.15);
+  }
+
+  .selected_05 {
+    align-self: stretch;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 12px;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .selected_05:hover {
+    background: #f8f9fa;
+    outline: 1px #c0c0c0 solid;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .selected_06 {
+    align-self: stretch;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 12px;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .selected_06:hover {
+    background: #f8f9fa;
+    outline: 1px #c0c0c0 solid;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .selected_03 {
+    align-self: stretch;
+    padding: 12px;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .selected_03:hover {
+    background: #f8f9fa;
+    outline: 1px #c0c0c0 solid;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .frame-1410103942_01 {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410103942 {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    display: flex;
+  }
+
+  .form_02 {
+    align-self: stretch;
+    padding: 12px;
+    border-radius: 10px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+    display: flex;
+  }
+
+  .form_01 {
+    align-self: stretch;
+    padding: 12px;
+    border-radius: 10px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+    display: flex;
+  }
+
+  .form {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-9 {
+    width: 627px;
+    padding: 16px;
+    background: white;
+    border-radius: 20px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 24px;
+    display: inline-flex;
+  }
+
+  .frame-1410104031 {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+    display: inline-flex;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  @media (max-width: 800px) {
+    .create-your-character {
+      text-align: left;
+    }
+    .upload-your-drawing-or-draw-your-own-character-right-here {
+      text-align: left;
+    }
+    .heading {
+      align-items: flex-start;
+    }
+    .frame-1410104031 {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .frame-8,
+    .frame-9 {
+      width: 100%;
+      flex: none;
+    }
+
+    .frame-9 {
+      width: 100%;
+    }
+
+    .character-creation-default {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .createyourcharacter_span {
+      font-size: 32px;
+      line-height: 44.8px;
+    }
+
+    .uploadyourdrawingordrawyourowncharacterrighthere_span {
+      font-size: 16px;
+      line-height: 19.2px;
+    }
+
+    .lets-bring-your-character-to-life-upload-a-drawing-or-photo {
+      width: auto;
+      max-width: 300px;
+    }
+
+    .message-content {
+      margin-left: 12px;
+      max-width: 300px;
+    }
+
+    .star-container {
+      align-self: center;
+    }
+
+    .message-container {
+      margin-left: 0;
+      justify-content: center;
+    }
+
+    .image {
+      height: 400px;
+    }
+
+    .coverbookpreview_span,
+    .informationcover_span {
+      font-size: 18px;
+      line-height: 25.2px;
+    }
+
+    .titleselection_span,
+    .selectyourbookcoverdesign_span {
+      font-size: 14px;
+      line-height: 19.6px;
+    }
+
+    .selected,
+    .selected_01,
+    .selected_02,
+    .selected_03,
+    .selected_04,
+    .selected_05,
+    .selected_06 {
+      padding: 8px;
+    }
+
+    .frame-1410104088,
+    .frame-1410104088_01,
+    .frame-1410104088_02 {
+      width: 60px;
+      height: 68px;
+    }
+
+    .thegreataddventureyourname_span,
+    .theamazingofjourneyyourname_span,
+    .yournameandthespaceadventure_span,
+    .customtitle_span,
+    .classicstorybook_span,
+    .modernminimalist_span,
+    .adventuretheme_span {
+      font-size: 14px;
+      line-height: 19.6px;
+    }
+
+    .ornateborderwithtraditionalcharm_span,
+    .characterfocuswithcleandesign_span,
+    .worldelementsanddynamiclayout_span {
+      font-size: 12px;
+      line-height: 16.8px;
+    }
+    .star-container {
+      width: 25%;
+    }
+    .message-container {
+      max-width: 75%;
+    }
+    .message-content {
+      width: 90%;
+    }
+  }
+</style>
