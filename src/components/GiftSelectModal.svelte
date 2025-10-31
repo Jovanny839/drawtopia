@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import purple_check from "../assets/purple-check.svg";
-  import x from "../assets/x.svg";
+  import x from "../assets/X.svg";
   import child from "../assets/child.jpg";
   import togift from "../assets/togift.jpg";
   const dispatch = createEventDispatcher();
