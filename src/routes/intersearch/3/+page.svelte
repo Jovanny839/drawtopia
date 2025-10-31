@@ -4,8 +4,8 @@
   // Placeholder image - replace with real cover asset
   import bookCover from "../../../assets/Luna1.png";
   import fullscreen from "../../../assets/fullscreen.svg";
-  import hintIcon from "../../../assets/hinticon.svg";
-  import zoomIcon from "../../../assets/zoomicon.svg";
+  import hintIcon from "../../../assets/hintIcon.svg";
+  import zoomIcon from "../../../assets/zoomIcon.svg";
   import coverIcon from "../../../assets/covericon.svg";
   import mailIcon from "../../../assets/mailicon.svg";
   import lockKeyIcon from "../../../assets/LockKey.svg";
