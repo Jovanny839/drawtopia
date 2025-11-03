@@ -54,6 +54,7 @@
       // If no child profile is selected, redirect to dashboard
       const childProfileId = sessionStorage.getItem('selectedChildProfileId');
       if (!childProfileId) {
+        console.log("No child profile selected, redirecting to dashboard: /dashboard");
         goto('/dashboard');
       } else {
         selectedChildProfileId = childProfileId;

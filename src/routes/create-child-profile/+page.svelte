@@ -96,7 +96,7 @@
     //   type: 'success',
     //   message: 'Child profiles saved successfully! Redirecting to dashboard...'
     // });
-    goto('/gift/1');
+    goto('/dashboard');
   };
 
 </script>

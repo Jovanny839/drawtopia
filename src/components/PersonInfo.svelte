@@ -3,11 +3,11 @@
   import PrimaryBtn from "./PrimaryBtn.svelte";
   import PrimarySelect from "./PrimarySelect.svelte";
   import PrimaryInput from "./PrimaryInput.svelte";
-  import { uploadAvatar } from '../lib/storage';
-  import { insertChildProfiles } from '../lib/database/childProfiles';
-  import type { ChildProfile } from '../lib/database/childProfiles';
-  import { onMount, onDestroy } from 'svelte';
-  
+  import { uploadAvatar } from "../lib/storage";
+  import { insertChildProfiles } from "../lib/database/childProfiles";
+  import type { ChildProfile } from "../lib/database/childProfiles";
+  import { onMount, onDestroy } from "svelte";
+
   export let showPhotoGuideModal = false;
   export let selectedAgeGroup = "";
   export let selectedRelationship = "parent";
@@ -16,7 +16,7 @@
   export let onAddChild: ((childData: any) => void) | undefined = undefined;
   export let children: Array<any> = [];
   export let onContinueToStoryCreation: (() => void) | undefined = undefined;
-  
+
   let errors = {
     firstName: "",
     ageGroup: "",
@@ -53,12 +53,12 @@
   const handleDragLeave = (event: DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    
+
     // Only set isDragOver to false if we're leaving the drop zone itself
     // Check if the related target is outside the drop zone
     const dropZone = event.currentTarget as HTMLElement;
     const relatedTarget = event.relatedTarget as Node;
-    
+
     if (!dropZone.contains(relatedTarget)) {
       isDragOver = false;
     }
@@ -72,7 +72,7 @@
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       const file = files[0]; // Take only the first file if multiple are dropped
-      
+
       // Check if it's an image file
       if (file.type.startsWith("image/")) {
         await processImageFile(file);
@@ -109,7 +109,7 @@
     uploading = true;
     try {
       const result = await uploadAvatar(file, userId);
-      
+
       if (result.success && result.url) {
         uploadedAvatarUrl = result.url;
         if (onAvatarUploaded) {
@@ -131,7 +131,7 @@
   const handleFileSelect = async (event: Event) => {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
-    
+
     if (file) {
       await processImageFile(file);
     }
@@ -180,7 +180,7 @@
       ageGroup: selectedAgeGroup,
       relationship: selectedRelationship,
       avatarUrl: uploadedAvatarUrl || "https://placehold.co/40x40",
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
   };
 
@@ -204,16 +204,16 @@
     }
 
     const childData = collectChildData();
-    
+
     if (onAddChild) {
       onAddChild(childData);
-      
+
       // Show success message temporarily
       showSuccessMessage = true;
       setTimeout(() => {
         showSuccessMessage = false;
       }, 3000);
-      
+
       resetForm();
       console.log("Child added successfully:", childData);
     }
@@ -235,12 +235,12 @@
 
     try {
       // Convert children data to database format
-      const childProfiles: ChildProfile[] = children.map(child => ({
+      const childProfiles: ChildProfile[] = children.map((child) => ({
         first_name: child.name,
         age_group: child.ageGroup,
         relationship: child.relationship,
         parent_id: userId,
-        avatar_url: child.avatarUrl
+        avatar_url: child.avatarUrl,
       }));
 
       console.log("Saving child profiles:", childProfiles);
@@ -250,7 +250,15 @@
 
       if (result.success) {
         console.log("Child profiles saved successfully:", result.data);
-        
+        sessionStorage.setItem(
+          "selectedChildProfileId",
+          result.data[0].id.toString(),
+        );
+        sessionStorage.setItem(
+          "selectedChildProfileName",
+          result.data[0].first_name,
+        );
+
         // Call the parent callback to proceed to story creation
         if (onContinueToStoryCreation) {
           onContinueToStoryCreation();
@@ -259,7 +267,6 @@
         saveError = result.error || "Failed to save child profiles";
         console.error("Failed to save child profiles:", result.error);
       }
-
     } catch (error) {
       saveError = "An unexpected error occurred while saving profiles";
       console.error("Error saving child profiles:", error);
@@ -276,14 +283,14 @@
 
   onMount(() => {
     // Prevent default drag and drop behavior on the entire window
-    window.addEventListener('dragover', preventDefaultDrag);
-    window.addEventListener('drop', preventDefaultDrag);
+    window.addEventListener("dragover", preventDefaultDrag);
+    window.addEventListener("drop", preventDefaultDrag);
   });
 
   onDestroy(() => {
     // Clean up event listeners
-    window.removeEventListener('dragover', preventDefaultDrag);
-    window.removeEventListener('drop', preventDefaultDrag);
+    window.removeEventListener("dragover", preventDefaultDrag);
+    window.removeEventListener("drop", preventDefaultDrag);
   });
 </script>
 
@@ -291,7 +298,7 @@
   <div class="personal-information">
     <span class="personalinformation_span">Personal Information</span>
   </div>
-  
+
   {#if showSuccessMessage}
     <div class="success-message">
       ✅ Child added successfully! The form has been reset for the next child.
@@ -477,13 +484,13 @@
       <!-- </div> -->
     </div>
   </div>
-  
+
   {#if saveError}
     <div class="save-error-message">
       ❌ {saveError}
     </div>
   {/if}
-  
+
   <div class="frame-1410103991">
     <OutlineBtn
       text="Add Another Child"
@@ -494,10 +501,14 @@
     />
     <div class="continue-btn-wrapper" class:disabled={children.length === 0}>
       <PrimaryBtn
-        text={children.length === 0 ? "Add a child first" : "Continue to Story Creation"}
+        text={children.length === 0
+          ? "Add a child first"
+          : "Continue to Story Creation"}
         isLoading={savingProfiles}
         spinner_name="Saving profiles..."
-        onClick={children.length === 0 ? () => {} : handleContinueToStoryCreation}
+        onClick={children.length === 0
+          ? () => {}
+          : handleContinueToStoryCreation}
       />
     </div>
   </div>
@@ -555,7 +566,6 @@
     align-self: stretch;
     text-align: center;
   }
-
 
   .makesureonlyonepersoninclearlyvisibleseedetails_span_01 {
     color: black;
@@ -901,13 +911,23 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   @keyframes fadeInOut {
-    0%, 100% { opacity: 0; }
-    10%, 90% { opacity: 1; }
+    0%,
+    100% {
+      opacity: 0;
+    }
+    10%,
+    90% {
+      opacity: 1;
+    }
   }
 
   .error-message {

@@ -84,7 +84,7 @@
 
   const handleBack = () => {
     // Navigate back to step 2
-    goto("/gift/sendlink/6");
+    goto("/gift/sendlink/3");
   };
 </script>
 <div class="finishing-touches-filled">

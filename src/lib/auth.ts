@@ -427,6 +427,7 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
  */
 export async function checkUserExists(email: string): Promise<{ exists: boolean; user?: any; error?: string }> {
   try {
+    console.log("normalizedEmail", email);
     const normalizedEmail = email.toLowerCase().trim();
     
     // Check in users table by email

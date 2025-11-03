@@ -121,6 +121,13 @@
             occasion: selectedOccasion,
         });
 
+        // Save delivery details including parent email as delivery email
+        giftCreation.setDeliveryDetails({
+            deliveryEmail: parentEmail,
+            deliveryTime: scheduleDelivery ? deliveryDate : undefined,
+            deliveryOption: scheduleDelivery ? 'scheduled' : 'surprise',
+        });
+
         // Navigate to next step
         goto("/gift/sendlink/2");
     };

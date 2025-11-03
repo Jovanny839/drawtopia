@@ -2,11 +2,13 @@
   import { goto } from "$app/navigation";
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
+  import { page } from "$app/stores";
 
   import logo from "../../../../assets/logo.png";
   import CalendarBlank from "../../../../assets/CalendarBlank.svg";
 
   import { giftCreation } from "../../../../lib/stores/giftCreation";
+  import { getGiftById, type Gift } from "../../../../lib/database/gifts";
   import {
     user,
     authLoading,
@@ -14,29 +16,59 @@
   } from "../../../../lib/stores/auth";
 
   let giftState: any = {};
+  let giftData: Gift | null = null;
   let gifterName = "Grandma"; // Default or get from store/params
   let recipientName = "";
   let recipientAge = "";
   let occasion = "";
   let giftMessage = "";
+  let loadingGift = false;
 
   // Reactive statements for auth state
   $: currentUser = $user;
   $: loading = $authLoading;
   $: authenticated = $isAuthenticated;
   $: safeToRedirect = browser && !loading && currentUser !== undefined;
+  
+  // Get giftId from URL query params
+  $: giftId = $page.url.searchParams.get('giftId');
 
-  // Load gift data from store
-  onMount(() => {
-    const unsubscribe = giftCreation.subscribe((state) => {
-      giftState = state;
-      recipientName = state.childName || "Emma";
-      recipientAge = state.ageGroup ? getAgeFromRange(state.ageGroup) : "7";
-      occasion = state.occasion || "Birthday";
-      giftMessage = state.specialMsg || "";
-    });
+  // Load gift data from database if giftId is provided
+  onMount(async () => {
+    // First try to load from URL parameter (from notification click)
+    if (giftId) {
+      loadingGift = true;
+      try {
+        const result = await getGiftById(giftId);
+        if (result.success && result.data) {
+          giftData = result.data as Gift;
+          // Populate fields from gift data
+          recipientName = giftData.child_name || "Emma";
+          recipientAge = giftData.age_group ? getAgeFromRange(giftData.age_group) : "7";
+          occasion = giftData.occasion || "Birthday";
+          giftMessage = giftData.special_msg || "";
+          
+          // TODO: Fetch sender's name from user profile using giftData.from_user_id
+          // For now, use relationship or default
+          gifterName = giftData.relationship || "Someone";
+        }
+      } catch (err) {
+        console.error('Error loading gift:', err);
+      } finally {
+        loadingGift = false;
+      }
+    } else {
+      // Fallback to store if no giftId
+      const unsubscribe = giftCreation.subscribe((state) => {
+        giftState = state;
+        recipientName = state.childName || "Emma";
+        recipientAge = state.ageGroup ? getAgeFromRange(state.ageGroup) : "7";
+        occasion = state.occasion || "Birthday";
+        giftMessage = state.specialMsg || "";
+      });
 
-    return unsubscribe;
+      return unsubscribe;
+    }
   });
 
   // Helper to convert age range to a single age for display

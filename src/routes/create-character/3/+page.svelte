@@ -19,10 +19,14 @@
   import bookIcon from "../../../assets/Book.svg";
   import headphoneIcon from "../../../assets/SpeakerSimpleHigh.svg";
   import clockIcon from "../../../assets/ClockCountdown.svg";
+  import storyAdventure from "../../../assets/story_adventure.png";
+  import interactiveSearch from "../../../assets/interactive_search.png";
+  import xIcon from "../../../assets/X.svg";
 
   let isMobile = false;
   let selectedFormat = ""; // "interactive" or "story"
   let characterName = "";
+  let showPreviewModal = false;
 
   $: if (browser) {
     isMobile = window.innerWidth < 800;
@@ -68,8 +72,22 @@
   };
 
   const handlePreviewBoth = () => {
-    // TODO: Implement preview both formats functionality
-    alert('Preview functionality coming soon!');
+    showPreviewModal = true;
+  };
+
+  const handleCloseModal = () => {
+    showPreviewModal = false;
+  };
+
+  const handleModalBackdropClick = (e: MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleCloseModal();
+    }
+  };
+
+  const handleTryStoryAdventure = () => {
+    selectFormat("story");
+    handleCloseModal();
   };
 </script>
 
@@ -130,7 +148,7 @@
           { icon: personIcon, text: "Ages 3-12" },
           { icon: playIcon, text: "15-25 min play" }
         ]}
-        imageSrc="https://placehold.co/500x350/90EE90/000000?text=Interactive+Search+Adventure"
+        imageSrc={interactiveSearch}
         imageAlt="Interactive Search Adventure"
         isSelected={selectedFormat === "interactive"}
         onSelect={selectFormat}
@@ -144,7 +162,7 @@
           { icon: personIcon, text: "Ages 3-12" },
           { icon: clockIcon, text: "5-10 min read" }
         ]}
-        imageSrc="https://placehold.co/500x350/DA70D6/FFFFFF?text=Story+Adventure"
+        imageSrc={storyAdventure}
         imageAlt="Story Adventure"
         isSelected={selectedFormat === "story"}
         onSelect={selectFormat}
@@ -209,6 +227,72 @@
     </div>
   </div>
 </div>
+
+<!-- Preview Formats Modal -->
+{#if showPreviewModal}
+  <div
+    class="preview-modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="preview-modal-title"
+    on:click={handleModalBackdropClick}
+    on:keydown={(e) => e.key === "Escape" && handleCloseModal()}
+    tabindex="-1"
+  >
+    <div class="preview-modal-container" role="document">
+      <div class="preview-modal-header">
+        <div class="preview-modal-logo">
+          <div class="preview-logo-img"></div>
+        </div>
+        <button
+          class="preview-modal-close"
+          on:click={handleCloseModal}
+          aria-label="Close preview"
+        >
+          <img src={xIcon} alt="close" />
+        </button>
+      </div>
+      
+      <div class="preview-modal-content">
+        <h2 id="preview-modal-title" class="preview-modal-title">Preview Book Formats</h2>
+        
+        <div class="preview-cards-container">
+          <div class="preview-card">
+            <div class="preview-card-image-container">
+              <img
+                src={interactiveSearch}
+                alt="Interactive Search Example"
+                class="preview-card-image"
+              />
+            </div>
+            <div class="preview-card-content">
+              <h3 class="preview-card-title">Interactive Search Example</h3>
+              <p class="preview-card-description">Try finding the sample characters.</p>
+            </div>
+          </div>
+          
+          <div class="preview-card preview-card-highlighted">
+            <div class="preview-card-image-container">
+              <img
+                src={storyAdventure}
+                alt="Story Adventure Example"
+                class="preview-card-image"
+              />
+            </div>
+            <div class="preview-card-content">
+              <h3 class="preview-card-title">Story Adventure Example</h3>
+              <p class="preview-card-description">Listen to sample Story.</p>
+            </div>
+          </div>
+        </div>
+        
+        <button class="preview-modal-button" on:click={handleTryStoryAdventure}>
+          <span class="preview-modal-button-text">Try Story Adventure</span>
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   .createyourcharacter_span {
@@ -555,8 +639,8 @@
   }
 
   .format-cards-container {
-    width: 100%;
-    height: 100%;
+    /* width: 100%; */
+    width: 1240px;
     justify-content: flex-start;
     align-items: center;
     gap: 24px;
@@ -612,6 +696,216 @@
     .button-outline {
       width: 100%;
       margin-top: 8px;
+    }
+  }
+
+  /* Preview Modal Styles */
+  .preview-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .preview-modal-container {
+    background: white;
+    border-radius: 24px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  .preview-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 16px 24px;
+  }
+
+  .preview-modal-logo {
+    width: 203.32px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+  }
+
+  .preview-logo-img {
+    background-image: url("../../../assets/logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .preview-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+
+  .preview-modal-close:hover {
+    background-color: #f0f0f0;
+  }
+
+  .preview-modal-close img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .preview-modal-content {
+    padding: 0 32px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .preview-modal-title {
+    color: #121212;
+    font-size: 36px;
+    font-family: Quicksand;
+    font-weight: 700;
+    line-height: 50.4px;
+    text-align: center;
+    margin: 0;
+  }
+
+  .preview-cards-container {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .preview-card {
+    flex: 1;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #ededed;
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+  }
+
+  .preview-card-highlighted {
+    border: 2px solid #438bff;
+    box-shadow: 0 2px 8px rgba(67, 139, 255, 0.2);
+  }
+
+  .preview-card-image-container {
+    width: 100%;
+    aspect-ratio: 1 / 0.75;
+    overflow: hidden;
+  }
+
+  .preview-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .preview-card-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .preview-card-title {
+    color: #141414;
+    font-size: 20px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 28px;
+    margin: 0;
+  }
+
+  .preview-card-description {
+    color: #666d80;
+    font-size: 14px;
+    font-family: Nunito;
+    font-weight: 400;
+    line-height: 19.6px;
+    margin: 0;
+  }
+
+  .preview-modal-button {
+    width: 100%;
+    max-width: 400px;
+    padding: 16px 24px;
+    background: #438bff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .preview-modal-button:hover {
+    background: #3370cc;
+  }
+
+  .preview-modal-button-text {
+    color: white;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.2px;
+  }
+
+  @media (max-width: 800px) {
+    .preview-modal-container {
+      max-width: 95vw;
+      border-radius: 20px;
+    }
+
+    .preview-modal-header {
+      padding: 16px;
+    }
+
+    .preview-modal-logo {
+      width: 150px;
+      height: 28px;
+    }
+
+    .preview-modal-content {
+      padding: 0 16px 24px 16px;
+      gap: 20px;
+    }
+
+    .preview-modal-title {
+      font-size: 28px;
+      line-height: 39.2px;
+    }
+
+    .preview-cards-container {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-card {
+      max-width: 100%;
     }
   }
 </style>

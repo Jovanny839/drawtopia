@@ -2,11 +2,70 @@
   import GiftStepComponent from "../../../../components/GiftStepComponent.svelte";
   import PrimarySelect from "../../../../components/PrimarySelect.svelte";
   import arrow_left from "../../../../assets/ArrowLeft.svg";
+  import GiftStoryComponent from "../../../../components/GiftStoryComponent.svelte";
   import { giftCreation } from "../../../../lib/stores/giftCreation";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { user, authLoading, isAuthenticated } from "../../../../lib/stores/auth";
   import { browser } from "$app/environment";
+  import school from '../../../../assets/school.png';
+  import birth from '../../../../assets/birth.png';
+  import grad from '../../../../assets/grad.png';
+  import holiday from '../../../../assets/holiday.png';
+  import baby from '../../../../assets/baby.png';
+  import just from '../../../../assets/just.png';
+
+  // Sample story data
+  const stories = [
+    {
+      id: 1,
+      image: birth,
+      ageRange: "All Ages",
+      title: "First Day of School",
+      description:
+        "A special birthday adventure celebrating another year",
+    },
+    {
+      id: 2,
+      image: grad,
+      ageRange: "Ages 5-12",
+      title: "Graduation",
+      description:
+        "An inspiring story about courage and new beginnings",
+    },
+    {
+      id: 3,
+      image: school,
+      ageRange: "Ages 3-8",
+      title: "First Day of School",
+      description:
+        "A confidence-building adventure about making friends and being brave",
+    },
+    {
+      id: 4,
+      image: holiday,
+      ageRange: "All Ages",
+      title: "Holiday/Christmas",
+      description:
+        "A magical seasonal adventure filled with joy and wonder",
+    },
+    {
+      id: 5,
+      image: baby,
+      ageRange: "Ages 3-10",
+      title: "New Sibling",
+      description:
+        "A heartwarming story about being a caring big brother or sister",
+    },
+    {
+      id: 6,
+      image: just,
+      ageRange: "All Ages",
+      title: "Just Because",
+      description:
+        "A special story showing how amazing they are, any day of the year",
+    },
+  ];
 
   // Age group options
   const ageGroupOptions = [
@@ -14,7 +73,7 @@
     { value: "3-5", label: "👧 Ages 3-5 (Imagination Builders)" },
     { value: "6-7", label: "🧒 Ages 6-7 (Story Seekers)" },
     { value: "8-10", label: "👦 Ages 8-10 (Adventure Creators)" },
-    { value: "11-12", label: "🧑 Ages 11-12 (Dream Weavers)" }
+    { value: "11-12", label: "🧑 Ages 11-12 (Dream Weavers)" },
   ];
 
   // Relationship options
@@ -24,19 +83,20 @@
     { value: "aunt-uncle", label: "Aunt/Uncle" },
     { value: "sibling", label: "Sibling" },
     { value: "family-friend", label: "Family Friend" },
-    { value: "other", label: "Other" }
+    { value: "other", label: "Other" },
   ];
 
   let selectedAgeGroup = "3-5";
   let selectedRelationship = "grandparent";
   let childName = "Emma";
+  let selectedStory: any = null;
 
   // Reactive statements for auth state
   $: currentUser = $user;
   $: loading = $authLoading;
   $: authenticated = $isAuthenticated;
   $: userId = currentUser?.id;
-  
+
   // Additional safety check for SSR
   $: safeToRedirect = browser && !loading && currentUser !== undefined;
 
@@ -47,71 +107,58 @@
       // Add a small delay to ensure auth state is fully loaded
       setTimeout(() => {
         if (safeToRedirect && !authenticated) {
-          goto('/login');
+          goto("/login");
           return;
         }
       }, 100);
     }
-
-    // Initialize from store on mount
-    const unsubscribe = giftCreation.subscribe(state => {
-      if (state.childName) childName = state.childName;
-      if (state.ageGroup) selectedAgeGroup = state.ageGroup;
-      if (state.relationship) selectedRelationship = state.relationship;
-    });
-    
-    return unsubscribe;
   });
 
   // Reactive redirect when auth state changes (client-side only)
   $: if (safeToRedirect && !authenticated) {
     // Only redirect if we're sure about the auth state
-    goto('/login');
+    goto("/login");
   }
 
   const handleAgeGroupChange = (event: Event) => {
     const target = event.target as HTMLSelectElement;
     selectedAgeGroup = target.value;
-    updateGiftStore();
   };
 
   const handleRelationshipChange = (event: Event) => {
     const target = event.target as HTMLSelectElement;
     selectedRelationship = target.value;
-    updateGiftStore();
   };
 
   const handleChildNameChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
     childName = target.value;
-    updateGiftStore();
   };
 
-  const updateGiftStore = () => {
-    giftCreation.setRecipientDetails({
-      childName,
-      ageGroup: selectedAgeGroup,
-      relationship: selectedRelationship
-    });
+  const handleStorySelect = (story: any) => {
+    selectedStory = story;
+    console.log("Selected story:", story);
   };
 
   const handleContinue = () => {
-    // Validate required fields
-    if (!childName.trim()) {
-      alert("Please enter the child's name");
+    if (!selectedStory) {
+      alert("Please select a story for the occasion");
       return;
     }
-    
-    // Save data to store
-    updateGiftStore();
-    
-    // Navigate to step 2
-    goto("/gift/sendlink/6");
+
+    // Save story selection to gift store
+    giftCreation.setOccasionAndStory({
+      occasion: selectedStory.title, // Using story title as occasion for now
+      selectedStory: selectedStory,
+    });
+
+    // Navigate to step 3
+    goto("/gift/sendlink/7");
   };
 
   const handleBack = () => {
-    // Navigate back to dashboard or previous page
-    goto("/gift/sendlink/2");
+    // Navigate back to step 1
+    goto("/gift/sendlink/5");
   };
 </script>
 
@@ -121,6 +168,7 @@
       <div class="logo-img"></div>
     </div>
   </div>
+
   <!-- Mobile Back Button -->
   <div class="mobile-back-button">
     <div
@@ -140,7 +188,8 @@
       <div class="frame-1">
         <div class="heading">
           <div class="tell-us-about-the-child">
-            <span class="tellusaboutthechild_span">Tell us about the child</span
+            <span class="tellusaboutthechild_span"
+              >What's the special occasion?</span
             >
           </div>
           <div class="well-create-a-personalized-story-just-for-them">
@@ -151,88 +200,65 @@
         </div>
       </div>
     </div>
-    <GiftStepComponent currentStep={1} totalSteps={3} stepTitle="Setting Up Gift" stepLabel="Step 1" />
-    <div class="frame-10">
-      <div class="personal-recipient-information">
-        <span class="personalrecipientinformation_span"
-          >Personal Recipient Information</span
-        >
-      </div>
-      <div class="frame-1410103935">
-        <div class="frame-1410103850">
-          <div class="form">
-            <div class="childs-first-name">
-              <span class="childsfirstname_span">Child’s first name*</span>
-            </div>
-            <div class="input-placeholder">
-              <input 
-                type="text" 
-                bind:value={childName} 
-                on:input={handleChildNameChange}
-                placeholder="Enter child's first name"
-                class="name-input"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="form_01">
-          <div class="age-group">
-            <span class="agegroup_span">Age Group*</span>
-          </div>
-          <PrimarySelect 
-            options={ageGroupOptions} 
-            selectedOption={selectedAgeGroup} 
-            onChange={handleAgeGroupChange} 
-            placeholder="Select age group"
-          />
-        </div>
-        <div class="form_02">
-          <div class="select-your-relationship">
-            <span class="selectyourrelationship_span"
-              >Select Your relationship*</span
-            >
-          </div>
-          <PrimarySelect 
-            options={relationshipOptions} 
-            selectedOption={selectedRelationship} 
-            onChange={handleRelationshipChange} 
-            placeholder="Select your relationship"
-          />
-        </div>
-      </div>
-      <div class="frame-1410104113">
-        <div class="checkbox-label">
-          <input type="checkbox" class="input-check" />
-          <div class="youll-set-the-occasion-and-pay-theyll-create-the-story">
-            <span class="youllsettheoccasionandpaytheyllcreatethestory_span"
-              >You'll set the occasion and pay, they'll create the story.</span
-            >
-          </div>
-        </div>
-        <div class="frame-1410103991">
-          <div 
-            class="button"
+    <div class="step-component-container">
+      <GiftStepComponent
+        currentStep={2}
+        totalSteps={3}
+        stepTitle="Choose Your Story"
+        stepLabel="Step 2"
+      />
+    </div>
+    <!-- Story Selection Section -->
+    <div class="story-selection">
+      <!-- Stories Grid -->
+      <div class="stories-grid">
+        {#each stories as story (story.id)}
+          <div
+            class="story-item"
+            class:selected={selectedStory && selectedStory.id === story.id}
             role="button"
             tabindex="0"
-            on:click={handleContinue}
-            on:keydown={(e) => e.key === "Enter" && handleContinue()}
+            on:click={() => handleStorySelect(story)}
+            on:keydown={(e) => e.key === "Enter" && handleStorySelect(story)}
           >
-            <div class="continue-to-occassion-selection">
-              <span class="continuetooccassionselection_span"
-                >Continue to Occassion Selection</span
-              >
+            <GiftStoryComponent
+              image={story.image}
+              ageRange={story.ageRange}
+              title={story.title}
+              description={story.description}
+              isSelected={selectedStory && selectedStory.id === story.id}
+              showPopularTag={story.id === 2}
+            />
+          </div>
+        {/each}
+      </div>
+
+      <!-- Continue Button -->
+      <div class="continue-section-container">
+        <div class="continue-section">
+          <div class="frame-1410103991">
+            <div
+              class="button"
+              role="button"
+              tabindex="0"
+              on:click={handleContinue}
+              on:keydown={(e) => e.key === "Enter" && handleContinue()}
+            >
+              <div class="continue-to-payment">
+                <span class="continuetopayment_span">Continue to Payment</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div 
-          class="button_01"
-          role="button"
-          tabindex="0"
-          on:click={handleBack}
-          on:keydown={(e) => e.key === "Enter" && handleBack()}
-        >
-          <img src={arrow_left} alt="arrow left" class="arrowleft" />
-          <div class="back"><span class="back_span">Back</span></div>
+          <div
+            class="button_01"
+            role="button"
+            tabindex="0"
+            on:click={handleBack}
+            on:keydown={(e) => e.key === "Enter" && handleBack()}
+          >
+            <img src={arrow_left} alt="arrow left" class="arrowleft" />
+            <div class="back"><span class="back_span">Back</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -265,9 +291,6 @@
     height: 100%;
   }
 
-
-
-
   .tellusaboutthechild_span {
     color: #121212;
     font-size: 48px;
@@ -295,92 +318,6 @@
     align-self: stretch;
     text-align: center;
   }
-
-
-
-  .personalrecipientinformation_span {
-    color: black;
-    font-size: 24px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 33.6px;
-    word-wrap: break-word;
-  }
-
-  .personal-recipient-information {
-    align-self: stretch;
-  }
-
-  .childsfirstname_span {
-    color: #141414;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .childs-first-name {
-    align-self: stretch;
-  }
-
-
-
-  .agegroup_span {
-    color: #141414;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .age-group {
-    align-self: stretch;
-  }
-
-
-
-  .selectyourrelationship_span {
-    color: #141414;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .select-your-relationship {
-    align-self: stretch;
-  }
-
-  .youllsettheoccasionandpaytheyllcreatethestory_span {
-    color: #666d80;
-    font-size: 18px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 25.2px;
-    word-wrap: break-word;
-  }
-
-  .youll-set-the-occasion-and-pay-theyll-create-the-story {
-    flex: 1 1 0;
-  }
-
-  .continuetooccassionselection_span {
-    color: white;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.2px;
-    word-wrap: break-word;
-  }
-
-  .continue-to-occassion-selection {
-    text-align: center;
-  }
-
-
 
   .back_span {
     color: black;
@@ -449,52 +386,6 @@
     display: flex;
   }
 
-  .input-placeholder {
-    align-self: stretch;
-    height: 50px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    background: white;
-    overflow: hidden;
-    border-radius: 12px;
-    outline: 1px #dcdcdc solid;
-    outline-offset: -1px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
-    display: inline-flex;
-    transition: all 0.2s ease;
-  }
-
-  .input-placeholder:focus-within {
-    outline: 2px solid #438bff;
-    outline-offset: -2px;
-    box-shadow: 0 0 0 3px rgba(67, 139, 255, 0.1);
-    transform: translateY(-1px);
-  }
-
-  .name-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: #141414;
-    font-size: 16px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 22.4px;
-  }
-
-  .name-input::placeholder {
-    color: #727272;
-    font-size: 16px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 22.4px;
-  }
-
   .button {
     align-self: stretch;
     padding-left: 24px;
@@ -512,11 +403,12 @@
     user-select: none;
     position: relative;
     overflow: hidden;
+    border: none;
   }
 
   .button:hover {
     background: #3a7ae4;
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
     box-shadow: 0 4px 12px rgba(67, 139, 255, 0.3);
   }
 
@@ -543,11 +435,17 @@
     background: rgba(255, 255, 255, 0.3);
     transition: width 0.3s, height 0.3s;
     transform: translate(-50%, -50%);
+    z-index: 1;
   } */
 
   .button:active::before {
     width: 300px;
     height: 300px;
+  }
+
+  .button span {
+    position: relative;
+    z-index: 2;
   }
 
   .frame-1410103820 {
@@ -569,15 +467,6 @@
     justify-content: flex-start;
     align-items: center;
     gap: 32px;
-    display: flex;
-  }
-
-  .form {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
     display: flex;
   }
 
@@ -659,81 +548,8 @@
     display: flex;
   }
 
-  .frame-1410103850 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 12px;
-    display: flex;
-  }
-
-
-
-  .form_01 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
-  }
-
-  .form_02 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
-  }
-
-  .checkbox-label {
-    align-self: stretch;
-    border-radius: 6px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-    display: inline-flex;
-  }
-
-  .frame-1410103935 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 12px;
-    display: flex;
-  }
-
-  .frame-1410104113 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 12px;
-    display: flex;
-  }
-
-  .frame-10 {
-    align-self: stretch;
-    padding-top: 24px;
-    padding-bottom: 16px;
-    padding-left: 12px;
-    padding-right: 12px;
-    background: white;
-    border-radius: 20px;
-    outline: 1px #dcdcdc solid;
-    outline-offset: -1px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 24px;
-    display: flex;
-  }
-
   .frame-1410103818 {
-    width: 700px;
+    width: 100%;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -756,11 +572,103 @@
     gap: 48px;
     display: inline-flex;
   }
-  .input-check {
+
+  /* Story Selection Styles */
+  .story-selection {
+    align-self: stretch;
+    background: white;
+    border-radius: 20px;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 24px;
+    display: flex;
+  }
+
+  .stories-grid {
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .story-item {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .story-item:hover {
+    /* transform: translateY(-2px); */
+    box-shadow: 0px 2px 8px rgba(67, 139, 255, 0.1);
+  }
+
+  .story-item:active {
+    /* transform: translateY(0); */
+    box-shadow: 0px 1px 4px rgba(67, 139, 255, 0.15);
+  }
+
+  .story-item:focus {
+    outline: 2px solid #438bff;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(67, 139, 255, 0.1);
+    /* transform: translateY(-2px); */
+  }
+
+  .story-item.selected {
+    outline: 2px #6912c5 solid;
+    box-shadow: 0px 1px 8px #871fff;
+    /* transform: translateY(-1px); */
+  }
+
+  .story-item.selected:hover {
+    /* transform: translateY(-3px); */
+    box-shadow: 0px 2px 12px #871fff;
+  }
+
+  .continue-section {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    display: flex;
+    margin-top: 16px;
+    width: 700px;
+  }
+
+  .continuetopayment_span {
+    color: white;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.2px;
+    word-wrap: break-word;
+  }
+
+  .continue-to-payment {
+    text-align: center;
+  }
+
+  .arrowleft {
     width: 20px;
     height: 20px;
-    position: relative;
-    overflow: hidden;
+  }
+  .step-component-container {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+  }
+  .continue-section-container {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
   }
 
   /* Mobile Back Button Styles */
@@ -798,38 +706,16 @@
     font-weight: 600;
     line-height: 22.4px;
   }
-
-  /* Fix select positioning */
-  .form_01,
-  .form_02 {
-    position: relative;
-    z-index: 1;
+  .story-item.selected {
+    outline: 2px #6912c5 solid;
+    box-shadow: 0px 1px 8px #871fff;
+    /* transform: translateY(-1px); */
   }
 
-  .form {
-    position: relative;
-    z-index: 2;
+  .story-item.selected:hover {
+    /* transform: translateY(-3px); */
+    box-shadow: 0px 2px 12px #871fff;
   }
-
-  /* Ensure proper stacking context for selects */
-  :global(.select-wrapper) {
-    position: relative;
-    z-index: 10;
-  }
-
-  /* Ensure container doesn't clip dropdown */
-  .frame-1410103935 {
-    overflow: visible;
-  }
-
-  .frame-10 {
-    overflow: visible;
-  }
-
-  .profile-creation-filled {
-    overflow: visible;
-  }
-
   /* Mobile responsive styles */
   @media (max-width: 800px) {
     .mobile-back-button {
@@ -881,51 +767,91 @@
       margin-bottom: 8px;
     }
 
-    .frame-10 {
-      padding: 16px;
-      gap: 16px;
+    /* Stories grid responsive - horizontal scrolling */
+    .stories-grid {
+      display: flex !important;
+      flex-direction: row !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      gap: 16px !important;
+      padding: 0 4px 16px 4px !important;
+      scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
     }
 
-    .frame-1410103935 {
-      flex-direction: column;
-      gap: 16px;
-      overflow: visible;
+    .story-item {
+      flex: 0 0 280px !important;
+      width: 280px !important;
+      scroll-snap-align: start !important;
     }
 
-    .form,
-    .form_01,
-    .form_02 {
-      width: 100%;
-      overflow: visible;
+    /* Hide scrollbar but keep functionality */
+    .stories-grid::-webkit-scrollbar {
+      height: 4px;
     }
 
-    /* Mobile select improvements */
-    :global(.select-wrapper) {
-      width: 100% !important;
-      height: 45px !important;
-      padding: 8px 12px !important;
-      font-size: 16px !important;
-      z-index: 20 !important;
+    .stories-grid::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 2px;
+    }
+
+    .stories-grid::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 2px;
+    }
+
+    .stories-grid::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    /* Add subtle shadow to indicate more content */
+    .story-selection {
       position: relative;
     }
 
-    .input-placeholder {
-      height: 45px;
-      padding: 8px 12px;
+    .story-selection::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 20px;
+      height: 100%;
+      background: linear-gradient(
+        to left,
+        rgba(255, 255, 255, 0.8),
+        transparent
+      );
+      pointer-events: none;
+      z-index: 1;
     }
 
-    .input-placeholder:focus-within {
-      transform: translateY(-2px);
-      box-shadow: 0 0 0 2px rgba(67, 139, 255, 0.15);
+    /* Ensure story items have proper touch interaction */
+    .story-item {
+      touch-action: manipulation;
+      user-select: none;
     }
 
-    .name-input {
+    /* Optimize selection effects for mobile */
+    .story-item:hover {
+      /* transform: translateY(-1px); */
+      box-shadow: 0px 1px 4px rgba(67, 139, 255, 0.1);
+    }
+
+    .story-item.selected {
+      outline: 2px #6912c5 solid;
+      box-shadow: 0px 1px 8px #871fff;
+      /* transform: translateY(-1px); */
+    }
+
+    .story-item.selected:hover {
+      /* transform: translateY(-2px); */
+      box-shadow: 0px 2px 8px #871fff;
+    }
+
+    /* Continue section mobile */
+    .continue-section {
       width: 100%;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      font-family: Nunito;
-      color: #141414;
+      gap: 16px;
     }
 
     .button {
@@ -933,13 +859,13 @@
       padding: 14px 20px;
       touch-action: manipulation;
     }
-    
+
     /* Optimize button effects for mobile */
     .button:hover {
-      transform: translateY(-1px);
+      /* transform: translateY(-1px); */
       box-shadow: 0 2px 8px rgba(67, 139, 255, 0.25);
     }
-    
+
     .button:active::before {
       width: 200px;
       height: 200px;
@@ -947,15 +873,6 @@
 
     .button_01 {
       display: none;
-    }
-
-    .frame-1410104113 {
-      gap: 16px;
-    }
-
-    .checkbox-label {
-      padding: 10px;
-      gap: 10px;
     }
 
     /* Typography adjustments for mobile */
@@ -969,24 +886,7 @@
       line-height: 19.2px;
     }
 
-    .personalrecipientinformation_span {
-      font-size: 20px;
-      line-height: 28px;
-    }
-
-    .childsfirstname_span,
-    .agegroup_span,
-    .selectyourrelationship_span {
-      font-size: 14px;
-      line-height: 19.6px;
-    }
-
-    .youllsettheoccasionandpaytheyllcreatethestory_span {
-      font-size: 13px;
-      line-height: 18.2px;
-    }
-
-    .continuetooccassionselection_span {
+    .continuetopayment_span {
       font-size: 16px;
       line-height: 22.4px;
     }
@@ -1014,6 +914,20 @@
 
     .frame-1410103820 {
       gap: 16px;
+    }
+
+    .story-selection {
+      gap: 20px;
+    }
+
+    .step-component-container,
+    .continue-section-container {
+      width: 100%;
+    }
+
+    /* Ensure proper overflow for mobile */
+    .profile-creation-filled {
+      overflow: visible;
     }
   }
 </style>

@@ -18,6 +18,10 @@
   function handleStartScene1() {
     goto('/intersearch/3');
   }
+
+  function handlePrevious() {
+    goto('/intersearch/1');
+  }
 </script>
 
 <div class="preview-outer">
@@ -89,7 +93,7 @@
       </div>
     </div>
     <div class="preview-footer-area">
-      <button class="preview-nav-btn" disabled>{"← Previous"}</button>
+      <button class="preview-nav-btn" on:click={handlePrevious}>{"← Previous"}</button>
       <div class="preview-dots">
         {#each Array(totalPages) as _, idx}
           {#if idx === 0}
@@ -318,12 +322,16 @@
     font-size: 13px;
     border: none;
     background: #f6f9fd;
-    color: #a8a8ac;
+    color: #3b4160;
     border-radius: 6px;
     padding: 6px 16px;
-    cursor: not-allowed;
+    cursor: pointer;
     height: 57px;
     width: 151px;
+    transition: background 0.18s;
+  }
+  .preview-nav-btn:hover {
+    background: #e8f0fb;
   }
   .preview-dots {
     display: flex;

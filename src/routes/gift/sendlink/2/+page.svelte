@@ -7,6 +7,7 @@
   import logo from "../../../../assets/logo.png";
   import PaperPlaneTilt from "../../../../assets/PaperPlaneTilt.svg";
   import XIcon from "../../../../assets/X.svg";
+  import green_check from "../../../../assets/green_check.svg";
 
   import GiftPackaging1 from "../../../../assets/giftpackage1.png";
   import GiftPackaging2 from "../../../../assets/giftpackage2.png";
@@ -19,6 +20,7 @@
     isAuthenticated,
   } from "../../../../lib/stores/auth";
   import GiftStepComponent from "../../../../components/GiftStepComponent.svelte";
+  import { createGift } from "../../../../lib/database/gifts";
 
   const exampleMessages = [
     "Happy Birthday, Emma!",
@@ -34,6 +36,10 @@
   let selectedCardDesign: GiftCardDesign = "blue";
   let characterCount = 0;
   let showPreviewModal = false;
+  let showStatusModal = false;
+  let isSuccess = false;
+  let isLoading = false;
+  let errorMessage = "";
   const maxCharacters = 200;
 
   // Reactive statements for auth state
@@ -97,7 +103,7 @@
     }
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     // Validate required fields
     if (!giftMessage.trim()) {
       alert("Please enter a gift message");
@@ -108,13 +114,67 @@
       return;
     }
 
-    // Save data to store
-    giftCreation.setDeliveryDetails({
-      specialMsg: giftMessage,
-    });
+    if (isLoading) return;
 
-    // Navigate to gift redemption page
-    goto("/gift/sendlink/5");
+    try {
+      isLoading = true;
+      isSuccess = false;
+      errorMessage = "";
+
+      // Update the store with the message from this page
+      giftCreation.setDeliveryDetails({
+        specialMsg: giftMessage,
+      });
+      
+      // Get updated state after setting the message
+      const giftState = $giftCreation;
+
+      // Convert gift state to Gift object for database
+      const giftData = giftCreation.toGiftObject(giftState);
+      
+      // Save gift to database
+      const result = await createGift(giftData);
+      
+      if (result.success) {
+        // Store the gift ID
+        if (result.data?.id) {
+          giftCreation.setGiftId(result.data.id);
+        }
+        
+        isSuccess = true;
+        showStatusModal = true;
+      } else {
+        isSuccess = false;
+        errorMessage = result.error || 'Failed to send gift creation link';
+        showStatusModal = true;
+      }
+    } catch (error: any) {
+      console.error('Error sending gift:', error);
+      isSuccess = false;
+      errorMessage = error.message || 'An error occurred while sending the gift creation link';
+      showStatusModal = true;
+    } finally {
+      isLoading = false;
+    }
+  };
+
+  const handleCloseStatusModal = () => {
+    showStatusModal = false;
+  };
+
+  const handleDoneButton = () => {
+    if (isSuccess) {
+      goto("/dashboard");
+    } else {
+      // If failed, just close the modal
+      handleCloseStatusModal();
+    }
+  };
+
+  const handleStatusModalBackdropClick = (event: MouseEvent) => {
+    if (event.target === event.currentTarget) {
+      handleCloseStatusModal();
+    }
   };
 
   const handleBack = () => {
@@ -227,10 +287,14 @@
       <button
         class="send-button"
         on:click={handleSend}
-        disabled={!giftMessage.trim() || !selectedCardDesign}
+        disabled={!giftMessage.trim() || !selectedCardDesign || isLoading}
       >
-      Send Gift Creation Link
-      <img src={PaperPlaneTilt} alt="send" class="send-icon" />
+      {#if isLoading}
+        Sending...
+      {:else}
+        Send Gift Creation Link
+        <img src={PaperPlaneTilt} alt="send" class="send-icon" />
+      {/if}
       </button>
       <button class="back-button" on:click={handleBack}>
         <img src={arrow_left} alt="back" class="arrow-icon" />
@@ -249,8 +313,9 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-title"
+    tabindex="-1"
   >
-    <div class="modal-content" on:click|stopPropagation>
+    <div class="modal-content" on:click|stopPropagation role="document">
       <div class="modal-header">
         <div class="modal-logo">
           <img src={logo} alt="logo" class="logo-img" />
@@ -283,6 +348,57 @@
               </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+{/if}
+
+{#if showStatusModal}
+  <!-- Status Modal (Success/Failed) -->
+  <div
+    class="modal-overlay"
+    on:click={handleStatusModalBackdropClick}
+    on:keydown={(e) => e.key === "Escape" && handleCloseStatusModal()}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="status-modal-title"
+    tabindex="-1"
+  >
+    <div class="status-modal-content" on:click|stopPropagation role="document">
+      <div class="status-modal-header">
+        <div class="modal-logo">
+          <img src={logo} alt="logo" class="logo-img" />
+        </div>
+        <button
+          class="modal-close"
+          on:click={handleCloseStatusModal}
+          aria-label="Close status modal"
+        >
+          <img src={XIcon} alt="close" />
+        </button>
+      </div>
+
+      <div class="status-modal-body">
+        {#if isSuccess}
+          <img src={green_check} alt="success" class="status-icon" />
+          <div class="status-title">Gift Sent Successfully!</div>
+          <div class="status-message">
+            Your gift creation link has been sent successfully. The recipient will receive the link shortly.
+          </div>
+        {:else}
+          <div class="status-icon error-icon">❌</div>
+          <div class="status-title error-title">Failed to Send Gift</div>
+          <div class="status-message error-message">
+            {errorMessage || 'An error occurred while sending the gift creation link. Please try again.'}
+          </div>
+        {/if}
+        <button class="status-button" on:click={handleDoneButton}>
+          {#if isSuccess}
+            Done
+          {:else}
+            Try Again
+          {/if}
+        </button>
       </div>
     </div>
   </div>
@@ -859,8 +975,126 @@
       min-height: 350px;
     }
 
-    .preview-card-message {
-      font-size: 18px;
-    }
+  .preview-card-message {
+    font-size: 18px;
   }
+}
+
+/* Status Modal Styles */
+.status-modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 592px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.status-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #ededed;
+}
+
+.status-modal-body {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.status-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 8px;
+}
+
+.error-icon {
+  font-size: 80px;
+  line-height: 80px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-title {
+  font-family: Quicksand;
+  font-weight: 600;
+  font-size: 24px;
+  color: #121212;
+  margin: 0;
+}
+
+.error-title {
+  color: #ef4444;
+}
+
+.status-message {
+  font-family: Nunito;
+  font-size: 16px;
+  font-weight: 400;
+  color: #727272;
+  line-height: 1.5;
+  max-width: 433px;
+}
+
+.error-message {
+  color: #ef4444;
+}
+
+.status-button {
+  margin-top: 12px;
+  padding: 16px 32px;
+  background: #438bff;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-family: Quicksand;
+  font-weight: 600;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 182px;
+}
+
+.status-button:hover {
+  background: #3a7ae4;
+}
+
+.status-button:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 800px) {
+  .status-modal-content {
+    max-width: 95%;
+  }
+
+  .status-modal-body {
+    padding: 32px 16px;
+  }
+
+  .status-title {
+    font-size: 20px;
+  }
+
+  .status-message {
+    font-size: 14px;
+  }
+
+  .status-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}
 </style>

@@ -153,12 +153,12 @@
     });
 
     // Navigate to step 3
-    goto("/gift/sendlink/7");
+    goto("/gift/sendlink/2");
   };
 
   const handleBack = () => {
     // Navigate back to step 1
-    goto("/gift/sendlink/5");
+    goto("/gift/sendlink/4");
   };
 </script>
 

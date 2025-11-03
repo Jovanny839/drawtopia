@@ -19,6 +19,7 @@
   import x from "../../assets/X.svg";
   import GiftTrackingComponent from "../../components/GiftTrackingComponent.svelte";
   import GiftSelectModal from "../../components/GiftSelectModal.svelte";
+  import NotificationComponent from "../../components/NotificationComponent.svelte";
   import { storyCreation } from "../../lib/stores/storyCreation";
 
   let showMobileMenu = false;
@@ -326,8 +327,11 @@
           <div class="logo-text-full">
             <div class="logo-img"></div>
           </div>
-          <div class="close-menu" on:click={toggleMobileMenu} on:keydown={(e) => e.key === 'Enter' && toggleMobileMenu()} role="button" tabindex="0">
-            <img src={x} alt="close" class="list" />
+          <div class="mobile-header-actions">
+            <NotificationComponent />
+            <div class="close-menu" on:click={toggleMobileMenu} on:keydown={(e) => e.key === 'Enter' && toggleMobileMenu()} role="button" tabindex="0">
+              <img src={x} alt="close" class="list" />
+            </div>
           </div>
         </div>
         <div class="mobile-menu-content">
@@ -396,23 +400,26 @@
             >
           </div>
         </div>
-        <div class="profile-close">
-          <div class="frame-1410103913">
-            <img
-              class="ellipse-7"
-              src="https://placehold.co/40x40"
-              alt="Alex Smith"
-            />
-            <div class="heading">
-              <div class="alex-smith">
-                <span class="alexsmith_span">Alex Smith</span>
-              </div>
-              <div class="premium-plan">
-                <span class="premiumplan_span">Premium Plan</span>
+        <div class="header-actions">
+          <NotificationComponent />
+          <div class="profile-close">
+            <div class="frame-1410103913">
+              <img
+                class="ellipse-7"
+                src="https://placehold.co/40x40"
+                alt="Alex Smith"
+              />
+              <div class="heading">
+                <div class="alex-smith">
+                  <span class="alexsmith_span">Alex Smith</span>
+                </div>
+                <div class="premium-plan">
+                  <span class="premiumplan_span">Premium Plan</span>
+                </div>
               </div>
             </div>
+            <img src={caretdown} alt="caretdown" class="caretdown" />
           </div>
-          <img src={caretdown} alt="caretdown" class="caretdown" />
         </div>
       </div>
     </div>
@@ -1157,6 +1164,12 @@
     display: inline-flex;
   }
 
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
   .parent-menu-dropdown {
     width: 236px;
     background: #eef6ff;
@@ -1551,6 +1564,12 @@
     justify-content: space-between;
     align-items: center;
     background: white;
+  }
+
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .close-menu {
