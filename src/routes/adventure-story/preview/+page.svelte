@@ -1,6 +1,6 @@
 <script lang="ts">
     import logo from "../../../assets/logo.png";
-    import shieldStar from "../../../assets/shieldstar.svg";
+    import shieldStar from "../../../assets/ShieldStar.svg";
     import star from "../../../assets/star.png";
     import classicStorybook from "../../../assets/classic_storybook.png";
     import modernMinimalist from "../../../assets/modern_minimalist.png";
