@@ -1,0 +1,604 @@
+<script lang="ts">
+  import vectorBook from "../assets/vectorBook.svg";
+  import vectorSearch from "../assets/vectorSearch.svg";
+  import greenCheck from "../assets/greenCheck.svg";
+  import warning from "../assets/RedWarning.svg";
+  import spinner from "../assets/Spinner.svg";
+  import archieve from "../assets/Archive.svg";
+  import whiteEye from "../assets/WhiteEye.svg";
+  import arrowclockwise from "../assets/WhiteArrowsClockwise.svg";
+  import simplepencil from "../assets/WhitePencilSimple.svg";
+  import simpledownload from "../assets/BlackDownloadSimple.svg";
+  import simplesharenetwork from "../assets/BlackShareNetwork.svg";
+
+  export let item: any;
+
+  // Determine the card type based on item status
+  const getCardType = () => {
+    if (item?.status === "completed") return "story";
+    if (item?.status === "failed") return "failed";
+    if (item?.status === "generating") return "search";
+    return "draft";
+  };
+
+  const cardType = getCardType();
+
+  // Get status icon and text
+  const getStatusInfo = () => {
+    if (item?.status === "completed") {
+      return { icon: greenCheck, text: "Completed" };
+    }
+    if (item?.status === "failed") {
+      return { icon: warning, text: "Failed" };
+    }
+    if (item?.status === "generating") {
+      return { icon: spinner, text: "Generating 45%" };
+    }
+    return { icon: archieve, text: "Draft" };
+  };
+
+  const statusInfo = getStatusInfo();
+
+  // Get status badge class
+  const getStatusBadgeClass = () => {
+    if (item?.status === "completed") return "status-completed";
+    if (item?.status === "failed") return "status-failed";
+    if (item?.status === "generating") return "status-generating";
+    return "status-draft";
+  };
+
+  const statusBadgeClass = getStatusBadgeClass();
+
+  // Get action button info
+  const getActionButton = () => {
+    if (item?.status === "completed") {
+      return { icon: whiteEye, text: "View Book" };
+    }
+    if (item?.status === "failed") {
+      return { icon: arrowclockwise, text: "Re-generate Book" };
+    }
+    if (item?.status === "generating") {
+      return { icon: whiteEye, text: "View Book" };
+    }
+    return { icon: simplepencil, text: "Edit Book" };
+  };
+
+  const actionButton = getActionButton();
+
+  // Format date
+  const formatDate = (date: string | Date | undefined) => {
+    if (!date) return "Unknown";
+    try {
+      const d = typeof date === "string" ? new Date(date) : date;
+      return d.toLocaleDateString("en-GB");
+    } catch {
+      return "Unknown";
+    }
+  };
+
+  // Get image source
+  const getImageSrc = () => {
+    return item?.story_cover || item?.original_image_url || vectorBook;
+  };
+
+  // Get title
+  const getTitle = () => {
+    return item?.title || item?.story_title || "Untitled Story";
+  };
+
+  // Get created by
+  const getCreatedBy = () => {
+    return item?.author || item?.child_profiles?.first_name || "Unknown";
+  };
+
+  // Get created date
+  const getCreatedDate = () => {
+    return formatDate(item?.createdDate || item?.created_at);
+  };
+</script>
+
+<div class="cardd">
+  <div class="image" style="background-image: url({getImageSrc()})">
+    <div class="frame-1410103869">
+      <div class="book">
+        <img
+          src={cardType === "search" ? vectorSearch : vectorBook}
+          alt={cardType === "search" ? "Search icon" : "Story icon"}
+        />
+      </div>
+      <div class="sub-menu">
+        <div class="story">
+          <span class="story_span">{cardType === "search" ? "Search" : "Story"}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="emmas-magical-forest-adventure">
+    <span class="emmasmagicalforestadventure_span">{getTitle()}</span>
+  </div>
+  <div class="frame-1410104158">
+    <div class="frame-1410104124">
+      <div><span class="createddate_span">Created Date:</span></div>
+      <div><span class="f1302024_span">{getCreatedDate()}</span></div>
+    </div>
+    <div class="frame-1410104125">
+      <div><span class="createby_span">Create By</span></div>
+      <div class="frame-1410103850">
+        <img class="ellipse" src="https://placehold.co/20x20" alt="Avatar" />
+        <div class="form">
+          <div><span class="mazda_span">{getCreatedBy()}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="frame-1410104126">
+      <div><span class="status_span">Status</span></div>
+      <div class="frame-1410103870 {statusBadgeClass}">
+        <div class="archive">
+          <img src={statusInfo.icon} alt={statusInfo.text} class="status-icon" />
+        </div>
+        <div class="sub-menu_01">
+          <div class="draft">
+            <span class="draft_span">{statusInfo.text}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="rectangle-263"></div>
+  <div class="frame-1410104166">
+    <div class="frame-1410104245">
+      <div class="ellipse-1415"></div>
+      <div class="pencilsimple">
+        <img src={actionButton.icon} alt={actionButton.text} class="action-icon" />
+      </div>
+      <div class="edit-book">
+        <span class="editbook_span">{actionButton.text}</span>
+      </div>
+    </div>
+    <div class="button">
+      <div class="downloadsimple">
+        <img src={simpledownload} alt="download" class="icon-img" />
+      </div>
+    </div>
+    <div class="button_01">
+      <div class="sharenetwork">
+        <img src={simplesharenetwork} alt="share" class="icon-img" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .vector {
+    width: 11px;
+    height: 13px;
+    left: 2.5px;
+    top: 1.5px;
+    position: absolute;
+    background: #438bff;
+  }
+
+  .story_span {
+    color: #438bff;
+    font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 700;
+    line-height: 19.6px;
+    word-wrap: break-word;
+  }
+
+  .story {
+    text-align: center;
+  }
+
+  .emmasmagicalforestadventure_span {
+    color: black;
+    font-size: 20px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 28px;
+    word-wrap: break-word;
+  }
+
+  .emmas-magical-forest-adventure {
+    align-self: stretch;
+  }
+
+  .createddate_span {
+    color: #727272;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .f1302024_span {
+    color: black;
+    font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 19.6px;
+    word-wrap: break-word;
+  }
+
+  .createby_span {
+    color: #727272;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .ellipse {
+    width: 20px;
+    height: 20px;
+    background: #727272;
+    border-radius: 9999px;
+    object-fit: cover;
+  }
+
+  .mazda_span {
+    color: #141414;
+    font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 19.6px;
+    word-wrap: break-word;
+  }
+
+  .status_span {
+    color: #727272;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 400;
+    line-height: 22.4px;
+    word-wrap: break-word;
+  }
+
+  .status-icon {
+    width: 14.5px;
+    height: 10.5px;
+    object-fit: contain;
+  }
+
+  .draft_span {
+    color: #ffbe4c;
+    font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 700;
+    line-height: 19.6px;
+    word-wrap: break-word;
+  }
+
+  .draft {
+    text-align: center;
+  }
+
+  .rectangle-263 {
+    align-self: stretch;
+    height: 1px;
+    background: #ededed;
+  }
+
+  .ellipse-1415 {
+    width: 248px;
+    height: 114px;
+    left: -18px;
+    top: 15px;
+    position: absolute;
+    background: radial-gradient(
+      ellipse 42.11% 42.11% at 50% 52.94%,
+      white 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    border-radius: 9999px;
+  }
+
+  .action-icon {
+    width: 12.5px;
+    height: 12.5px;
+    object-fit: contain;
+  }
+
+  .editbook_span {
+    color: white;
+    font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 19.6px;
+    word-wrap: break-word;
+  }
+
+  .edit-book {
+    text-align: center;
+  }
+
+  .icon-img {
+    width: 13.5px;
+    height: 13.5px;
+    object-fit: contain;
+  }
+
+  .sharenetwork .icon-img {
+    width: 13.5px;
+    height: 15.75px;
+  }
+
+  .sub-menu {
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+  }
+
+  .frame-1410104124 {
+    align-self: stretch;
+    height: 38px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+  }
+
+  .form {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 4px;
+    display: inline-flex;
+  }
+
+  .sub-menu_01 {
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+  }
+
+  .book {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .book img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .archive {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pencilsimple {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .downloadsimple {
+    width: 18px;
+    height: 18px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sharenetwork {
+    width: 18px;
+    height: 18px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .frame-1410103850 {
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    display: flex;
+  }
+
+  .frame-1410103869 {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 14px;
+    padding-right: 16px;
+    background: white;
+    border-radius: 12px;
+    outline: 1px #438bff solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    display: flex;
+  }
+
+  .frame-1410103870 {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 14px;
+    padding-right: 16px;
+    background: #fff6e0;
+    border-radius: 12px;
+    outline: 1px #ffbe4c solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    display: flex;
+  }
+
+  /* Status-specific styling */
+  .frame-1410103870.status-completed {
+    background: #e8f5e9;
+    outline: 1px #4caf50 solid;
+  }
+
+  .frame-1410103870.status-completed .draft_span {
+    color: #4caf50;
+  }
+
+  .frame-1410103870.status-failed {
+    background: #ffebee;
+    outline: 1px #f44336 solid;
+  }
+
+  .frame-1410103870.status-failed .draft_span {
+    color: #f44336;
+  }
+
+  .frame-1410103870.status-generating {
+    background: #e3f2fd;
+    outline: 1px #2196f3 solid;
+  }
+
+  .frame-1410103870.status-generating .draft_span {
+    color: #2196f3;
+  }
+
+  .frame-1410103870.status-draft {
+    background: #fff6e0;
+    outline: 1px #ffbe4c solid;
+  }
+
+  .frame-1410103870.status-draft .draft_span {
+    color: #ffbe4c;
+  }
+
+  .frame-1410104245 {
+    flex: 1 1 0;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    position: relative;
+    background: #438bff;
+    overflow: hidden;
+    border-radius: 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    display: flex;
+    cursor: pointer;
+  }
+
+  .button {
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    cursor: pointer;
+  }
+
+  .button_01 {
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    cursor: pointer;
+  }
+
+  .frame-1410104125 {
+    align-self: stretch;
+    height: 38px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+  }
+
+  .image {
+    align-self: stretch;
+    height: 400px;
+    padding: 8px;
+    background: #fbfbfb;
+    overflow: hidden;
+    border-radius: 12px;
+    outline: 1px #d3d3d3 solid;
+    outline-offset: -1px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+    display: inline-flex;
+  }
+
+  .frame-1410104126 {
+    align-self: stretch;
+    height: 38px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+  }
+
+  .frame-1410104166 {
+    align-self: stretch;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    display: inline-flex;
+  }
+
+  .frame-1410104158 {
+    align-self: stretch;
+    padding-left: 4px;
+    padding-right: 4px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 4px;
+    display: flex;
+  }
+
+  .cardd {
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    display: inline-flex;
+  }
+</style>

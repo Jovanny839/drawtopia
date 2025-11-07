@@ -45,7 +45,7 @@ export async function generateStyledImage(options: ImageGenerationOptions): Prom
         : prompts.cartoon.normal;
     }
 
-    const response = await fetch('https://image-edit-gray.vercel.app/edit-image', {
+    const response = await fetch('https://image-edit-five.vercel.app/edit-image', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

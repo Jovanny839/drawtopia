@@ -17,6 +17,7 @@ export interface Story {
   original_image_url: string;
   enhanced_images?: string[];
   story_title?: string;
+  story_cover?: string;
   cover_design?: string;
   status?: 'generating' | 'completed' | 'failed';
 }
@@ -48,6 +49,7 @@ export async function createStory(story: Story): Promise<DatabaseResult> {
         original_image_url: story.original_image_url,
         enhanced_images: story.enhanced_images || [],
         story_title: story.story_title,
+        story_cover: story.story_cover,
         cover_design: story.cover_design,
         status: story.status || 'generating'
       }])
@@ -158,7 +160,7 @@ export async function getAllStoriesForParent(parentId: string): Promise<Database
     // First, get all child profile IDs for this parent
     const { data: childProfiles, error: childError } = await supabase
       .from('child_profiles')
-      .select('id, first_name, age_group')
+      .select('*')
       .eq('parent_id', parentId);
 
     if (childError) {
@@ -177,7 +179,7 @@ export async function getAllStoriesForParent(parentId: string): Promise<Database
     }
 
     // Extract child profile IDs
-    const childProfileIds = childProfiles.map(profile => profile.id);
+    const childProfileIds = childProfiles.map(profile => profile.parent_id);
 
     // Now get all stories for these child profiles
     const { data: stories, error: storiesError } = await supabase

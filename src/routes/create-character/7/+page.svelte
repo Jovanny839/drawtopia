@@ -67,12 +67,20 @@
   // Cover design selection handler
   function selectCoverDesign(design: string) {
     selectedCoverDesign = design;
+    // Save the cover image URL (Supabase URL from step 6) when cover design is selected
+    if (selectedImageFromStep6) {
+      // Remove query parameters if present to get clean Supabase URL
+      const cleanImageUrl = selectedImageFromStep6.split('?')[0];
+      storyCreation.setStoryPresentation(selectedTitle, selectedCoverDesign, cleanImageUrl);
+    }
   }
 
   // Handle preview story button click
   const handlePreviewStory = () => {
     // Update story creation store with final story presentation data
-    storyCreation.setStoryPresentation(selectedTitle, selectedCoverDesign);
+    // Include the cover image URL if available
+    const coverImageUrl = selectedImageFromStep6 ? selectedImageFromStep6.split('?')[0] : undefined;
+    storyCreation.setStoryPresentation(selectedTitle, selectedCoverDesign, coverImageUrl);
     
     // Navigate to preview page
     goto("/create-character/7/preview");

@@ -23,6 +23,7 @@
   import { onMount } from "svelte";
   import PrimarySelect from "../../../components/PrimarySelect.svelte";
   import PrimaryInput from "../../../components/PrimaryInput.svelte";
+  import AdvancedSelect from "../../../components/AdvancedSelect.svelte";
   import { getChildProfiles } from "../../../lib/database/childProfiles";
   
   let fileInput: HTMLInputElement;
@@ -42,6 +43,17 @@
   let selectedSpecialAbility = "";
   let customSpecialAbility = "";
   let selectedCharacterStyle = "3d";
+
+  // Special ability options
+  const specialAbilityOptions = [
+    { value: "healing-powers", label: "Healing Powers" },
+    { value: "flying", label: "Flying" },
+    { value: "super-strength", label: "Super Strength" },
+    { value: "invisibility", label: "Invisibility" },
+    { value: "animal-communication", label: "Animal Communication" },
+    { value: "time-control", label: "Time Control" },
+    { value: "shape-shifting", label: "Shape-Shifting" }
+  ];
 
   // Reactive statement to keep local state in sync with store
   $: if ($storyCreation.selectedChildProfileName) {
@@ -220,10 +232,8 @@
       specialAbility: customSpecialAbility || selectedSpecialAbility
     });
 
-    // Store style selection
-    if (browser) {
-      sessionStorage.setItem('characterStyle', selectedCharacterStyle);
-    }
+    // Store style selection in the store
+    storyCreation.setCharacterStyle(selectedCharacterStyle as '3d' | 'cartoon' | 'anime');
 
     // Navigate to step 2
     goto("/create-character/2");
@@ -535,10 +545,12 @@
                 >What special ability does your character have?</span
               >
             </div>
-            <PrimarySelect
-              options={[]}
+            <AdvancedSelect
+              options={specialAbilityOptions}
               selectedOption={selectedSpecialAbility}
-              onChange={() => {}}
+              onChange={(e) => {
+                selectedSpecialAbility = (e.target as HTMLInputElement).value;
+              }}
               placeholder="Select special Ability"
               id="specialAbilitySelect"
             />

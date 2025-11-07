@@ -242,6 +242,16 @@ export async function signOut(): Promise<{ success: boolean; error?: string }> {
       };
     }
 
+    // Clear user info from localStorage on sign out
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('userInfo');
+        console.log('User info cleared from localStorage');
+      } catch (storageError) {
+        console.error('Error clearing user info from localStorage:', storageError);
+      }
+    }
+
     console.log('User signed out successfully');
     return { success: true };
   } catch (error) {

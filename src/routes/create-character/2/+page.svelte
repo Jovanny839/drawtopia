@@ -46,7 +46,7 @@
         });
       }
       
-      // Load generated images from step 3
+      // Load generated images from step 1
       generatedImages = loadGeneratedImages(['3d', 'cartoon', 'anime']);
     }
   });

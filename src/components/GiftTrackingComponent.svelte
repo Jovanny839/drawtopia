@@ -1497,7 +1497,7 @@
   .frame_gift_1410104151 {
     width: 100%;
     height: 100%;
-    padding: 0px;
+    padding: 16px;
     background: white;
     border-radius: 8px;
     justify-content: center;

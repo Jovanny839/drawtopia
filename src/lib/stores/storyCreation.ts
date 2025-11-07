@@ -21,6 +21,7 @@ export interface StoryCreationState {
   enhancedImages?: string[];
   storyTitle?: string;
   coverDesign?: string;
+  storyCover?: string;
   storyId?: string;
 }
 
@@ -48,6 +49,7 @@ const createStoryCreationStore = () => {
         const originalImageUrl = sessionStorage.getItem('characterImageUrl');
         const storyTitle = sessionStorage.getItem('storyTitle');
         const coverDesign = sessionStorage.getItem('coverDesign');
+        const storyCover = sessionStorage.getItem('storyCover');
         console.log(selectedChildProfileId);
         // Load enhanced images if they exist
         const enhancedImages: string[] = [];
@@ -75,7 +77,8 @@ const createStoryCreationStore = () => {
           originalImageUrl: originalImageUrl || undefined,
           enhancedImages: enhancedImages.length > 0 ? enhancedImages : undefined,
           storyTitle: storyTitle || undefined,
-          coverDesign: coverDesign || undefined
+          coverDesign: coverDesign || undefined,
+          storyCover: storyCover || undefined
         };
         
         console.log('Initializing story creation state from sessionStorage:', newState);
@@ -152,11 +155,14 @@ const createStoryCreationStore = () => {
     },
 
     // Update story title and cover design
-    setStoryPresentation: (title: string, coverDesign: string) => {
-      update(state => ({ ...state, storyTitle: title, coverDesign }));
+    setStoryPresentation: (title: string, coverDesign: string, storyCover?: string) => {
+      update(state => ({ ...state, storyTitle: title, coverDesign, storyCover }));
       if (browser) {
         sessionStorage.setItem('storyTitle', title);
         sessionStorage.setItem('coverDesign', coverDesign);
+        if (storyCover) {
+          sessionStorage.setItem('storyCover', storyCover);
+        }
       }
     },
 
@@ -183,6 +189,7 @@ const createStoryCreationStore = () => {
         sessionStorage.removeItem('characterImageUrl');
         sessionStorage.removeItem('storyTitle');
         sessionStorage.removeItem('coverDesign');
+        sessionStorage.removeItem('storyCover');
       }
     },
 
@@ -205,6 +212,7 @@ const createStoryCreationStore = () => {
         enhanced_images: state.enhancedImages || [],
         story_title: state.storyTitle,
         cover_design: state.coverDesign,
+        story_cover: state.storyCover,
         status: 'generating'
       };
     }

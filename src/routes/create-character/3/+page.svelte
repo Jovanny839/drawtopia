@@ -60,7 +60,7 @@
     // Navigate to the appropriate next step based on format
     if (selectedFormat === "interactive") {
       // For Interactive Search Adventure, go to intersearch flow
-      goto("/intersearch/1");
+      goto("/intersearch");
     } else {
       // For Story Adventure, continue to story world selection
       goto("/create-character/5");
