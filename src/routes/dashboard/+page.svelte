@@ -32,17 +32,6 @@
 import AccountDropdown from "../../components/AccountDropdown.svelte";
   import { storyCreation } from "../../lib/stores/storyCreation";
   import books from "../../assets/Books.svg";
-  import vectorBook from "../../assets/vectorBook.svg";
-  import vectorSearch from "../../assets/vectorSearch.svg";
-  import greenCheck from "../../assets/greenCheck.svg";
-  import warning from "../../assets/RedWarning.svg";
-  import spinner from "../../assets/Spinner.svg";
-  import archieve from "../../assets/Archive.svg";
-  import whiteEye from "../../assets/WhiteEye.svg";
-  import arrowclockwise from "../../assets/WhiteArrowsClockwise.svg";
-  import simplepencil from "../../assets/WhitePencilSimple.svg";
-  import simpledownload from "../../assets/BlackDownloadSimple.svg";
-  import simplesharenetwork from "../../assets/BlackShareNetwork.svg";
   import starIcon from "../../assets/OutlineStar.svg";
   import speakerIcon from "../../assets/OutlineHeadset.svg";
   import BookIcon from "../../assets/Book.svg";
