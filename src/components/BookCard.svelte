@@ -1,7 +1,7 @@
 <script lang="ts">
   import vectorBook from "../assets/vectorBook.svg";
   import vectorSearch from "../assets/vectorSearch.svg";
-  import greenCheck from "../assets/greenCheck.svg";
+  import greenCheck from "../assets/GreenCheck.svg";
   import warning from "../assets/RedWarning.svg";
   import spinner from "../assets/Spinner.svg";
   import archieve from "../assets/Archive.svg";
