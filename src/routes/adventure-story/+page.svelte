@@ -4,7 +4,7 @@
     import underwaterkingdom from "../../assets/cunderwater_kingdom.png";
     import logo from "../../assets/logo.png";
     import arrowleft from "../../assets/WhiteArrowLeft.svg";
-    import globehemispherewest from "../../assets/BlackGlobeHemiSphereWest.svg";
+    import globehemispherewest from "../../assets/BlackGlobeHemisphereWest.svg";
     import shieldstar from "../../assets/ShieldStar.svg";
     import treasurehunt from "../../assets/treasure_hunt.png";
     import helpfriend from "../../assets/help_friend.png";
