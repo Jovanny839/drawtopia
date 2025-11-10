@@ -70,6 +70,8 @@
     if (!date) return "Unknown";
     try {
       const d = typeof date === "string" ? new Date(date) : date;
+      // Check if date is valid
+      if (isNaN(d.getTime())) return "Unknown";
       return d.toLocaleDateString("en-GB");
     } catch {
       return "Unknown";
@@ -88,12 +90,13 @@
 
   // Get created by
   const getCreatedBy = () => {
-    return item?.author || item?.child_profiles?.first_name || "Unknown";
+    return item?.user_name || item?.child_profiles?.first_name || "Unknown";
   };
 
   // Get created date
   const getCreatedDate = () => {
-    return formatDate(item?.createdDate || item?.created_at);
+    // Prefer created_at (raw date) over createdDate (pre-formatted string)
+    return formatDate(item?.created_at || item?.createdDate);
   };
 </script>
 

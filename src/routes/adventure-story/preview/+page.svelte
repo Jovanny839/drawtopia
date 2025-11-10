@@ -415,35 +415,6 @@
 </div>
 
 <style>
-    .drawtopia {
-        width: 203.32px;
-        height: 38px;
-        left: 0px;
-        top: 0px;
-        position: absolute;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421258926392px 1.703526258468628px #871fff inset;
-    }
-
-    .subtract {
-        width: 28.39px;
-        height: 28.39px;
-        left: 121.55px;
-        top: 1.82px;
-        position: absolute;
-        transform: rotate(4deg);
-        transform-origin: top left;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421854972839px 1.703526496887207px #871fff inset;
-    }
 
     .hereyourmagicalstory_span {
         color: #141414;
@@ -471,15 +442,6 @@
     .your-character-is-now-part-of-their-very-own-adventure {
         width: 1040px;
         text-align: center;
-    }
-
-    .vector {
-        width: 15px;
-        height: 15.63px;
-        left: 2.5px;
-        top: 3.12px;
-        position: absolute;
-        background: #438bff;
     }
 
     .ffreepagepreview_span {
@@ -658,97 +620,6 @@
 
     .generation {
         align-self: stretch;
-    }
-
-    .star-5 {
-        width: 88px;
-        height: 88px;
-        left: 0px;
-        top: 0px;
-        position: absolute;
-        background: #0f0072;
-        border: 0.88px #0f0072 solid;
-    }
-
-    .star-4 {
-        width: 81.48px;
-        height: 81.48px;
-        left: 6.52px;
-        top: 0px;
-        position: absolute;
-        background: white;
-        border: 0.81px #0f0072 solid;
-    }
-
-    .star-6 {
-        width: 65.19px;
-        height: 65.19px;
-        left: 14.66px;
-        top: 8.15px;
-        position: absolute;
-        background: #438bff;
-    }
-
-    .eyebrow {
-        width: 12.22px;
-        height: 4.07px;
-        left: 33px;
-        top: 22.82px;
-        position: absolute;
-        border-radius: 3.37px;
-        outline: 1.63px white solid;
-        outline-offset: -0.81px;
-    }
-
-    .eyebrow_01 {
-        width: 12.22px;
-        height: 4.07px;
-        left: 49.3px;
-        top: 22.82px;
-        position: absolute;
-        border-radius: 3.37px;
-        outline: 1.63px white solid;
-        outline-offset: -0.81px;
-    }
-
-    .rectangle-10 {
-        width: 16.3px;
-        height: 16.3px;
-        left: 0px;
-        top: 0px;
-        position: absolute;
-        background: white;
-        border-radius: 81.48px;
-    }
-
-    .rectangle-11 {
-        width: 16.3px;
-        height: 16.3px;
-        left: 16.3px;
-        top: 0px;
-        position: absolute;
-        background: white;
-        border-radius: 81.48px;
-    }
-
-    .rectangle-12 {
-        width: 9.78px;
-        height: 9.78px;
-        left: 16.3px;
-        top: 3.26px;
-        position: absolute;
-        background: #111111;
-        border-radius: 81.48px;
-    }
-
-    .rectangle-13 {
-        width: 9.78px;
-        height: 9.78px;
-        left: 6.52px;
-        top: 3.26px;
-        position: absolute;
-        background: #111111;
-        border-radius: 81.48px;
     }
 
     .polygon-1 {
@@ -1032,15 +903,6 @@
         border: 1px #ededed solid;
     }
 
-    .vector_01 {
-        width: 18px;
-        height: 15px;
-        left: 3px;
-        top: 4.5px;
-        position: absolute;
-        background: black;
-    }
-
     .backtostep_span {
         color: black;
         font-size: 18px;
@@ -1242,14 +1104,6 @@
         position: relative;
         overflow: hidden;
         align-items: center;
-    }
-
-    .eye {
-        width: 32.59px;
-        height: 16.3px;
-        left: 30.96px;
-        top: 30.76px;
-        position: absolute;
     }
 
     .frame-1410104043 {
@@ -1511,25 +1365,6 @@
     }
 
     .selected_01:hover {
-        outline: 1px #438bff solid;
-        background: #f9fbff;
-    }
-
-    .selected_02 {
-        align-self: stretch;
-        padding: 12px;
-        border-radius: 12px;
-        outline: 1px #ededed solid;
-        outline-offset: -1px;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 12px;
-        display: inline-flex;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .selected_02:hover {
         outline: 1px #438bff solid;
         background: #f9fbff;
     }

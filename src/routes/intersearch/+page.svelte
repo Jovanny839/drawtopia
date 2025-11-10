@@ -417,27 +417,6 @@
 </div>
 
 <style>
-.drawtopia {
-    width: 203.32px;
-    height: 38px;
-    left: 0px;
-    top: 0px;
-    position: absolute;
-    background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #0FE3EF 44%, #438BFF 100%);
-    box-shadow: 0px 0.5678421258926392px 1.703526258468628px #871FFF inset;
-}
-
-.subtract {
-    width: 28.39px;
-    height: 28.39px;
-    left: 121.55px;
-    top: 1.82px;
-    position: absolute;
-    transform: rotate(4deg);
-    transform-origin: top left;
-    background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #0FE3EF 44%, #438BFF 100%);
-    box-shadow: 0px 0.5678421854972839px 1.703526496887207px #871FFF inset;
-}
 
 .configureyoursearchadventure_span {
     color: #141414;
@@ -451,15 +430,6 @@
 .configure-your-search-adventure {
     align-self: stretch;
     text-align: center;
-}
-
-.vector {
-    width: 15px;
-    height: 15.63px;
-    left: 2.50px;
-    top: 3.12px;
-    position: absolute;
-    background: #438BFF;
 }
 
 .ffreepagepreview_span {
@@ -681,15 +651,6 @@
     align-self: stretch;
 }
 
-.vector_01 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
-}
-
 .fmagicalforestscenes_span {
     color: #141414;
     font-size: 16px;
@@ -732,15 +693,6 @@
 
 .outer-space {
     align-self: stretch;
-}
-
-.vector_02 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
 }
 
 .fcosmicspacescenes_span {
@@ -787,15 +739,6 @@
     align-self: stretch;
 }
 
-.vector_03 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
-}
-
 .foceanscenes_span {
     color: #141414;
     font-size: 16px;
@@ -831,15 +774,6 @@
     text-align: center;
 }
 
-.vector_04 {
-    width: 26px;
-    height: 26px;
-    left: 3px;
-    top: 3px;
-    position: absolute;
-    background: #438BFF;
-}
-
 .easy_span {
     color: #141414;
     font-size: 24px;
@@ -853,15 +787,6 @@
     align-self: stretch;
 }
 
-.vector_05 {
-    width: 16.25px;
-    height: 15px;
-    left: 1.88px;
-    top: 2.50px;
-    position: absolute;
-    background: black;
-}
-
 .character15-20visible_span {
     color: #141414;
     font-size: 16px;
@@ -871,15 +796,6 @@
     word-wrap: break-word;
 }
 
-.vector_06 {
-    width: 16.88px;
-    height: 16.25px;
-    left: 0.62px;
-    top: 1.25px;
-    position: absolute;
-    background: black;
-}
-
 .f-8otherelements_span {
     color: #141414;
     font-size: 16px;
@@ -887,15 +803,6 @@
     font-weight: 700;
     line-height: 22.40px;
     word-wrap: break-word;
-}
-
-.vector_07 {
-    width: 16.27px;
-    height: 15.64px;
-    left: 1.87px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
 }
 
 .age3-6recommended_span {
@@ -920,15 +827,6 @@
     text-align: center;
 }
 
-.vector_08 {
-    width: 28px;
-    height: 28px;
-    left: 2px;
-    top: 2px;
-    position: absolute;
-    background: #438BFF;
-}
-
 .medium_span {
     color: #141414;
     font-size: 24px;
@@ -942,15 +840,6 @@
     align-self: stretch;
 }
 
-.vector_09 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
-}
-
 .character10-15visible_span {
     color: #141414;
     font-size: 16px;
@@ -960,15 +849,6 @@
     word-wrap: break-word;
 }
 
-.vector_10 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
-}
-
 .f0-15otherelements_span {
     color: #141414;
     font-size: 16px;
@@ -976,15 +856,6 @@
     font-weight: 700;
     line-height: 22.40px;
     word-wrap: break-word;
-}
-
-.vector_11 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
 }
 
 .age7-10recommended_span {
@@ -1009,15 +880,6 @@
     text-align: center;
 }
 
-.vector_12 {
-    width: 22px;
-    height: 27px;
-    left: 5px;
-    top: 2px;
-    position: absolute;
-    background: #438BFF;
-}
-
 .hard_span {
     color: #141414;
     font-size: 24px;
@@ -1031,15 +893,6 @@
     align-self: stretch;
 }
 
-.vector_13 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
-}
-
 .character8-12visible_span {
     color: #141414;
     font-size: 16px;
@@ -1049,15 +902,6 @@
     word-wrap: break-word;
 }
 
-.vector_14 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
-}
-
 .f5-25otherelements_span {
     color: #141414;
     font-size: 16px;
@@ -1065,15 +909,6 @@
     font-weight: 700;
     line-height: 22.40px;
     word-wrap: break-word;
-}
-
-.vector_15 {
-    width: 16.25px;
-    height: 16.25px;
-    left: 1.88px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
 }
 
 .age11-12recommended_span {
@@ -1119,15 +954,6 @@
     position: absolute;
     background: radial-gradient(ellipse 42.11% 42.11% at 50.00% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
     border-radius: 9999px;
-}
-
-.vector_16 {
-    width: 15px;
-    height: 12.50px;
-    left: 2.50px;
-    top: 3.75px;
-    position: absolute;
-    background: white;
 }
 
 .frame-1410103829 {

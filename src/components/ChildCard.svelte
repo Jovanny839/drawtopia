@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { browser } from "$app/environment";
+  import { storyCreation } from "../lib/stores/storyCreation";
   import eye from "../assets/eye.svg";
   import Plus from "../assets/Plus.svg";
 
@@ -43,8 +46,25 @@
 
   // Handle "New Story" button click
   function handleNewStory() {
-    // TODO: Implement navigation to create new story for this child
-    console.log("New story for child:", item);
+    const childId = item.id?.toString();
+    const childName = getChildName();
+
+    if (!childId) {
+      console.error("Child ID is missing");
+      return;
+    }
+
+    // Store child info in sessionStorage
+    if (browser) {
+      sessionStorage.setItem("selectedChildProfileId", childId);
+      sessionStorage.setItem("selectedChildProfileName", childName);
+    }
+
+    // Update story creation store
+    storyCreation.setSelectedChild(childId, childName);
+
+    // Navigate to create-character/1
+    goto("/create-character/1");
   }
 </script>
 

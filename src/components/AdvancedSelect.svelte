@@ -3,7 +3,7 @@
 
 	export let options: Array<{ value: string; label: string; disabled?: boolean }> = [];
 	export let selectedOption: string = "";
-	export let onChange: ((event: Event) => void) | undefined;
+	export let onChange: ((event: Event) => void) | undefined = undefined;
 	export let placeholder: string = "Select an option";
 	export let id: string = "advanced-select";
 	export let label: string = "";

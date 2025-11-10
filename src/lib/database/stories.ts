@@ -157,6 +157,24 @@ export async function getStoriesForChild(childProfileId: string): Promise<Databa
  */
 export async function getAllStoriesForParent(parentId: string): Promise<DatabaseResult> {
   try {
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', parentId)
+      // .single();
+
+    console.log("++++++++++++++++==================", parentId, userData)
+
+    // if (userError) {
+    //   console.error('Error fetching user data:', userError);
+    //   return {
+    //     success: false,
+    //     error: userError.message
+    //   };
+    // }
+
+    // const userName = userData?.full_name || `${userData?.first_name || ''} ${userData?.last_name || ''}`.trim();
+
     // First, get all child profile IDs for this parent
     const { data: childProfiles, error: childError } = await supabase
       .from('child_profiles')
@@ -201,6 +219,7 @@ export async function getAllStoriesForParent(parentId: string): Promise<Database
       const childProfile = childProfiles.find(cp => cp.id === story.child_profile_id);
       return {
         ...story,
+        user_name: userData ? `${userData[0].first_name} ${userData[0].last_name}` : 'Unknown',
         child_profiles: childProfile
       };
     }) || [];

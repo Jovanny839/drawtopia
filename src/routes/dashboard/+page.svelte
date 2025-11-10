@@ -38,6 +38,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   import BookCard from "../../components/BookCard.svelte";
   import CharacterCard from "../../components/CharacterCard.svelte";
   import ChildCard from "../../components/ChildCard.svelte";
+  import AdvancedSelect from "../../components/AdvancedSelect.svelte";
 
   // Sidebar library switch state
   let libraryView: "all" | "characters" | "children" = "all";
@@ -67,6 +68,36 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   let giftsError = "";
   let showGiftSelectModal = false;
   let homeCategory: string | null = "AllBooks";
+
+  // Filter states for dashboard dropdowns
+  let selectedFormat: string = "all";
+  let selectedChild: string = "all";
+  let selectedStatus: string = "all";
+
+  // Format options
+  $: formatOptions = [
+    { value: "all", label: "All Formats" },
+    { value: "story_adventure", label: "Story Adventure Mode" },
+    { value: "interactive_search", label: "Interactive Search Mode" },
+  ];
+
+  // Children options - dynamically generated from childProfiles
+  $: childrenOptions = [
+    { value: "all", label: "All Children" },
+    ...childProfiles.map((child) => ({
+      value: child.id,
+      label: child.name || child.first_name,
+    })),
+  ];
+
+  // Status options
+  $: statusOptions = [
+    { value: "all", label: "All Status" },
+    { value: "completed", label: "Completed" },
+    { value: "drafting", label: "Drafting" },
+    { value: "generating", label: "Generating" },
+    { value: "failed", label: "Failed" },
+  ];
 
   // Random story themes for lastStory
   const storyThemes = [
@@ -231,7 +262,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
         // Transform the data to match the StoryLibraryComponent interface
         stories = storiesData
           .map(
-            (story: Story & { child_profiles?: any }, index: number) => ({
+            (story: Story & { child_profiles?: any, user_name?: string }, index: number) => ({
               id: story.id || `temp_story_${index}_${Date.now()}`,
               title: story.story_title || `${story.character_name}'s Adventure`,
               author: story.child_profiles?.first_name || "Unknown",
@@ -249,7 +280,8 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
               imageUrl:
                 story.original_image_url || "https://placehold.co/332x225",
               story_title: story.story_title,
-              child_profiles: story.child_profiles
+              user_name: story.user_name,
+              child_profiles: story.child_profiles,
             }),
           )
           .filter((story) => story.id); // Ensure all stories have valid ids
@@ -766,30 +798,30 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
             </div>
             <div class="rectangle-263"></div>
             <div class="frame-1410103899">
-              <div class="dropdown">
-                <div class="dropdown_01">
-                  <div class="all-formats">
-                    <span class="allformats_span">All Formats</span>
-                  </div>
-                  <div class="caretdown">
-                    <img src={caretdown} alt="caretdown" />
-                  </div>
+              <div class="dropdown-filters">
+                <div class="filter-select-wrapper">
+                  <AdvancedSelect
+                    options={formatOptions}
+                    bind:selectedOption={selectedFormat}
+                    placeholder="All Formats"
+                    id="format-select"
+                  />
                 </div>
-                <div class="dropdown_02">
-                  <div class="all-children">
-                    <span class="allchildren_span">All Children</span>
-                  </div>
-                  <div class="caretdown_01">
-                    <img src={caretdown} alt="caretdown" />
-                  </div>
+                <div class="filter-select-wrapper">
+                  <AdvancedSelect
+                    options={childrenOptions}
+                    bind:selectedOption={selectedChild}
+                    placeholder="All Children"
+                    id="child-select"
+                  />
                 </div>
-                <div class="dropdown_03">
-                  <div class="all-status">
-                    <span class="allstatus_span">All Status</span>
-                  </div>
-                  <div class="caretdown_02">
-                    <img src={caretdown} alt="caretdown" />
-                  </div>
+                <div class="filter-select-wrapper">
+                  <AdvancedSelect
+                    options={statusOptions}
+                    bind:selectedOption={selectedStatus}
+                    placeholder="All Status"
+                    id="status-select"
+                  />
                 </div>
               </div>
             </div>
@@ -1215,9 +1247,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     transition: color 0.2s ease;
   }
 
-  .parent-menu-dropdown_01.active .childprofiles_span,
-  .parent-menu-dropdown_02.active .childprofiles_span,
-  .parent-menu-dropdown_03.active .childprofiles_span {
+  .parent-menu-dropdown_01.active .childprofiles_span {
     color: white;
     font-weight: 600;
   }
@@ -1517,8 +1547,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     transition: opacity 0.2s ease, filter 0.2s ease;
   }
 
-  .parent-menu-dropdown_01.active .baby img,
-  .parent-menu-dropdown_02.active .baby img {
+  .parent-menu-dropdown_01.active .baby img {
     opacity: 1;
     filter: brightness(0) invert(1);
   }
@@ -2097,6 +2126,17 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
       gap: 12px;
     }
 
+    .dropdown-filters {
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .filter-select-wrapper {
+      width: 100%;
+      
+    }
+
     .frame-1410103898 {
       width: 100%;
     }
@@ -2440,748 +2480,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     background: #ededed;
   }
 
-  .allformats_span {
-    color: black;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 500;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .all-formats {
-    text-align: center;
-  }
-
-  .vector_01 {
-    width: 16.5px;
-    height: 9px;
-    left: 3.75px;
-    top: 8.25px;
-    position: absolute;
-    background: black;
-  }
-
-  .allchildren_span {
-    color: black;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 500;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .all-children {
-    text-align: center;
-  }
-
-  .vector_02 {
-    width: 16.5px;
-    height: 9px;
-    left: 3.75px;
-    top: 8.25px;
-    position: absolute;
-    background: black;
-  }
-
-  .allstatus_span {
-    color: black;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 500;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .all-status {
-    text-align: center;
-  }
-
-  .vector_03 {
-    width: 16.5px;
-    height: 9px;
-    left: 3.75px;
-    top: 8.25px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_04 {
-    width: 11px;
-    height: 13px;
-    left: 2.5px;
-    top: 1.5px;
-    position: absolute;
-    background: #438bff;
-  }
-
-  .story_span {
-    color: #438bff;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .story {
-    text-align: center;
-  }
-
-  .emmasmagicalforestadventure_span {
-    color: black;
-    font-size: 20px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 28px;
-    word-wrap: break-word;
-  }
-
-  .emmas-magical-forest-adventure {
-    align-self: stretch;
-  }
-
-  .createddate_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .f1302024_span {
-    color: black;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .createby_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .ellipse {
-    width: 20px;
-    height: 20px;
-    background: #727272;
-    border-radius: 9999px;
-  }
-
-  .mazda_span {
-    color: #141414;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .status_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .vector_05 {
-    width: 13px;
-    height: 9.5px;
-    left: 1.75px;
-    top: 3.75px;
-    position: absolute;
-    background: #40c4aa;
-  }
-
-  .completed_span {
-    color: #40c4aa;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .completed {
-    text-align: center;
-  }
-
-  .rectangle-263_01 {
-    align-self: stretch;
-    height: 1px;
-    background: #ededed;
-  }
-
-  .ellipse-1415_01 {
-    width: 248px;
-    height: 114px;
-    left: -18px;
-    top: 15px;
-    position: absolute;
-    background: radial-gradient(
-      ellipse 42.11% 42.11% at 50% 52.94%,
-      white 0%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    border-radius: 9999px;
-  }
-
-  .vector_06 {
-    width: 15px;
-    height: 10px;
-    left: 0.5px;
-    top: 3px;
-    position: absolute;
-    background: white;
-  }
-
-  .viewbook_span {
-    color: white;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .view-book {
-    text-align: center;
-  }
-
-  .vector_07 {
-    width: 13.5px;
-    height: 13.5px;
-    left: 2.25px;
-    top: 1.69px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_08 {
-    width: 13.5px;
-    height: 15.75px;
-    left: 1.68px;
-    top: 1.12px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_09 {
-    width: 11px;
-    height: 13px;
-    left: 2.5px;
-    top: 1.5px;
-    position: absolute;
-    background: #438bff;
-  }
-
-  .story_01_span {
-    color: #438bff;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .story_01 {
-    text-align: center;
-  }
-
-  .thegreatadventuremarkie_span {
-    color: black;
-    font-size: 20px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 28px;
-    word-wrap: break-word;
-  }
-
-  .the-great-adventure-markie {
-    align-self: stretch;
-  }
-
-  .createddate_01_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .f1302024_01_span {
-    color: black;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .createby_01_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .ellipse_01 {
-    width: 20px;
-    height: 20px;
-    background: #727272;
-    border-radius: 9999px;
-  }
-
-  .mazda_01_span {
-    color: #141414;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .status_01_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .vector_10 {
-    width: 14.5px;
-    height: 13px;
-    left: 0.75px;
-    top: 1.25px;
-    position: absolute;
-    background: #df1c41;
-  }
-
-  .failed_span {
-    color: #df1c41;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .failed {
-    text-align: center;
-  }
-
-  .rectangle-263_02 {
-    align-self: stretch;
-    height: 1px;
-    background: #ededed;
-  }
-
-  .ellipse-1415_02 {
-    width: 248px;
-    height: 114px;
-    left: -18px;
-    top: 15px;
-    position: absolute;
-    background: radial-gradient(
-      ellipse 42.11% 42.11% at 50% 52.94%,
-      white 0%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    border-radius: 9999px;
-  }
-
-  .vector_11 {
-    width: 12px;
-    height: 11.76px;
-    left: 2px;
-    top: 2.12px;
-    position: absolute;
-    background: white;
-  }
-
-  .re-generatebook_span {
-    color: white;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .re-generate-book {
-    text-align: center;
-  }
-
-  .vector_12 {
-    width: 13.5px;
-    height: 13.5px;
-    left: 2.25px;
-    top: 1.69px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_13 {
-    width: 13.5px;
-    height: 15.75px;
-    left: 1.68px;
-    top: 1.12px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_14 {
-    width: 13.01px;
-    height: 13.01px;
-    left: 1.48px;
-    top: 1.48px;
-    position: absolute;
-    background: #438bff;
-  }
-
-  .search_span {
-    color: #438bff;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .search {
-    text-align: center;
-  }
-
-  .whereisluna_span {
-    color: black;
-    font-size: 20px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 28px;
-    word-wrap: break-word;
-  }
-
-  .where-is-luna {
-    align-self: stretch;
-  }
-
-  .createddate_02_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .f1302024_02_span {
-    color: black;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .createby_02_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .ellipse_02 {
-    width: 20px;
-    height: 20px;
-    background: #727272;
-    border-radius: 9999px;
-  }
-
-  .mazda_02_span {
-    color: #141414;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .status_02_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .vector_15 {
-    width: 13.5px;
-    height: 13.5px;
-    left: 1.25px;
-    top: 1.25px;
-    position: absolute;
-    background: #438bff;
-  }
-
-  .generating45_span {
-    color: #438bff;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .generating-45 {
-    text-align: center;
-  }
-
-  .rectangle-263_03 {
-    align-self: stretch;
-    height: 1px;
-    background: #ededed;
-  }
-
-  .ellipse-1415_03 {
-    width: 248px;
-    height: 114px;
-    left: -18px;
-    top: 15px;
-    position: absolute;
-    background: radial-gradient(
-      ellipse 42.11% 42.11% at 50% 52.94%,
-      white 0%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    border-radius: 9999px;
-  }
-
-  .vector_16 {
-    width: 15px;
-    height: 10px;
-    left: 0.5px;
-    top: 3px;
-    position: absolute;
-    background: #818898;
-  }
-
-  .viewbook_01_span {
-    color: #818898;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .view-book_01 {
-    text-align: center;
-  }
-
-  .vector_17 {
-    width: 13.5px;
-    height: 13.5px;
-    left: 2.25px;
-    top: 1.69px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_18 {
-    width: 13.5px;
-    height: 15.75px;
-    left: 1.68px;
-    top: 1.12px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_19 {
-    width: 11px;
-    height: 13px;
-    left: 2.5px;
-    top: 1.5px;
-    position: absolute;
-    background: #438bff;
-  }
-
-  .story_02_span {
-    color: #438bff;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .story_02 {
-    text-align: center;
-  }
-
-  .emmasmagicalforestadventure_01_span {
-    color: black;
-    font-size: 20px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 28px;
-    word-wrap: break-word;
-  }
-
-  .emmas-magical-forest-adventure_01 {
-    align-self: stretch;
-  }
-
-  .createddate_03_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .f1302024_03_span {
-    color: black;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .createby_03_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .ellipse_03 {
-    width: 20px;
-    height: 20px;
-    background: #727272;
-    border-radius: 9999px;
-  }
-
-  .mazda_03_span {
-    color: #141414;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .status_03_span {
-    color: #727272;
-    font-size: 16px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .vector_20 {
-    width: 14.5px;
-    height: 10.5px;
-    left: 0.75px;
-    top: 2.75px;
-    position: absolute;
-    background: #ffbe4c;
-  }
-
-  .draft_span {
-    color: #ffbe4c;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 700;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .draft {
-    text-align: center;
-  }
-
-  .rectangle-263_04 {
-    align-self: stretch;
-    height: 1px;
-    background: #ededed;
-  }
-
-  .ellipse-1415_04 {
-    width: 248px;
-    height: 114px;
-    left: -18px;
-    top: 15px;
-    position: absolute;
-    background: radial-gradient(
-      ellipse 42.11% 42.11% at 50% 52.94%,
-      white 0%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    border-radius: 9999px;
-  }
-
-  .vector_21 {
-    width: 12.5px;
-    height: 12.5px;
-    left: 2px;
-    top: 1.5px;
-    position: absolute;
-    background: white;
-  }
-
-  .editbook_span {
-    color: white;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.6px;
-    word-wrap: break-word;
-  }
-
-  .edit-book {
-    text-align: center;
-  }
-
-  .vector_22 {
-    width: 13.5px;
-    height: 13.5px;
-    left: 2.25px;
-    top: 1.69px;
-    position: absolute;
-    background: black;
-  }
-
-  .vector_23 {
-    width: 13.5px;
-    height: 15.75px;
-    left: 1.68px;
-    top: 1.12px;
-    position: absolute;
-    background: black;
-  }
-
   .button {
     padding-left: 22px;
     padding-right: 22px;
@@ -3249,123 +2547,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     display: flex;
   }
 
-  .frame-1410104124 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .form {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: inline-flex;
-  }
-
-  .sub-menu_01 {
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .sub-menu_02 {
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .frame-1410104124_01 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .form_01 {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: inline-flex;
-  }
-
-  .sub-menu_03 {
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .sub-menu_04 {
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .frame-1410104124_02 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .form_02 {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: inline-flex;
-  }
-
-  .sub-menu_05 {
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .sub-menu_06 {
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .frame-1410104124_03 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .form_03 {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: inline-flex;
-  }
-
-  .sub-menu_07 {
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
   .plus {
     width: 24px;
     height: 24px;
@@ -3380,157 +2561,9 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     overflow: hidden;
   }
 
-  .caretdown_01 {
-    width: 24px;
-    height: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .caretdown_02 {
-    width: 24px;
-    height: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .book {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .check {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .eye {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .downloadsimple {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .sharenetwork {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .book_01 {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .warning {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .arrowsclockwise {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .downloadsimple_01 {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .sharenetwork_01 {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
   .magnifyingglass {
     width: 16px;
     height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .spinner {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .eye_01 {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-    /* margin: auto; */
-  }
-
-  .downloadsimple_02 {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .sharenetwork_02 {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .book_02 {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .archive {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .pencilsimple {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .downloadsimple_03 {
-    width: 18px;
-    height: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .sharenetwork_03 {
-    width: 18px;
-    height: 18px;
     position: relative;
     overflow: hidden;
   }
@@ -3546,34 +2579,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     align-items: center;
     gap: 4px;
     display: inline-flex;
-  }
-
-  .frame-1410103850 {
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .frame-1410103850_01 {
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .frame-1410103850_02 {
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .frame-1410103850_03 {
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
   }
 
   .frame-1410104245 {
@@ -3622,309 +2627,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     display: flex;
   }
 
-  .dropdown_03 {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    padding-left: 24px;
-    padding-right: 12px;
-    background: white;
-    border-radius: 20px;
-    outline: 1px #dcdcdc solid;
-    outline-offset: -1px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .frame-1410103869 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #438bff solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410103869_01 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: #effefa;
-    border-radius: 12px;
-    outline: 1px #40c4aa solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410104245_01 {
-    flex: 1 1 0;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    position: relative;
-    background: #438bff;
-    overflow: hidden;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .button_03 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .button_04 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .frame-1410103870 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #438bff solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410103870_01 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: #fff0f3;
-    border-radius: 12px;
-    outline: 1px #df1c41 solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410104245_02 {
-    flex: 1 1 0;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    position: relative;
-    background: #438bff;
-    overflow: hidden;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .button_05 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .button_06 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .frame-1410103870_02 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #438bff solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410104162 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: #eef6ff;
-    border-radius: 12px;
-    outline: 1px #438bff solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410104245_03 {
-    flex: 1 1 0;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    position: relative;
-    background: #dfe1e7;
-    overflow: hidden;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .button_07 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .button_08 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .frame-1410103869_02 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #438bff solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410103870_03 {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 16px;
-    background: #fff6e0;
-    border-radius: 12px;
-    outline: 1px #ffbe4c solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    display: flex;
-  }
-
-  .frame-1410104245_04 {
-    flex: 1 1 0;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    position: relative;
-    background: #438bff;
-    overflow: hidden;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    display: flex;
-  }
-
-  .button_09 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
-  .button_10 {
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: flex;
-  }
-
   .frame-2147227614 {
     flex-direction: column;
     justify-content: flex-start;
@@ -3933,179 +2635,11 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     display: inline-flex;
   }
 
-  .frame-1410104125 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .frame-1410104125_01 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .frame-1410104125_02 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .frame-1410104125_03 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
   .dropdown {
     justify-content: flex-start;
     align-items: center;
     gap: 12px;
     display: flex;
-  }
-
-  .image {
-    align-self: stretch;
-    height: 400px;
-    padding: 8px;
-    background: #fbfbfb;
-    overflow: hidden;
-    border-radius: 12px;
-    outline: 1px #d3d3d3 solid;
-    outline-offset: -1px;
-    background-image: url(https://placehold.co/321x400);
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 10px;
-    display: inline-flex;
-  }
-
-  .frame-1410104126 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .frame-1410104166 {
-    align-self: stretch;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    display: inline-flex;
-  }
-
-  .image_01 {
-    align-self: stretch;
-    height: 400px;
-    padding: 8px;
-    background: #fbfbfb;
-    overflow: hidden;
-    border-radius: 12px;
-    outline: 1px #d3d3d3 solid;
-    outline-offset: -1px;
-    background-image: url(https://placehold.co/321x400);
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 10px;
-    display: inline-flex;
-  }
-
-  .frame-1410104126_01 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .frame-1410104166_01 {
-    align-self: stretch;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    display: inline-flex;
-  }
-
-  .image_02 {
-    align-self: stretch;
-    height: 400px;
-    padding: 8px;
-    background: #fbfbfb;
-    overflow: hidden;
-    border-radius: 12px;
-    outline: 1px #d3d3d3 solid;
-    outline-offset: -1px;
-    background-image: url(https://placehold.co/321x400);
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 10px;
-    display: inline-flex;
-  }
-
-  .frame-1410104126_02 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .frame-1410104165 {
-    align-self: stretch;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    display: inline-flex;
-  }
-
-  .image_03 {
-    align-self: stretch;
-    height: 400px;
-    padding: 8px;
-    background: #fbfbfb;
-    overflow: hidden;
-    border-radius: 12px;
-    outline: 1px #d3d3d3 solid;
-    outline-offset: -1px;
-    background-image: url(https://placehold.co/321x400);
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 10px;
-    display: inline-flex;
-  }
-
-  .frame-1410104126_03 {
-    align-self: stretch;
-    height: 38px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .frame-1410104166_03 {
-    align-self: stretch;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    display: inline-flex;
   }
 
   .frame-2147227616 {
@@ -4122,48 +2656,65 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     display: inline-flex;
   }
 
-  .frame-1410104158 {
-    align-self: stretch;
-    padding-left: 4px;
-    padding-right: 4px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
+  .dropdown-filters {
     display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
   }
 
-  .frame-1410104158_01 {
-    align-self: stretch;
-    padding-left: 4px;
-    padding-right: 4px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
+  .filter-select-wrapper {
+    flex: 1;
+    min-width: 0;
   }
 
-  .frame-1410104166_02 {
-    align-self: stretch;
-    padding-left: 4px;
-    padding-right: 4px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
+  .filter-select-wrapper :global(.container) {
+    width: 100%;
   }
 
-  .frame-1410104158_02 {
-    align-self: stretch;
-    padding-left: 4px;
-    padding-right: 4px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
+  .filter-select-wrapper :global(.dropdown) {
+    padding: 12px 12px 12px 24px;
+    height: auto;
+    min-height: 48px;
+    background: white;
+    border: 1px solid #dcdcdc;
+    border-radius: 20px;
+    box-shadow: none;
+  }
+
+  .filter-select-wrapper :global(.selected-text) {
+    color: black;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 500;
+    line-height: 22.4px;
+  }
+
+  .filter-select-wrapper :global(.icon) {
+    width: 24px;
+    height: 24px;
+    stroke: #666;
+  }
+
+  .filter-select-wrapper :global(.dropdown-list) {
+    border-radius: 20px;
+    border: 1px solid #dcdcdc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .filter-select-wrapper :global(.item-btn) {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 500;
+    color: black;
+  }
+
+  .filter-select-wrapper :global(.item-btn.selected) {
+    background: #e3f2fd;
+    color: #438bff;
+    font-weight: 600;
   }
 
   .frame-2147227615 {
@@ -4173,62 +2724,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     align-items: flex-start;
     gap: 24px;
     display: flex;
-  }
-
-  .cardd {
-    flex: 1 1 0;
-    padding: 12px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .cardd_01 {
-    flex: 1 1 0;
-    padding: 12px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .cardd_02 {
-    flex: 1 1 0;
-    padding: 12px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 12px;
-    display: inline-flex;
-  }
-
-  .cardd_03 {
-    width: 345.33px;
-    padding: 12px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 12px;
-    display: inline-flex;
   }
 
   .frame-1410103894 {
@@ -4258,24 +2753,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     color: #999;
   }
 
-  .frame-1410103894_01 {
-    align-self: stretch;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 16px;
-    display: inline-flex;
-  }
-
   .frame-1410104154 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 24px;
-    display: flex;
-  }
-
-  .frame-2147227616_01 {
     align-self: stretch;
     flex-direction: column;
     justify-content: center;
@@ -4295,15 +2773,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     align-items: center;
     gap: 24px;
     display: inline-flex;
-  }
-
-  .vector {
-    width: 15px;
-    height: 15.62px;
-    left: 3.12px;
-    top: 1.88px;
-    position: absolute;
-    background: #438bff;
   }
 
   .fstorycreditsleft_span {

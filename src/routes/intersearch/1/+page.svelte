@@ -122,7 +122,7 @@
       const promises = prompts.map(async (prompt, index) => {
         // Generate image using the prompt directly via API
         const response = await fetch(
-          "https://image-edit-five.vercel.app/edit-image",
+          "https://localhost:8000/edit-image",
           {
             method: "POST",
             headers: {
