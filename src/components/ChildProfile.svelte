@@ -5,13 +5,14 @@
   export let avatarUrl: string = "https://placehold.co/40x40";
   export let onEdit: (() => void) | undefined = undefined;
   export let onDelete: (() => void) | undefined = undefined;
+  export let isEditing: boolean = false;
 </script>
 
-<div class="frame-1410103935">
+<div class="frame-1410103935" class:frame-1410103936={isEditing}>
   <div class="frame-1410103850">
     <img class="ellipse" src={avatarUrl} alt={`${name}'s avatar`} />
     <div class="form">
-      <div><span class="name_span">{name}</span></div>
+      <div><span class="name_span mazda_span">{name}</span></div>
     </div>
     <div class="frame-1410103982">
       <div class="frame-1410103980">
@@ -134,6 +135,31 @@
     align-items: center;
     gap: 12px;
     display: inline-flex;
+  }
+
+  .frame-1410103935.frame-1410103936 {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    background: #EEF6FF !important;
+    box-shadow: 0px 1px 8px #438BFF !important;
+    border-radius: 999px;
+    outline: 1px #173DB6 solid !important;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
+  }
+
+  .mazda_span {
+    color: #141414;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
   }
 
   .pencilsimple:hover,

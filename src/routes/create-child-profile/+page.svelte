@@ -3,6 +3,8 @@
   import ChildProfile from "../../components/ChildProfile.svelte";
   import PhotoGuideModal from "../../components/PhotoGuideModal.svelte";
   import PersonInfo from "../../components/PersonInfo.svelte";
+  import EditPersonalInfo from "../../components/EditPersonalInfo.svelte";
+  import RemoveChildProfile from "../../components/RemoveChildProfile.svelte";
   // import StoryPreview from "../../components/StoryPreview.svelte";
   import { user, authLoading, isAuthenticated } from "../../lib/stores/auth";
   import { goto } from "$app/navigation";
@@ -10,16 +12,37 @@
   import { onMount } from "svelte";
   import { addNotification } from "$lib/stores/notification";
   import MobileBackBtn from "../../components/MobileBackBtn.svelte";
+  import { deleteChildProfile } from "../../lib/database/childProfiles";
 
   let showPhotoGuideModal = false;
   let selectedAgeGroup = "";
-  
+  let isEditingChild = false;
+  let editingChild: {
+    id: number;
+    name: string;
+    avatarUrl: string;
+    ageGroup?: string;
+    relationship?: string;
+    createdAt?: string;
+  } | null = null;
+
+  // Remove child profile modal state
+  let showRemoveChildModal = false;
+  let childToDelete: {
+    id: number;
+    name: string;
+    avatarUrl: string;
+    ageGroup?: string;
+    relationship?: string;
+    createdAt?: string;
+  } | null = null;
+
   // Reactive statements for auth state
   $: currentUser = $user;
   $: loading = $authLoading;
   $: authenticated = $isAuthenticated;
   $: userId = currentUser?.id;
-  
+
   // Additional safety check for SSR
   $: safeToRedirect = browser && !loading && currentUser !== undefined;
 
@@ -40,7 +63,7 @@
       // Add a small delay to ensure auth state is fully loaded
       setTimeout(() => {
         if (safeToRedirect && !authenticated) {
-          goto('/login');
+          goto("/login");
         }
       }, 100);
     }
@@ -49,7 +72,7 @@
   // Reactive redirect when auth state changes (client-side only)
   $: if (safeToRedirect && !authenticated) {
     // Only redirect if we're sure about the auth state
-    goto('/login');
+    goto("/login");
   }
 
   const closePhotoGuideModal = () => {
@@ -58,12 +81,97 @@
 
   const handleEditChild = (childId: number) => {
     console.log("Edit child:", childId);
-    // Add edit logic here
+    const child = children.find((c) => c.id === childId);
+    if (child) {
+      editingChild = child;
+      isEditingChild = true;
+    }
   };
 
   const handleDeleteChild = (childId: number) => {
-    console.log("Delete child:", childId);
-    children = children.filter(child => child.id !== childId);
+    console.log("Delete child requested:", childId);
+    const child = children.find((c) => c.id === childId);
+    if (child) {
+      childToDelete = child;
+      showRemoveChildModal = true;
+    }
+  };
+
+  const handleRemoveChild = async () => {
+    if (!childToDelete || !userId) {
+      showRemoveChildModal = false;
+      childToDelete = null;
+      return;
+    }
+
+    try {
+      // Check if the child being deleted is currently being edited
+      const isCurrentlyEditing = editingChild?.id === childToDelete.id;
+
+      // Check if this is a database-saved child (has a numeric ID that's not a timestamp)
+      // Database IDs are typically smaller numbers, while temporary IDs from Date.now() are very large
+      // We'll check if the ID is less than a reasonable threshold (e.g., 1 billion)
+      // This is a heuristic - in production, you might want a better way to distinguish
+      const isDatabaseChild = childToDelete.id < 1000000000; // Threshold for database IDs
+
+      if (isDatabaseChild) {
+        // Delete from database
+        const result = await deleteChildProfile(childToDelete.id, userId);
+        if (result.success) {
+          // Remove from local array
+          children = children.filter((child) => child.id !== childToDelete!.id);
+          
+          // If the deleted child was being edited, cancel edit mode and switch to PersonInfo
+          if (isCurrentlyEditing) {
+            isEditingChild = false;
+            editingChild = null;
+          }
+          
+          addNotification({
+            type: 'success',
+            message: 'Child profile removed successfully'
+          });
+        } else {
+          addNotification({
+            type: 'error',
+            message: result.error || 'Failed to remove child profile'
+          });
+        }
+      } else {
+        // Just remove from local array (not yet saved to database)
+        children = children.filter((child) => child.id !== childToDelete!.id);
+        
+        // If the deleted child was being edited, cancel edit mode and switch to PersonInfo
+        if (isCurrentlyEditing) {
+          isEditingChild = false;
+          editingChild = null;
+        }
+        
+        addNotification({
+          type: 'success',
+          message: 'Child profile removed'
+        });
+      }
+    } catch (error) {
+      console.error('Error removing child profile:', error);
+      addNotification({
+        type: 'error',
+        message: 'An error occurred while removing the child profile'
+      });
+    } finally {
+      showRemoveChildModal = false;
+      childToDelete = null;
+    }
+  };
+
+  const handleCancelRemove = () => {
+    showRemoveChildModal = false;
+    childToDelete = null;
+  };
+
+  const handleCloseRemoveModal = () => {
+    showRemoveChildModal = false;
+    childToDelete = null;
   };
 
   const handleAvatarUploaded = (avatarUrl: string) => {
@@ -74,17 +182,20 @@
 
   const handleAddChild = (childData: any) => {
     console.log("Adding new child:", childData);
-    
+
     // Add the new child to the children array
-    children = [...children, {
-      id: childData.id,
-      name: childData.name,
-      avatarUrl: childData.avatarUrl,
-      ageGroup: childData.ageGroup,
-      relationship: childData.relationship,
-      createdAt: childData.createdAt
-    }];
-    
+    children = [
+      ...children,
+      {
+        id: childData.id,
+        name: childData.name,
+        avatarUrl: childData.avatarUrl,
+        ageGroup: childData.ageGroup,
+        relationship: childData.relationship,
+        createdAt: childData.createdAt,
+      },
+    ];
+
     console.log("Updated children list:", children);
   };
 
@@ -96,9 +207,39 @@
     //   type: 'success',
     //   message: 'Child profiles saved successfully! Redirecting to dashboard...'
     // });
-    goto('/dashboard');
+    goto("/dashboard");
   };
 
+  const handleSaveChild = (data: {
+    firstName: string;
+    ageGroup: string;
+    relationship: string;
+    avatarUrl: string | null;
+  }) => {
+    if (editingChild) {
+      // Update the child in the children array
+      children = children.map((child) =>
+        child.id === editingChild!.id
+          ? {
+              ...child,
+              name: data.firstName,
+              ageGroup: data.ageGroup,
+              relationship: data.relationship,
+              avatarUrl: data.avatarUrl || child.avatarUrl,
+            }
+          : child
+      );
+      // Exit edit mode
+      isEditingChild = false;
+      editingChild = null;
+      console.log("Child updated successfully:", data);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    isEditingChild = false;
+    editingChild = null;
+  };
 </script>
 
 {#if loading || !browser}
@@ -118,93 +259,102 @@
           <div class="logo-img"></div>
         </div>
       </div>
-      <MobileBackBtn backText="Back"/>
+      <MobileBackBtn backText="Back" backRoute="/dashboard" />
       <div class="back-btn-container">
-        <BackBtn />
+        <BackBtn backRoute="/dashboard" />
       </div>
-    <div class="frame-5">
-      <div class="frame-1">
-        <div class="heading">
-          <div class="create-child-profile">
-            <span class="createchildprofile_span">Create Child Profile</span>
-          </div>
-          <div
-            class="tell-us-about-your-child-so-we-can-personalize-their-drawtopia-experience"
-          >
-            <span
-              class="tellusaboutyourchildsowecanpersonalizetheirdrawtopiaexperience_span"
-              >Tell us about your child so we can personalize their Drawtopia
-              experience</span
+      <div class="frame-5">
+        <div class="frame-1">
+          <div class="heading">
+            <div class="create-child-profile">
+              <span class="createchildprofile_span">Create Child Profile</span>
+            </div>
+            <div
+              class="tell-us-about-your-child-so-we-can-personalize-their-drawtopia-experience"
             >
+              <span
+                class="tellusaboutyourchildsowecanpersonalizetheirdrawtopiaexperience_span"
+                >Tell us about your child so we can personalize their Drawtopia
+                experience</span
+              >
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="progress-bar">
-      <div class="frame-1410103829">
-        <div class="frame-1410103997">
-          <div class="step-1"><span class="step1_span">Step 1</span></div>
-          <div><span class="f2_span">1/2</span></div>
-        </div>
-        <div class="bar">
-          <div class="bar_01"></div>
-        </div>
-        <div class="setting-up-profile">
-          <span class="settingupprofile_span">Setting Up Profile</span>
-        </div>
-      </div>
-    </div>
-    <div class="frame-1410104010">
-      <div class="list-of-children">
-        <span class="listofchildren_span">List of Children</span>
-      </div>
-      <div class="frame-1410104011">
-        {#if children.length === 0}
-          <div class="no-children-message">
-            <p>No children added yet. Fill out the form below and click "Add Another Child" to add them to the list.</p>
+      <div class="progress-bar">
+        <div class="frame-1410103829">
+          <div class="frame-1410103997">
+            <div class="step-1"><span class="step1_span">Step 1</span></div>
+            <div><span class="f2_span">1/2</span></div>
           </div>
-        {:else}
+          <div class="bar">
+            <div class="bar_01"></div>
+          </div>
+          <div class="setting-up-profile">
+            <span class="settingupprofile_span">Setting Up Profile</span>
+          </div>
+        </div>
+      </div>
+      {#if children.length > 0}
+      <div class="frame-1410104010">
+        <div class="list-of-children">
+          <span class="listofchildren_span">List of Children</span>
+        </div>
+        <div class="frame-1410104011">
           {#each children as child (child.id)}
             <ChildProfile
               name={child.name}
               avatarUrl={child.avatarUrl}
               onEdit={() => handleEditChild(child.id)}
               onDelete={() => handleDeleteChild(child.id)}
+              isEditing={isEditingChild && editingChild?.id === child.id}
             />
           {/each}
-        {/if}
-      </div>
-    </div>
-    <div class="frame-1410103818">
-      <PersonInfo 
-        bind:showPhotoGuideModal 
-        bind:selectedAgeGroup 
-        onAvatarUploaded={handleAvatarUploaded}
-        onAddChild={handleAddChild}
-        onContinueToStoryCreation={handleContinueToStoryCreation}
-        children={children}
-        userId={userId}
-      />
-      <!-- <StoryPreview {selectedAgeGroup} /> -->
-    </div>
-    <div class="frame-1410103821">
-      <div class="contact-us-hellodrawtopiacom">
-        <span class="contactushellodrawtopiacom_span"
-          >Contact us: hello@drawtopia.com</span
-        >
-      </div>
-      <div class="rectangle-34"></div>
-      <div class="frame-1410103820">
-        <div class="privacy-policy">
-          <span class="privacypolicy_span">Privacy Policy</span>
         </div>
-        <div class="terms-of-service">
-          <span class="termsofservice_span">Terms of Service</span>
+      </div>
+      {/if}
+      <div class="frame-1410103818">
+        {#if isEditingChild && editingChild}
+          <EditPersonalInfo
+            {userId}
+            initialFirstName={editingChild.name}
+            initialAgeGroup={editingChild.ageGroup || ""}
+            initialRelationship={editingChild.relationship || "parent"}
+            initialAvatarUrl={editingChild.avatarUrl}
+            onSave={handleSaveChild}
+            onCancel={handleCancelEdit}
+          />
+        {:else}
+          <PersonInfo
+            bind:showPhotoGuideModal
+            bind:selectedAgeGroup
+            onAvatarUploaded={handleAvatarUploaded}
+            onAddChild={handleAddChild}
+            onContinueToStoryCreation={handleContinueToStoryCreation}
+            {children}
+            {userId}
+          />
+        {/if}
+        <!-- <StoryPreview {selectedAgeGroup} /> -->
+      </div>
+      <div class="frame-1410103821">
+        <div class="contact-us-hellodrawtopiacom">
+          <span class="contactushellodrawtopiacom_span"
+            >Contact us: hello@drawtopia.com</span
+          >
+        </div>
+        <div class="rectangle-34"></div>
+        <div class="frame-1410103820">
+          <div class="privacy-policy">
+            <span class="privacypolicy_span">Privacy Policy</span>
+          </div>
+          <div class="terms-of-service">
+            <span class="termsofservice_span">Terms of Service</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 {/if}
 
 {#if showPhotoGuideModal}
@@ -220,6 +370,14 @@
   </div>
 {/if}
 
+{#if showRemoveChildModal}
+  <RemoveChildProfile
+    on:remove={handleRemoveChild}
+    on:cancel={handleCancelRemove}
+    on:close={handleCloseRemoveModal}
+  />
+{/if}
+
 <style>
   .main-pane {
     width: 700px;
@@ -228,38 +386,38 @@
     flex-direction: column;
   }
   .listofchildren_span {
-  color: black;
-  font-size: 24px;
-  font-family: Quicksand;
-  font-weight: 600;
-  line-height: 33.60px;
-  word-wrap: break-word;
-}
+    color: black;
+    font-size: 24px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 33.6px;
+    word-wrap: break-word;
+  }
 
-.list-of-children {
-  align-self: stretch;
-}
+  .list-of-children {
+    align-self: stretch;
+  }
 
-.frame-1410104011 {
-  justify-content: flex-start;
-  align-items: center;
-  gap: 4px;
-  display: inline-flex;
-}
+  .frame-1410104011 {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    display: inline-flex;
+  }
 
-.frame-1410104010 {
-  align-self: stretch;
-  padding: 8px;
-  background: white;
-  border-radius: 12px;
-  outline: 1px #EDEDED solid;
-  outline-offset: -1px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 24px;
-  display: flex;
-}
+  .frame-1410104010 {
+    align-self: stretch;
+    padding: 8px;
+    background: white;
+    border-radius: 12px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+    display: flex;
+  }
   .createchildprofile_span {
     color: #121212;
     font-size: 48px;
@@ -682,8 +840,12 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .no-children-message {

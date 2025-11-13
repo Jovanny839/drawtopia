@@ -330,7 +330,10 @@
     width: 48%;
     height: 98vh;
     position: relative;
-    background: #eef6ff;
+    background-image: url("../../assets/victorycele.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 12px;
     border: 1px #ededed solid;
     display: flex;

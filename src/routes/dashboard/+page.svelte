@@ -39,6 +39,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   import CharacterCard from "../../components/CharacterCard.svelte";
   import ChildCard from "../../components/ChildCard.svelte";
   import AdvancedSelect from "../../components/AdvancedSelect.svelte";
+  import CharacterDetailsModal from "../../components/CharacterDetailsModal.svelte";
 
   // Sidebar library switch state
   let libraryView: "all" | "characters" | "children" = "all";
@@ -68,6 +69,9 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   let giftsError = "";
   let showGiftSelectModal = false;
   let homeCategory: string | null = "AllBooks";
+  let showCharacterModal = false;
+  let selectedCharacter: any = null;
+  let characterBooks: any[] = [];
 
   // Filter states for dashboard dropdowns
   let selectedFormat: string = "all";
@@ -437,6 +441,60 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     goto("/gift/1");
   };
 
+  // Handle character preview
+  const handleCharacterPreview = (event: CustomEvent) => {
+    const character = event.detail;
+    selectedCharacter = character;
+    
+    // Find all books featuring this character
+    const characterName = character.character_name?.toLowerCase();
+    if (characterName && rawStories) {
+      characterBooks = rawStories.filter((story: any) => 
+        story.character_name?.toLowerCase() === characterName
+      );
+    } else {
+      characterBooks = [];
+    }
+    
+    showCharacterModal = true;
+  };
+
+  // Handle character modal close
+  const handleCharacterModalClose = () => {
+    showCharacterModal = false;
+    selectedCharacter = null;
+    characterBooks = [];
+  };
+
+  // Handle character modal actions
+  const handleUseInNewBook = (event: CustomEvent) => {
+    const character = event.detail;
+    handleCharacterModalClose();
+    // TODO: Navigate to create new book with this character
+    console.log("Use in new book:", character);
+  };
+
+  const handleEditCharacter = (event: CustomEvent) => {
+    const character = event.detail;
+    handleCharacterModalClose();
+    // TODO: Navigate to edit character
+    console.log("Edit character:", character);
+  };
+
+  const handleDeleteCharacter = (event: CustomEvent) => {
+    const character = event.detail;
+    handleCharacterModalClose();
+    // TODO: Implement delete character
+    console.log("Delete character:", character);
+  };
+
+  const handleBookClick = (event: CustomEvent) => {
+    const book = event.detail;
+    handleCharacterModalClose();
+    // TODO: Navigate to book view
+    console.log("Book clicked:", book);
+  };
+
   // Fetch profiles, stories, and gifts when component mounts and user is available
   onMount(() => {
     const unsubscribe = user.subscribe(($user) => {
@@ -797,32 +855,43 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
               </div>
             </div>
             <div class="rectangle-263"></div>
-            <div class="frame-1410103899">
-              <div class="dropdown-filters">
-                <div class="filter-select-wrapper">
-                  <AdvancedSelect
-                    options={formatOptions}
-                    bind:selectedOption={selectedFormat}
-                    placeholder="All Formats"
-                    id="format-select"
-                  />
+            <div class="frame-1410103899-add-children">
+              {#if libraryView === "children"}
+                <div class="frame-1410104245-add-children" on:click={handleAddChildren} role="button" tabindex="0" on:keydown={(e) => (e.key === "Enter" || e.key === " ") && handleAddChildren()}>
+                  <div class="usercircleplus-add-children">
+                    <img src={usercircleplus} alt="add children" class="usercircleplus-icon" />
+                  </div>
+                  <div class="add-children"><span class="addchildren_span">Add Children</span></div>
+                  <div class="ellipse-1415-add-children"></div>
                 </div>
-                <div class="filter-select-wrapper">
-                  <AdvancedSelect
-                    options={childrenOptions}
-                    bind:selectedOption={selectedChild}
-                    placeholder="All Children"
-                    id="child-select"
-                  />
-                </div>
-                <div class="filter-select-wrapper">
-                  <AdvancedSelect
-                    options={statusOptions}
-                    bind:selectedOption={selectedStatus}
-                    placeholder="All Status"
-                    id="status-select"
-                  />
-                </div>
+              {/if}
+              <div class="frame-1410103899">
+                  <div class="dropdown-filters">
+                    <div class="filter-select-wrapper">
+                      <AdvancedSelect
+                        options={formatOptions}
+                        bind:selectedOption={selectedFormat}
+                        placeholder="All Formats"
+                        id="format-select"
+                      />
+                    </div>
+                    <div class="filter-select-wrapper">
+                      <AdvancedSelect
+                        options={childrenOptions}
+                        bind:selectedOption={selectedChild}
+                        placeholder="All Children"
+                        id="child-select"
+                      />
+                    </div>
+                    <div class="filter-select-wrapper">
+                      <AdvancedSelect
+                        options={statusOptions}
+                        bind:selectedOption={selectedStatus}
+                        placeholder="All Status"
+                        id="status-select"
+                      />
+                    </div>
+                  </div>
               </div>
             </div>
           </div>
@@ -852,7 +921,11 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
                   <div class="empty-message">No characters found</div>
                 {:else}
                   {#each characters as character (character.id)}
-                    <CharacterCard item={character} booksCount={character.booksCount || 0} />
+                    <CharacterCard 
+                      item={character} 
+                      booksCount={character.booksCount || 0}
+                      on:preview={handleCharacterPreview}
+                    />
                   {/each}
                 {/if}
               {:else if libraryView === "children"}
@@ -1160,6 +1233,35 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   </div>
 {/if}
 
+<!-- Character Details Modal -->
+{#if showCharacterModal && selectedCharacter}
+  <div
+    class="modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="character-modal-title"
+    on:click={handleCharacterModalClose}
+    on:keydown={(e) => e.key === "Escape" && handleCharacterModalClose()}
+    tabindex="-1"
+  >
+    <div 
+      class="modal-container character-modal-container" 
+      role="document"
+      on:click|stopPropagation
+    >
+      <CharacterDetailsModal
+        character={selectedCharacter}
+        books={characterBooks}
+        on:close={handleCharacterModalClose}
+        on:useInNewBook={handleUseInNewBook}
+        on:editCharacter={handleEditCharacter}
+        on:deleteCharacter={handleDeleteCharacter}
+        on:bookClick={handleBookClick}
+      />
+    </div>
+  </div>
+{/if}
+
 <style>
   .modal-overlay {
     position: fixed;
@@ -1177,8 +1279,9 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   }
 
   .modal-container {
-    max-width: min(95vw, 900px);
+    max-width: min(95vw, 1200px);
     max-height: min(95vh, 850px);
+    min-width: 900px;
     width: auto;
     height: auto;
     overflow: visible;
@@ -1188,6 +1291,11 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     justify-content: center;
     align-items: center;
     position: relative;
+  }
+
+  .character-modal-container {
+    max-width: min(95vw, 800px);
+    max-height: min(95vh, 900px);
   }
 
   /* Ensure modal is centered on all screen sizes */
@@ -1370,10 +1478,10 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
 
   .addchildren_span {
     color: white;
-    font-size: 20px;
+    font-size: 18px;
     font-family: Quicksand;
-    font-weight: 500;
-    line-height: 28px;
+    font-weight: 600;
+    line-height: 25.20px;
     word-wrap: break-word;
   }
 
@@ -3072,5 +3180,62 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     align-items: center;
     gap: 24px;
     display: inline-flex;
+  }
+
+  /* Add Children Button Styles */
+  .frame-1410104245-add-children {
+    width: 200px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    position: relative;
+    background: #438BFF;
+    overflow: hidden;
+    border-radius: 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+  }
+
+  .frame-1410104245-add-children:hover {
+    background: #3b7ce6;
+  }
+
+  .frame-1410103899-add-children {
+    flex-direction: row;
+    gap: 12px;
+    display: flex;
+  }
+
+  .usercircleplus-add-children {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .usercircleplus-icon {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+  }
+
+  .ellipse-1415-add-children {
+    width: 248px;
+    height: 114px;
+    left: -38px;
+    top: 20px;
+    position: absolute;
+    background: radial-gradient(ellipse 42.11% 42.11% at 50.00% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 9999px;
+    pointer-events: none;
   }
 </style>

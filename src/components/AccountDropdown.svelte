@@ -5,8 +5,9 @@
   import { goto } from "$app/navigation";
   import caretdown from "../assets/CaretDown.svg";
   import { auth, user } from "../lib/stores/auth";
-  import { getUserProfile } from "../lib/auth";
+  import { getUserProfile, signOut } from "../lib/auth";
   import type { UserProfile } from "../lib/supabase";
+  import { addNotification } from "../lib/stores/notification";
 
   import gear from "../assets/Gear.svg";
   import globe from "../assets/Globe.svg";
@@ -139,6 +140,36 @@
     }
   }
 
+  // Handle logout
+  async function handleLogout() {
+    try {
+      closeDropdown(); // Close the dropdown first
+      
+      const result = await signOut();
+      if (result.success) {
+        console.log('User signed out successfully');
+        // Show success message and redirect to login
+        addNotification({
+          type: 'success',
+          message: 'Signed out successfully!'
+        });
+        goto('/login');
+      } else {
+        console.error('Sign out failed:', result.error);
+        addNotification({
+          type: 'error',
+          message: 'Error signing out: ' + result.error
+        });
+      }
+    } catch (error) {
+      console.error('Sign out error:', error);
+      addNotification({
+        type: 'error',
+        message: 'An unexpected error occurred during sign out'
+      });
+    }
+  }
+
   onMount(() => {
     if (!browser) return;
 
@@ -223,7 +254,7 @@
         </button>
       </div>
       <div class="rectangle-37" aria-hidden="true"></div>
-      <button class="menu_03" type="button" role="menuitem">
+      <button class="menu_03" type="button" role="menuitem" on:click={handleLogout}>
         <div class="signout">
           <img src={signout} alt="signout">
         </div>
@@ -381,39 +412,6 @@
     height: 24px;
     position: relative;
     overflow: hidden;
-  }
-
-  .vector_01,
-  .vector_02,
-  .vector_03,
-  .vector_04 {
-    position: absolute;
-    top: 2.25px;
-    left: 2.25px;
-    background: black;
-    border-radius: 4px;
-  }
-
-  .vector_01 {
-    width: 19.62px;
-    height: 19.62px;
-  }
-
-  .vector_02 {
-    width: 19.5px;
-    height: 19.5px;
-  }
-
-  .vector_03 {
-    width: 19.5px;
-    height: 21px;
-  }
-
-  .vector_04 {
-    width: 18px;
-    height: 18px;
-    top: 3px;
-    left: 3.75px;
   }
 
   .account-settings,

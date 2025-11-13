@@ -6,8 +6,12 @@
   import Star from "../assets/Star.svg";
   import eye from "../assets/eye.svg";
 
+  import { createEventDispatcher } from "svelte";
+
   export let item: any;
   export let booksCount: number = 0; // Number of books using this character
+
+  const dispatch = createEventDispatcher();
 
   // Get character name
   const getCharacterName = () => {
@@ -70,6 +74,11 @@
     // TODO: Implement navigation to view books using this character
     console.log("View books:", item);
   }
+
+  // Handle "Preview" button click
+  function handlePreview() {
+    dispatch("preview", item);
+  }
 </script>
 
 <div class="card">
@@ -110,11 +119,11 @@
         <div class="ellipse-1415"></div>
         <div class="use-in-new-book"><span class="useinnewbook_span">Use in New Book</span></div>
       </div>
-      <div class="button" on:click={handleViewBooks} role="button" tabindex="0">
+      <div class="button" on:click={handlePreview} role="button" tabindex="0">
         <div class="eye">
-          <img src={eye} alt="view" class="vector_03" />
+          <img src={eye} alt="preview" class="vector_03" />
         </div>
-        <div class="view-books"><span class="viewbooks_span">View Books</span></div>
+        <div class="view-books"><span class="viewbooks_span">Preview</span></div>
       </div>
     </div>
   </div>

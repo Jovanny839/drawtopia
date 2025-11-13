@@ -1,4 +1,10 @@
-<button class="button">
+<script lang="ts">
+  import { goto } from "$app/navigation";
+
+  export let backRoute: string | undefined = undefined;
+</script>
+
+<button class="button" on:click={() => backRoute && goto(backRoute)}>
   <div class="arrowleft"></div>
   <div class="back"><span class="back_span">Back</span></div>
 </button>

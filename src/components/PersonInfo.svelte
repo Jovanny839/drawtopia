@@ -1,12 +1,14 @@
 <script lang="ts">
   import OutlineBtn from "./OutlineBtn.svelte";
   import PrimaryBtn from "./PrimaryBtn.svelte";
-  import PrimarySelect from "./PrimarySelect.svelte";
+  import AdvancedSelect from "./AdvancedSelect.svelte";
   import PrimaryInput from "./PrimaryInput.svelte";
   import { uploadAvatar } from "../lib/storage";
   import { insertChildProfiles } from "../lib/database/childProfiles";
   import type { ChildProfile } from "../lib/database/childProfiles";
   import { onMount, onDestroy } from "svelte";
+  import plusIcon from "../assets/Gray-Plus.svg";
+  import blueplusIcon from "../assets/blue-plus.svg";
 
   export let showPhotoGuideModal = false;
   export let selectedAgeGroup = "";
@@ -309,7 +311,7 @@
       <div class="form">
         <div class="upload-a-photo-of-childs-name">
           <span class="uploadaphotoofchildsname_span"
-            >Upload a photo of [Child's Name]</span
+            >Upload Your Child Photo</span
           >
         </div>
         <div class="image" style="cursor: pointer;">
@@ -411,7 +413,7 @@
     <div class="frame-1410103850">
       <div class="form_01">
         <div class="childs-first-name">
-          <span class="childsfirstname_span">Child’s first name*</span>
+          <span class="childsfirstname_span">Child’s First Name*</span>
         </div>
         <PrimaryInput
           type="firstName"
@@ -429,13 +431,12 @@
       <div class="age-group">
         <span class="agegroup_span">Age Group*</span>
       </div>
-      <PrimarySelect
+      <AdvancedSelect
         options={[
           { value: "0-2", label: "👶 Ages 0-2 (tiny - Explorers)" },
-          { value: "3-5", label: "👧 Ages 3-5 (Imagination Builders)" },
-          { value: "6-7", label: "🧒 Ages 6-7 (Early Adventurers)" },
-          { value: "8-10", label: "👦 Ages 8-10 (Creative Storyteller)" },
-          { value: "11-12", label: "👦🏽 Ages 11-12 (Young Authors)" },
+          { value: "3-6", label: "👧 Ages 3-6 (Early Readers)" },
+          { value: "7-10", label: "👦 Ages 7-10 (Developing Readers)" },
+          { value: "11-12", label: "👦🏽 Ages 11-12 (Independent Readers)" },
         ]}
         bind:selectedOption={selectedAgeGroup}
         onChange={() => {}}
@@ -444,28 +445,68 @@
         <div class="error-message">{errors.ageGroup}</div>
       {/if}
     </div>
-    <div class="title">
-      <div class="frame-1410104017">
-        <div class="this-story-is-for-your-littlest-dreamer">
-          <span class="thisstoryisforyourlittlestdreamer_span"
-            >This story is for your littlest dreamer.</span
-          >
-        </div>
-        <div class="keep-it-short-and-simple-well-do-the-rest">
-          <span class="keepitshortandsimplewelldotherest_span"
-            >Keep it short and simple — we’ll do the rest!</span
-          >
-        </div>
+    {#if selectedAgeGroup === "3-6"}
+      <div class="title">
+        <ul class="age-group-list">
+          <li class="list-item">
+            <span class="list-item-text">Simple sentences (5-8 words)</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Large text and images</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Interactive Search: Easy difficulty</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Story: 100-150 words total</span>
+          </li>
+        </ul>
       </div>
-    </div>
+    {/if}
+    {#if selectedAgeGroup === "7-10"}
+      <div class="title">
+        <ul class="age-group-list">
+          <li class="list-item">
+            <span class="list-item-text">Medium sentences (8-12 words)</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Balanced text and images</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Interactive Search: Medium difficulty</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Story: 200-300 words total</span>
+          </li>
+        </ul>
+      </div>
+    {/if}
+    {#if selectedAgeGroup === "11-12"}
+      <div class="title">
+        <ul class="age-group-list">
+          <li class="list-item">
+            <span class="list-item-text">Complex sentences (12-15 words)</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Rich vocabulary and themes</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Interactive Search: Hard difficulty</span>
+          </li>
+          <li class="list-item">
+            <span class="list-item-text">Story: 300-400 words total</span>
+          </li>
+        </ul>
+      </div>
+    {/if}
     <div class="form_03">
       <div class="select-your-relationship">
         <span class="selectyourrelationship_span"
-          >Select Your relationship*</span
+          >Select Your Relationship*</span
         >
       </div>
       <!-- <div class="input-placeholder_02"> -->
-      <PrimarySelect
+      <AdvancedSelect
         options={[
           { value: "parent", label: "Parent" },
           { value: "aunt_uncle", label: "Aunt/Uncle" },
@@ -492,22 +533,36 @@
   {/if}
 
   <div class="frame-1410103991">
-    <OutlineBtn
-      text="Add Another Child"
-      isLoading={false}
-      spinner_name="add-another-child"
-      onClick={handleAddChild}
-      outlineType="dot-outline"
-    />
-    <div class="continue-btn-wrapper" class:disabled={children.length === 0}>
+    {#if children.length > 0}
+      {@const allFieldsFilled = firstName.trim() && selectedAgeGroup && selectedRelationship}
+      <button
+        class="button"
+        class:disabled={!allFieldsFilled}
+        on:click={handleAddChild}
+        disabled={!allFieldsFilled}
+        type="button"
+      >
+        <div class="plus">
+          {#if !allFieldsFilled}
+            <img src={plusIcon} alt="Plus Icon">
+          {:else}
+            <img src={blueplusIcon} alt="Blue Plus Icon">
+          {/if}
+        </div>
+        <div class="add-another-child">
+          <span class="addanotherchild_span">Add Another Child</span>
+        </div>
+      </button>
+    {/if}
+    <div class="continue-btn-wrapper">
       <PrimaryBtn
         text={children.length === 0
-          ? "Add a child first"
+          ? "Create Child"
           : "Continue to Story Creation"}
         isLoading={savingProfiles}
         spinner_name="Saving profiles..."
         onClick={children.length === 0
-          ? () => {}
+          ? handleAddChild
           : handleContinueToStoryCreation}
       />
     </div>
@@ -1003,51 +1058,153 @@
     opacity: 0.6;
     pointer-events: none;
   }
-  .thisstoryisforyourlittlestdreamer_span {
-    color: #871fff;
-    font-size: 20px;
-    font-family: Nunito;
-    font-weight: 600;
-    line-height: 28px;
-    word-wrap: break-word;
-  }
 
-  .this-story-is-for-your-littlest-dreamer {
-    align-self: stretch;
-  }
-
-  .keepitshortandsimplewelldotherest_span {
-    color: #666d80;
-    font-size: 16px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 22.4px;
-    word-wrap: break-word;
-  }
-
-  .keep-it-short-and-simple-well-do-the-rest {
-    align-self: stretch;
-  }
-
-  .frame-1410104017 {
-    flex: 1 1 0;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 2px;
+  .button {
+    width: 100%;
+    height: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #E7FEFF;
+    box-shadow: 0px 4px 0px #438BFF;
+    border-radius: 12px;
+    outline: 2px rgba(231, 254, 255, 0.20) solid;
+    outline-offset: -2px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     display: inline-flex;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .button:hover:not(:disabled) {
+    background: #d0f5f7;
+    box-shadow: 0px 4px 0px #357ae8;
+  }
+
+  .button:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px #438BFF;
+  }
+
+  .button:disabled {
+    background: #DFE1E7;
+    box-shadow: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .vector {
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    position: absolute;
+    background: #438BFF;
+  }
+
+  .vector::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 18px;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    background: #438BFF;
+  }
+
+  .vector::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #438BFF;
+  }
+
+  .button:disabled .vector,
+  .button:disabled .vector::before,
+  .button:disabled .vector::after {
+    background: #818898;
+  }
+
+  .addanotherchild_span {
+    color: #438BFF;
+    font-size: 18px;
+    font-family: DM Sans;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
+  }
+
+  .button:disabled .addanotherchild_span {
+    color: #818898;
+  }
+
+  .add-another-child {
+    text-align: center;
+  }
+
+  .plus {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
   }
 
   .title {
     width: 100%;
     height: 100%;
     padding: 8px;
-    background: #f5f2ff;
+    background: #EEF6FF;
     border-radius: 9px;
     justify-content: flex-start;
     align-items: flex-start;
     gap: 8px;
     display: inline-flex;
+  }
+
+  .age-group-list {
+    list-style: none;
+    padding-left: 5px;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .list-item {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 4px;
+  }
+
+  .list-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: #438BFF;
+    border-radius: 50%;
+  }
+
+  .list-item-text {
+    color: #438BFF;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 500;
+    line-height: 19.60px;
+    word-wrap: break-word;
   }
 
   /* Mobile responsive styles */

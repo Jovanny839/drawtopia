@@ -367,6 +367,36 @@
                 <span class="error-text">{errors.accountType}</span>
               {/if}
             </div> -->
+            
+            <div class="text-field">
+              <div><span class="phonenumber_01_span">Name</span></div>
+              <div class="name-inputs-row">
+                <div class="name-input-wrapper">
+                  <PrimaryInput
+                    type="text"
+                    bind:value={firstName}
+                    placeholder="First name"
+                    {errors}
+                    disabled={isLoading}
+                  />
+                  {#if errors.firstName}
+                    <span class="error-text">{errors.firstName}</span>
+                  {/if}
+                </div>
+                <div class="name-input-wrapper">
+                  <PrimaryInput
+                    type="text"
+                    bind:value={lastName}
+                    placeholder="Last name"
+                    {errors}
+                    disabled={isLoading}
+                  />
+                  {#if errors.lastName}
+                    <span class="error-text">{errors.lastName}</span>
+                  {/if}
+                </div>
+              </div>
+            </div>
             {#if signupMethod === "phone"}
               <div class="text-field">
                 <div><span class="phonenumber_01_span">Phone Number</span></div>
@@ -382,35 +412,6 @@
               </div>
             {:else}
               <div class="text-field">
-                <div class="text-field">
-                  <div><span class="phonenumber_01_span">Name</span></div>
-                  <div class="name-inputs-row">
-                    <div class="name-input-wrapper">
-                      <PrimaryInput
-                        type="text"
-                        bind:value={firstName}
-                        placeholder="First name"
-                        {errors}
-                        disabled={isLoading}
-                      />
-                      {#if errors.firstName}
-                        <span class="error-text">{errors.firstName}</span>
-                      {/if}
-                    </div>
-                    <div class="name-input-wrapper">
-                      <PrimaryInput
-                        type="text"
-                        bind:value={lastName}
-                        placeholder="Last name"
-                        {errors}
-                        disabled={isLoading}
-                      />
-                      {#if errors.lastName}
-                        <span class="error-text">{errors.lastName}</span>
-                      {/if}
-                    </div>
-                  </div>
-                </div>
                 <div><span class="phonenumber_01_span">Email</span></div>
                 <PrimaryInput
                   type="email"
