@@ -11,7 +11,7 @@
     import star from "../../../assets/star.png";
 
     type GiftMode = "create" | "link" | null;
-    let selectedMode: GiftMode = "create";
+    let selectedMode: GiftMode = null;
 
     const selectMode = (mode: Exclude<GiftMode, null>) => {
         selectedMode = mode;

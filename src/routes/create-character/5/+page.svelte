@@ -15,6 +15,7 @@
   import underwater from "../../../assets/underwater.png";
   import treasure from "../../../assets/treasurehunt.png";
   import helping from "../../../assets/helpfriend.png";
+  import globehemispherewest from "../../../assets/BlackGlobeHemiSphereWest.svg";
   import { 
     generateStyledImage, 
     loadGeneratedImages,
@@ -25,8 +26,8 @@
   import { storyCreation } from "../../../lib/stores/storyCreation";
 
   let isMobile = false;
-  let selectedWorld = "underwater"; // Default selection: "forest", "outspace", or "underwater"
-  let selectedAdventure = "treasure"; // Default selection: "treasure" or "helping"
+  let selectedWorld = ""; // Default selection: "forest", "outspace", or "underwater"
+  let selectedAdventure = ""; // Default: no selection - user must choose "treasure" or "helping"
   let characterName = "";
   let specialAbility = "";
   let selectedStyle = "";
@@ -312,8 +313,14 @@
     }
   };
 
+  // Check if both selections are made
+  $: canContinue = selectedWorld !== "" && selectedAdventure !== "";
+
   // Handle continue to next step
   const handleContinue = async () => {
+    // Only proceed if both selections are made
+    if (!canContinue) return;
+    
     // Update story creation store with selected world and adventure
     storyCreation.setStoryWorld(selectedWorld as any);
     const adventureType = selectedAdventure === 'treasure' ? 'treasure_hunt' : 'helping_friend';
@@ -370,7 +377,7 @@
               <div class="frame-2147227581">
                 <div class="icons">
                   <div class="globehemispherewest">
-                    <div class="vector"></div>
+                    <img src={globehemispherewest} alt="globehemispherewest">
                   </div>
                   <div>
                     <span class="magicalcreaturestalkingtrees_span">Magical Creatures & Talking Trees</span>
@@ -403,7 +410,7 @@
               <div class="frame-2147227581">
                 <div class="icons">
                   <div class="globehemispherewest">
-                    <div class="vector"></div>
+                    <img src={globehemispherewest} alt="globehemispherewest">
                   </div>
                   <div>
                     <span class="cosmicplanetaliensfriendly_span">Cosmic Planet & Aliens Friendly</span>
@@ -436,7 +443,7 @@
               <div class="frame-2147227581">
                 <div class="icons">
                   <div class="globehemispherewest">
-                    <div class="vector"></div>
+                    <img src={globehemispherewest} alt="globehemispherewest">
                   </div>
                   <div>
                     <span class="mermaidsvibrantsealife_span">Mermaids & Vibrant Sea Life</span>
@@ -522,7 +529,7 @@
       </div>
     </div>
 
-    <div class="frame-1410104246" on:click={handleContinue}>
+    <div class="frame-1410104246" class:button-disabled={!canContinue} on:click={handleContinue}>
       <div class="generate-search-adventure">
         <span class="generatesearchadventure_span">Generate Search Adventure</span>
       </div>
@@ -885,6 +892,12 @@
     gap: 8px;
     display: inline-flex;
     cursor: pointer;
+  }
+
+  .frame-1410104246.button-disabled {
+    background: #D3D3D3;
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 
   .frame-1410103884 {

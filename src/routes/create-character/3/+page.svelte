@@ -39,8 +39,8 @@
     if (browser) {
       // Get character name from sessionStorage
       characterName = sessionStorage.getItem('characterName') || "";
-      // Get previously selected format if any
-      selectedFormat = sessionStorage.getItem('selectedFormat') || "";
+      // No format selected by default - user must choose
+      selectedFormat = "";
     }
   });
 
@@ -197,27 +197,29 @@
         <div></div>
       {/if}
       
-      {#if !isMobile}
-        <button class="button-outline" on:click={handlePreviewBoth}>
-          <div class="preview-both">
-            <span class="previewboth_span">Preview Both Formats</span>
+      <div class="right-buttons">
+        {#if !isMobile}
+          <button class="button" on:click={handlePreviewBoth}>
+            <div class="preview-both-formats">
+              <span class="previewbothformats_span">Preview Both Formats</span>
+            </div>
+          </button>
+        {/if}
+        
+        <button
+          class="button-fill"
+          class:mobile-full-width={isMobile}
+          class:disabled-button={!selectedFormat}
+          disabled={!selectedFormat}
+          on:click={handleContinue}
+        >
+          <div class="continue-to-configuration">
+            <span class="continuetoconfiguration_span"
+              >Continue to Configuration</span
+            >
           </div>
         </button>
-      {/if}
-      
-      <button
-        class="button-fill"
-        class:mobile-full-width={isMobile}
-        class:disabled-button={!selectedFormat}
-        disabled={!selectedFormat}
-        on:click={handleContinue}
-      >
-        <div class="continue-to-configuration">
-          <span class="continuetoconfiguration_span"
-            >Continue to Configuration</span
-          >
-        </div>
-      </button>
+      </div>
     </div>
   </div>
   <div class="frame-1410103821">
@@ -402,16 +404,22 @@
     text-align: center;
   }
 
-  .previewboth_span {
-    color: #438bff;
+  .right-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .previewbothformats_span {
+    color: #438BFF;
     font-size: 18px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 25.2px;
+    line-height: 25.20px;
     word-wrap: break-word;
   }
 
-  .preview-both {
+  .preview-both-formats {
     text-align: center;
   }
 
@@ -577,21 +585,21 @@
     width: 200px;
   }
 
-  .button-outline {
+  .button {
+    height: 100%;
     padding-left: 24px;
     padding-right: 24px;
     padding-top: 16px;
     padding-bottom: 16px;
-    box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
-    border-radius: 20px;
-    outline: 1px #438bff solid;
-    outline-offset: -1px;
-    background-color: white;
+    background: #E7FEFF;
+    box-shadow: 0px 4px 0px #438BFF;
+    border-radius: 12px;
+    outline: 2px rgba(231, 254, 255, 0.20) solid;
+    outline-offset: -2px;
     justify-content: center;
     align-items: center;
     gap: 10px;
     display: inline-flex;
-    width: 250px;
   }
 
   .heading {
@@ -727,7 +735,7 @@
 
     .button-fill,
     .button_01,
-    .button-outline {
+    .button {
       width: 100%;
       margin-top: 8px;
     }

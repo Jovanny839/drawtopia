@@ -213,7 +213,7 @@
 
     .image {
         align-self: stretch;
-        height: 280px;
+        height: 440px;
         position: relative;
         overflow: hidden;
         border-top-left-radius: 12px;
@@ -256,7 +256,7 @@
 
     .image_01 {
         align-self: stretch;
-        height: 280px;
+        height: 440px;
         position: relative;
         overflow: hidden;
         border-top-left-radius: 12px;

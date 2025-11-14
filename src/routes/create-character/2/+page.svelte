@@ -18,7 +18,7 @@
   import { storyCreation } from "../../../lib/stores/storyCreation";
 
   let isMobile = false;
-  let selectedEnhancement = "normal"; // Default selection: "minimal", "normal", or "high"
+  let selectedEnhancement = ""; // Default: no selection - "minimal", "normal", or "high"
   let uploadedImageUrl = "";
   let selectedStyle = "";
   let generatedImages: { [key: string]: string } = {};
@@ -161,7 +161,7 @@
         isSelected={selectedEnhancement === "minimal"}
         onSelect={selectEnhancement}
         afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage=""
+        beforeImage={uploadedImageUrl}
         originalImageUrl={uploadedImageUrl}
         selectedStyle={selectedStyle}
       />
@@ -178,7 +178,7 @@
         onSelect={selectEnhancement}
         showMostPopular={true}
         afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage=""
+        beforeImage={uploadedImageUrl}
         originalImageUrl={uploadedImageUrl}
         selectedStyle={selectedStyle}
       />
@@ -194,7 +194,7 @@
         isSelected={selectedEnhancement === "high"}
         onSelect={selectEnhancement}
         afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage=""
+        beforeImage={uploadedImageUrl}
         originalImageUrl={uploadedImageUrl}
         selectedStyle={selectedStyle}
       />

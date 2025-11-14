@@ -13,6 +13,7 @@
     import notepad from "../../../assets/Notepad.svg";
     import genderneuter from "../../../assets/GenderNeuter.svg";
     import check from "../../../assets/Check_blue.svg";
+    import { goto } from "$app/navigation";
 
     // Helper functions for display names
     function getCharacterTypeDisplayName(type: string): string {
@@ -476,7 +477,7 @@
                         <span class="saveasdraft_span">Save as Draft</span>
                     </div>
                 </div>
-                <div class="frame-1410104246">
+                <div class="frame-1410104246" on:click={() => {goto('/adventure-story/loading')}}>
                     <div class="ellipse-1415"></div>
                     <div class="floppydiskback">
                         <img
@@ -1418,6 +1419,7 @@
         align-items: center;
         gap: 10px;
         display: flex;
+        cursor: pointer;
     }
 
     .logo-text-full {
@@ -1783,6 +1785,7 @@
         align-items: center;
         gap: 8px;
         display: flex;
+        cursor: pointer;
     }
 
     .progress-bar_01 {

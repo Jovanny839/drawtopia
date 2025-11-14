@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import ProgressBar from "../../components/ProgressBar.svelte";
     import enchantedforest from "../../assets/enchanted_forest.png";
     import outerspace from "../../assets/outer_space.png";
     import underwaterkingdom from "../../assets/underwater_kingdom.png";
@@ -62,45 +63,7 @@
                 <div><span class="ffreepagepreview_span">2 Free Page Preview</span></div>
             </div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-bar_01">
-                <div class="progress-bar_02">
-                    <div class="step-1"><span class="step1_span">Step 1</span></div>
-                    <div class="bar"></div>
-                    <div class="frame-1410103829">
-                        <div class="character-upload"><span class="characterupload_span">Character Upload</span></div>
-                    </div>
-                </div>
-                <div class="progress-bar_03">
-                    <div class="frame-1410103829_01">
-                        <div class="step-2"><span class="step2_span">Step 2</span></div>
-                    </div>
-                    <div class="bar_01"></div>
-                    <div class="character-enhancement"><span class="characterenhancement_span">Character Enhancement</span></div>
-                </div>
-                <div class="progress-bar_04">
-                    <div class="step-3"><span class="step3_span">Step 3</span></div>
-                    <div class="bar_02"></div>
-                    <div class="frame-1410103829_02">
-                        <div class="format-selection"><span class="formatselection_span">Format Selection</span></div>
-                    </div>
-                </div>
-                <div class="progress-bar_05">
-                    <div class="step-4"><span class="step4_span">Step 4</span></div>
-                    <div class="bar_03"></div>
-                    <div class="frame-1410103829_03">
-                        <div class="configuration"><span class="configuration_span">Configuration</span></div>
-                    </div>
-                </div>
-                <div class="progress-bar_06">
-                    <div class="step-5"><span class="step5_span">Step 5</span></div>
-                    <div class="bar_04"></div>
-                    <div class="frame-1410103829_04">
-                        <div class="generation"><span class="generation_span">Generation</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ProgressBar currentStep={4} />
         <div class="rectangle-261"></div>
         <div class="frame-1410103884">
             <div class="step-1-choose-story-world"><span class="step1choosestoryworld_span">Step 1: Choose Story World</span></div>
@@ -440,175 +403,6 @@
     word-wrap: break-word;
 }
 
-.step1_span {
-    color: #727272;
-    font-size: 14px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 19.60px;
-    word-wrap: break-word;
-}
-
-.step-1 {
-    width: 63px;
-}
-
-.bar {
-    align-self: stretch;
-    height: 8px;
-    position: relative;
-    background: #438BFF;
-    border-radius: 12px;
-}
-
-.characterupload_span {
-    color: #121212;
-    font-size: 16px;
-    font-family: DM Sans;
-    font-weight: 500;
-    line-height: 22.40px;
-    word-wrap: break-word;
-}
-
-.character-upload {
-    align-self: stretch;
-}
-
-.step2_span {
-    color: #727272;
-    font-size: 14px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 19.60px;
-    word-wrap: break-word;
-}
-
-.step-2 {
-    width: 63px;
-}
-
-.bar_01 {
-    align-self: stretch;
-    height: 8px;
-    position: relative;
-    background: #438BFF;
-    border-radius: 12px;
-}
-
-.characterenhancement_span {
-    color: #121212;
-    font-size: 16px;
-    font-family: DM Sans;
-    font-weight: 500;
-    line-height: 22.40px;
-    word-wrap: break-word;
-}
-
-.character-enhancement {
-    align-self: stretch;
-}
-
-.step3_span {
-    color: #727272;
-    font-size: 14px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 19.60px;
-    word-wrap: break-word;
-}
-
-.step-3 {
-    width: 63px;
-}
-
-.bar_02 {
-    align-self: stretch;
-    height: 8px;
-    position: relative;
-    background: #438BFF;
-    border-radius: 12px;
-}
-
-.formatselection_span {
-    color: #121212;
-    font-size: 16px;
-    font-family: DM Sans;
-    font-weight: 500;
-    line-height: 22.40px;
-    word-wrap: break-word;
-}
-
-.format-selection {
-    align-self: stretch;
-}
-
-.step4_span {
-    color: #727272;
-    font-size: 14px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 19.60px;
-    word-wrap: break-word;
-}
-
-.step-4 {
-    width: 63px;
-}
-
-.bar_03 {
-    align-self: stretch;
-    height: 8px;
-    position: relative;
-    background: #438BFF;
-    border-radius: 12px;
-}
-
-.configuration_span {
-    color: #121212;
-    font-size: 16px;
-    font-family: DM Sans;
-    font-weight: 500;
-    line-height: 22.40px;
-    word-wrap: break-word;
-}
-
-.configuration {
-    align-self: stretch;
-}
-
-.step5_span {
-    color: #727272;
-    font-size: 14px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 19.60px;
-    word-wrap: break-word;
-}
-
-.step-5 {
-    width: 63px;
-}
-
-.bar_04 {
-    align-self: stretch;
-    height: 8px;
-    position: relative;
-    background: #EEF6FF;
-    border-radius: 12px;
-}
-
-.generation_span {
-    color: #121212;
-    font-size: 16px;
-    font-family: DM Sans;
-    font-weight: 500;
-    line-height: 22.40px;
-    word-wrap: break-word;
-}
-
-.generation {
-    align-self: stretch;
-}
 
 .rectangle-261 {
     align-self: stretch;
@@ -956,50 +750,6 @@
     border-radius: 9999px;
 }
 
-.frame-1410103829 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
-}
-
-.frame-1410103829_01 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
-}
-
-.frame-1410103829_02 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
-}
-
-.frame-1410103829_03 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
-}
-
-.frame-1410103829_04 {
-    align-self: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 4px;
-    display: flex;
-}
 
 .button {
     align-self: stretch;
@@ -1331,50 +1081,6 @@
     overflow: hidden;
 }
 
-.progress-bar_02 {
-    flex: 1 1 0;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 8px;
-    display: inline-flex;
-}
-
-.progress-bar_03 {
-    flex: 1 1 0;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 8px;
-    display: inline-flex;
-}
-
-.progress-bar_04 {
-    flex: 1 1 0;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 8px;
-    display: inline-flex;
-}
-
-.progress-bar_05 {
-    flex: 1 1 0;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 8px;
-    display: inline-flex;
-}
-
-.progress-bar_06 {
-    flex: 1 1 0;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 8px;
-    display: inline-flex;
-}
 
 .frame-2147227582 {
     flex: 1 1 0;
@@ -1584,13 +1290,6 @@
     cursor: not-allowed;
   }
 
-.progress-bar_01 {
-    align-self: stretch;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-    display: inline-flex;
-}
 
 .heading {
     align-self: stretch;
@@ -1745,19 +1444,6 @@
     display: flex;
 }
 
-.progress-bar {
-    width: 1240px;
-    padding: 8px;
-    background: white;
-    border-radius: 12px;
-    outline: 1px #EDEDED solid;
-    outline-offset: -1px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 8px;
-    display: flex;
-}
 
 .heading_01 {
     align-self: stretch;

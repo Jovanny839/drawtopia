@@ -42,9 +42,9 @@
     }
   };
 
-  // Use the selected image from step 3 as before, and generated enhancement as after
-  $: currentBeforeImage = afterImage || sampleImages[enhancementId as keyof typeof sampleImages]?.before || sampleImages.normal.before;
-  $: currentAfterImage = generatedEnhancementImage || beforeImage || sampleImages[enhancementId as keyof typeof sampleImages]?.after || sampleImages.normal.after;
+  // Use the original uploaded image as before, and generated enhancement as after
+  $: currentBeforeImage = beforeImage || sampleImages[enhancementId as keyof typeof sampleImages]?.before || sampleImages.normal.before;
+  $: currentAfterImage = generatedEnhancementImage || afterImage || sampleImages[enhancementId as keyof typeof sampleImages]?.after || sampleImages.normal.after;
 
   // Generate enhancement image when component mounts or when originalImageUrl/selectedStyle changes
   $: if (originalImageUrl && selectedStyle) {
