@@ -1,4 +1,7 @@
-<script>
+<script lang="ts">
+    import { onMount } from "svelte";
+    import { browser } from "$app/environment";
+    import { storyCreation } from "../../../lib/stores/storyCreation";
     import drawtopia from "../../../assets/logo.png";
     import shieldstar from "../../../assets/ShieldStar.svg";
     import arrowleft from "../../../assets/ArrowLeft.svg";
@@ -10,6 +13,77 @@
     import notepad from "../../../assets/Notepad.svg";
     import genderneuter from "../../../assets/GenderNeuter.svg";
     import check from "../../../assets/Check_blue.svg";
+
+    // Helper functions for display names
+    function getCharacterTypeDisplayName(type: string): string {
+        if (!type) return "[Type]";
+        const typeMap: { [key: string]: string } = {
+            "person": "Person",
+            "animal": "Animal",
+            "magical_creature": "Magical Creature"
+        };
+        return typeMap[type.toLowerCase()] || type;
+    }
+
+    function getWorldDisplayName(world: string): string {
+        if (!world) return "Outer Space";
+        const worldMap: { [key: string]: string } = {
+            "forest": "Enchanted Forest",
+            "space": "Outer Space",
+            "outerspace": "Outer Space",
+            "outspace": "Outer Space",
+            "underwater": "Underwater Kingdom"
+        };
+        return worldMap[world.toLowerCase()] || world;
+    }
+
+    function getAdventureTypeDisplayName(adventure: string): string {
+        if (!adventure) return "Help a Friend";
+        const adventureMap: { [key: string]: string } = {
+            "treasure_hunt": "Treasure Hunt",
+            "helping_friend": "Help a Friend"
+        };
+        return adventureMap[adventure.toLowerCase()] || adventure;
+    }
+
+    function getStyleDisplayName(style: string): string {
+        if (!style) return "Anime";
+        const styleMap: { [key: string]: string } = {
+            "3d": "3D",
+            "cartoon": "Cartoon",
+            "anime": "Anime"
+        };
+        return styleMap[style.toLowerCase()] || style;
+    }
+
+    // Initialize store on mount
+    onMount(() => {
+        if (browser) {
+            storyCreation.init();
+        }
+    });
+
+    // Reactive store subscription
+    $: storyState = $storyCreation;
+    
+    // Computed values for display
+    $: storyTitle = storyState?.storyTitle || "[Storybook Title]";
+    $: characterName = storyState?.characterName || "[Character Name]";
+    $: characterType = storyState?.characterType || "";
+    $: specialAbility = storyState?.specialAbility || "[Special Ability]";
+    $: storyCover = storyState?.storyCover || "https://placehold.co/287x431";
+    $: originalImageUrl = storyState?.originalImageUrl || "https://placehold.co/91x90";
+    $: storyWorld = storyState?.storyWorld || "";
+    $: adventureType = storyState?.adventureType || "";
+    $: characterStyle = storyState?.characterStyle || "";
+    
+    $: characterTypeDisplay = getCharacterTypeDisplayName(characterType);
+    $: characterInfo = characterName && characterType && characterName !== "[Character Name]" && characterType !== ""
+        ? `${characterName} ${characterTypeDisplay}${specialAbility && specialAbility !== "[Special Ability]" ? ` with ${specialAbility}` : ""}`
+        : "[Character Name] [Type] with [Special Ability]";
+    $: worldDisplay = getWorldDisplayName(storyWorld);
+    $: adventureDisplay = getAdventureTypeDisplayName(adventureType);
+    $: styleDisplay = getStyleDisplayName(characterStyle);
 </script>
 
 <div class="story-preview-summary-default">
@@ -128,12 +202,13 @@
                     <div class="frame-1410104091">
                         <img
                             class="frame-1410104089"
-                            src="https://placehold.co/91x90"
+                            src={originalImageUrl}
+                            alt="Story summary"
                         />
                         <div class="frame-1410104090">
                             <div class="storybook-title">
                                 <span class="storybooktitle_span"
-                                    >[Storybook Title]</span
+                                    >{storyTitle}</span
                                 >
                             </div>
                             <div
@@ -141,8 +216,7 @@
                             >
                                 <span
                                     class="characternametypewithspecialability_span"
-                                    >[Character Name] [Type] with [Special
-                                    Ability]</span
+                                    >{characterInfo}</span
                                 >
                             </div>
                         </div>
@@ -165,7 +239,7 @@
                                         <span class="style_span">Style</span>
                                     </div>
                                     <div class="anime">
-                                        <span class="anime_span">Anime</span>
+                                        <span class="anime_span">{styleDisplay}</span>
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +279,7 @@
                                     </div>
                                     <div class="outer-space">
                                         <span class="outerspace_span"
-                                            >Outer Space</span
+                                            >{worldDisplay}</span
                                         >
                                     </div>
                                 </div>
@@ -228,7 +302,7 @@
                                     </div>
                                     <div class="help-a-friend">
                                         <span class="helpafriend_span"
-                                            >Help a Friend</span
+                                            >{adventureDisplay}</span
                                         >
                                     </div>
                                 </div>
@@ -335,7 +409,7 @@
                     >
                 </div>
                 <div class="frame-1410104103">
-                    <img class="image" src="https://placehold.co/287x431" />
+                    <img class="image" src={storyCover} alt="Book cover" />
                     <div class="frame-1410104075">
                         <div class="checklist">
                             <div class="check">

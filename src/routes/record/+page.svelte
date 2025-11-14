@@ -2,19 +2,43 @@
   import purple_check from "../../assets/purple-check.svg";
   import ArrowLeft from "../../assets/ArrowLeft.svg";
   import DevicePermissionModal from "../../components/DevicePermissionModal.svelte";
+  import { goto } from "$app/navigation";
 
   import { browser } from "$app/environment";
   import MobileBackBtn from "../../components/MobileBackBtn.svelte";
 
   let isMobile = false;
   let showDevicePermissionModal = false;
+  let selectedOption = 'record'; // 'record' or 'preview'
+
+  // Reactive button text based on selection
+  $: buttonText = selectedOption === 'record' ? 'Choose Record Video' : 'Preview a Story';
 
   function handleChooseRecordVideo() {
-    showDevicePermissionModal = true;
+    if (selectedOption === 'preview') {
+      // Navigate directly to preview page, no modal needed
+      goto('/preview/default');
+    } else {
+      // Show modal for record option
+      showDevicePermissionModal = true;
+    }
   }
 
   function closeModal() {
     showDevicePermissionModal = false;
+  }
+
+  function handleGrantPermissions() {
+    closeModal();
+    // Navigate to record/reaction page after permissions granted
+    goto('/record/reaction');
+  }
+
+  /**
+   * @param {'record' | 'preview'} option
+   */
+  function selectOption(option) {
+    selectedOption = option;
   }
 
   $: if (browser) {
@@ -48,9 +72,18 @@
     </div>
     <div class="frame-1410104111">
       <div class="frame-1410104110">
-        <div class="card">
+        <div 
+          class="card" 
+          class:selected={selectedOption === 'record'}
+          role="button" 
+          tabindex="0"
+          on:click={() => selectOption('record')}
+          on:keydown={(e) => e.key === 'Enter' && selectOption('record')}
+        >
           <div class="image">
-            <img src={purple_check} alt="purple_check" class="purple_check" />
+            {#if selectedOption === 'record'}
+              <img src={purple_check} alt="purple_check" class="purple_check" />
+            {/if}
           </div>
           <div class="frame-10">
             <div class="heading_02">
@@ -65,15 +98,27 @@
                 <span
                   class="watchyourchildsfacelightupastheymeettalkinganimalsandtraveltodistantworldsandrecordthemomentforever_span"
                 >
-                  Watch your child’s face light up as they meet talking animals
+                  Watch your child's face light up as they meet talking animals
                   and travel to distant worlds — and record the moment forever!</span
                 >
               </div>
             </div>
           </div>
         </div>
-        <div class="card_01">
-          <img class="image_01" src="https://placehold.co/402x280" alt="" />
+        <div 
+          class="card_01" 
+          class:selected={selectedOption === 'preview'}
+          role="button" 
+          tabindex="0"
+          on:click={() => selectOption('preview')}
+          on:keydown={(e) => e.key === 'Enter' && selectOption('preview')}
+        >
+          <div class="image_01_wrapper">
+            <img class="image_01" src="https://placehold.co/402x280" alt="" />
+            {#if selectedOption === 'preview'}
+              <img src={purple_check} alt="purple_check" class="purple_check" />
+            {/if}
+          </div>
           <div class="frame-10_01">
             <div class="heading_03">
               <div class="preview-a-story">
@@ -102,7 +147,7 @@
       </div>
       <div class="button_01" role="button" tabindex="0" on:click={handleChooseRecordVideo} on:keydown={(e) => e.key === 'Enter' && handleChooseRecordVideo()}>
         <div class="choose-record-video">
-          <span class="chooserecordvideo_span">Choose Record Video</span>
+          <span class="chooserecordvideo_span">{buttonText}</span>
         </div>
       </div>
     </div>
@@ -128,7 +173,7 @@
 {#if showDevicePermissionModal}
   <div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" on:click|self={closeModal} on:keydown={(e) => e.key === 'Escape' && closeModal()}>
     <div class="modal-content">
-      <DevicePermissionModal on:close={closeModal} />
+      <DevicePermissionModal on:close={closeModal} on:grant={handleGrantPermissions} />
     </div>
   </div>
 {/if}
@@ -187,13 +232,27 @@
     align-self: stretch;
   }
 
-  .image_01 {
+  .image_01_wrapper {
     align-self: stretch;
     height: 280px;
     position: relative;
+    overflow: hidden;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+
+  .image_01 {
+    align-self: stretch;
+    height: 280px;
+    width: 100%;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     border: 1px #d3d3d3 solid;
+    transition: border-color 0.2s;
+  }
+
+  .card_01.selected .image_01 {
+    border: 1px #6912c5 solid;
   }
 
   .previewastory_span {
@@ -417,10 +476,17 @@
     overflow: hidden;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
+    border-left: 1px #d3d3d3 solid;
+    border-top: 1px #d3d3d3 solid;
+    border-right: 1px #d3d3d3 solid;
+    background-image: url(https://placehold.co/402x280);
+    transition: border-color 0.2s;
+  }
+
+  .card.selected .image {
     border-left: 1px #6912c5 solid;
     border-top: 1px #6912c5 solid;
     border-right: 1px #6912c5 solid;
-    background-image: url(https://placehold.co/402x280);
   }
 
   .button {
@@ -459,21 +525,36 @@
     align-items: flex-start;
     gap: 12px;
     display: inline-flex;
+    cursor: pointer;
+    transition: outline 0.2s, box-shadow 0.2s;
+  }
+
+  .card_01.selected {
+    box-shadow: 0px 1px 8px #871fff;
+    outline: 2px #6912c5 solid;
+    outline-offset: -2px;
   }
 
   .card {
     width: 402px;
     padding-bottom: 10px;
     background: white;
-    box-shadow: 0px 1px 8px #871fff;
     border-radius: 20px;
-    outline: 2px #6912c5 solid;
-    outline-offset: -2px;
+    outline: 1px #ededed solid;
+    outline-offset: -1px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
     gap: 12px;
     display: inline-flex;
+    cursor: pointer;
+    transition: outline 0.2s, box-shadow 0.2s;
+  }
+
+  .card.selected {
+    box-shadow: 0px 1px 8px #871fff;
+    outline: 2px #6912c5 solid;
+    outline-offset: -2px;
   }
 
   .frame-1410103870 {
@@ -588,6 +669,11 @@
       width: 100%;
     }
     .image,
+    .image_01_wrapper {
+      width: 100%;
+      height: auto;
+      min-height: 200px;
+    }
     .image_01 {
       width: 100%;
       height: auto;

@@ -252,14 +252,14 @@
 
       if (result.success) {
         console.log("Child profiles saved successfully:", result.data);
-        sessionStorage.setItem(
-          "selectedChildProfileId",
-          result.data[0].id.toString(),
-        );
-        sessionStorage.setItem(
-          "selectedChildProfileName",
-          result.data[0].first_name,
-        );
+        // sessionStorage.setItem(
+        //   "selectedChildProfileId",
+        //   result.data[0].id.toString(),
+        // );
+        // sessionStorage.setItem(
+        //   "selectedChildProfileName",
+        //   result.data[0].first_name,
+        // );
 
         // Call the parent callback to proceed to story creation
         if (onContinueToStoryCreation) {
@@ -433,7 +433,7 @@
       </div>
       <AdvancedSelect
         options={[
-          { value: "0-2", label: "👶 Ages 0-2 (tiny - Explorers)" },
+          { value: "0-2", label: "👶 Ages 0-2 (Reserved)" },
           { value: "3-6", label: "👧 Ages 3-6 (Early Readers)" },
           { value: "7-10", label: "👦 Ages 7-10 (Developing Readers)" },
           { value: "11-12", label: "👦🏽 Ages 11-12 (Independent Readers)" },

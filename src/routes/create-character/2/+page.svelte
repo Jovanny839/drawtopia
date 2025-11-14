@@ -200,32 +200,37 @@
       />
     </div>
 
-    <div
-      style="display: flex; justify-content: {isMobile
-        ? 'center'
-        : 'space-between'}; width: 100%;"
-    >
+    <div class="frame-1410104075">
       {#if !isMobile}
-        <button class="button_01" on:click={() => goto("/create-character/1")}>
-          <div class="arrowleft">
-            <img src={arrowLeft} alt="arrowLeft" />
-          </div>
-          <div class="back-to-step">
-            <span class="backtostep_span">Back To Step</span>
+        <div class="frame-1410103870">
+          <button class="button" on:click={() => goto("/create-character/1")}>
+            <div class="arrowleft">
+              <img src={arrowLeft} alt="arrowLeft" class="vector" />
+            </div>
+            <div class="back-to-step">
+              <span class="backtostep_span">Back To Step</span>
+            </div>
+          </button>
+        </div>
+      {/if}
+      <div class="frame-2147227476">
+        <button class="button_01">
+          <div class="keep-current-version">
+            <span class="keepcurrentversion_span">Keep Current Version</span>
           </div>
         </button>
-      {/if}
-      <button
-        class="button-fill"
-        class:mobile-full-width={isMobile}
-        on:click={handleContinue}
-      >
-        <div class="continue-to-style-selection">
-          <span class="continuetostyleselection_span"
-            >Continue to Story World</span
-          >
-        </div>
-      </button>
+        <button
+          class="button_02"
+          class:mobile-full-width={isMobile}
+          on:click={handleContinue}
+        >
+          <div class="continue-to-story-configuration">
+            <span class="continuetostoryconfiguration_span"
+              >Continue to Story Configuration</span
+            >
+          </div>
+        </button>
+      </div>
     </div>
   </div>
   <div class="frame-1410103821">
@@ -313,11 +318,37 @@
     font-size: 18px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 25.2px;
+    line-height: 25.20px;
     word-wrap: break-word;
   }
 
   .back-to-step {
+    text-align: center;
+  }
+
+  .keepcurrentversion_span {
+    color: #438BFF;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
+  }
+
+  .keep-current-version {
+    text-align: center;
+  }
+
+  .continuetostoryconfiguration_span {
+    color: white;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
+  }
+
+  .continue-to-story-configuration {
     text-align: center;
   }
 
@@ -379,6 +410,15 @@
     position: relative;
     overflow: hidden;
     top: -2px;
+  }
+
+  .vector {
+    width: 18px;
+    height: 15px;
+    left: 3px;
+    top: 4.50px;
+    position: absolute;
+    object-fit: contain;
   }
 
   .arrowleft {
@@ -455,20 +495,90 @@
 
 
   .button_01 {
+    width: 231px;
+    height: 52px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #E7FEFF;
+    box-shadow: 0px 4px 0px #438BFF;
+    border-radius: 12px;
+    outline: 2px rgba(231, 254, 255, 0.20) solid;
+    outline-offset: -2px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    border: none;
+    cursor: pointer;
+  }
+
+  .button_01:hover {
+    background: #d0f5f7;
+    box-shadow: 0px 4px 0px #357ae8;
+  }
+
+  .button_01:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px #438BFF;
+  }
+
+  .button_02 {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #438BFF;
+    color: white;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    border: none;
+    cursor: pointer;
+  }
+
+  .button {
+    width: 200px;
     padding-left: 24px;
     padding-right: 24px;
     padding-top: 16px;
     padding-bottom: 16px;
     box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
     border-radius: 20px;
-    outline: 1px #dcdcdc solid;
+    outline: 1px #DCDCDC solid;
     outline-offset: -1px;
-    background-color: white;
     justify-content: center;
     align-items: center;
     gap: 10px;
+    display: flex;
+    background: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .frame-2147227476 {
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410103870 {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: flex;
+  }
+
+  .frame-1410104075 {
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-items: center;
     display: inline-flex;
-    width: 200px;
   }
 
   .heading {
@@ -529,33 +639,6 @@
     height: 100%;
   }
 
-  .continuetostyleselection_span {
-    color: white;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.2px;
-    word-wrap: break-word;
-  }
-
-  .continue-to-style-selection {
-    text-align: center;
-  }
-
-  .button-fill {
-    width: 300px;
-    height: 100%;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    background: #438bff;
-    border-radius: 20px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: inline-flex;
-  }
 
 
 
@@ -612,6 +695,23 @@
     }
     .message-content {
       width: 90%;
+    }
+
+    .frame-1410104075 {
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .frame-2147227476 {
+      flex-direction: column;
+      width: 100%;
+      gap: 12px;
+    }
+
+    .button_01,
+    .button_02 {
+      width: 100%;
     }
   }
 </style>

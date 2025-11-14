@@ -76,14 +76,28 @@
   }
 
   // Handle preview story button click
-  const handlePreviewStory = () => {
+  const handleContinueToDedicationPage = () => {
     // Update story creation store with final story presentation data
     // Include the cover image URL if available
     const coverImageUrl = selectedImageFromStep6 ? selectedImageFromStep6.split('?')[0] : undefined;
     storyCreation.setStoryPresentation(selectedTitle, selectedCoverDesign, coverImageUrl);
     
-    // Navigate to preview page
-    goto("/create-character/7/preview");
+    // Determine which dedication page to navigate to based on the story creation procedure
+    let dedicationPath = "/create-character/dedication/create-send"; // Default to create-send
+    
+    if (browser) {
+      const giftMode = sessionStorage.getItem("gift_mode");
+      if (giftMode === "link") {
+        // If the flow is "Send Creation Link", go to creation-link dedication page
+        dedicationPath = "/create-character/dedication/creation-link";
+      } else {
+        // If the flow is "Create & Send" or not set (dashboard flow), go to create-send dedication page
+        dedicationPath = "/create-character/dedication/create-send";
+      }
+    }
+    
+    // Navigate to the appropriate dedication page
+    goto(dedicationPath);
   };
 </script>
 
@@ -411,10 +425,10 @@
       <button
         class="button-fill"
         class:mobile-full-width={isMobile}
-        on:click={handlePreviewStory}
+        on:click={handleContinueToDedicationPage}
       >
         <div class="continue-to-style-selection">
-          <span class="continuetostyleselection_span">Preview Your Story</span>
+          <span class="continuetostyleselection_span">Continue to Dedication Page</span>
         </div>
       </button>
     </div>

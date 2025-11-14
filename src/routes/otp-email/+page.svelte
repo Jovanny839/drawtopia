@@ -5,6 +5,7 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { addNotification } from "$lib/stores/notification";
+  import languageFlag from "../../assets/langbtnicon.svg";
 
   // OTP related variables
   let otpValues: string[] = ["", "", "", "", "", ""];
@@ -212,6 +213,10 @@
 
 <div class="login-with-phone-number">
   <div class="form">
+    <div class="language-button">
+      <img src={languageFlag} alt="Language Flag" class="language-flag-img">
+      English
+    </div>
     <div class="logo-text-full">
       <div class="logo-img"></div>
     </div>
@@ -264,12 +269,16 @@
             spinner_name="Verifying..."
             onClick={handleSubmit}
           />
-          <OutlineBtn
-            text="Back"
-            isLoading={false}
-            spinner_name=""
-            onClick={handleBack}
-          />
+          <div
+            class="button"
+            role="button"
+            tabindex="0"
+            aria-label="Go back to signup"
+            on:click={handleBack}
+            on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleBack(); }}
+          >
+            <div class="back"><span class="back_span">Back</span></div>
+          </div>
         </div>
       </form>
     </div>
@@ -388,6 +397,18 @@
     display: flex;
   }
 
+  .language-button {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    width: 110px;
+    height: 42px;
+    border-radius: 100px;
+    border: 1px solid #ededed;
+    padding: 10px 20px 10px 16px;
+    align-items: center;
+  }
+
   .form {
     width: 50%;
     height: 100vh;
@@ -429,21 +450,7 @@
     margin-bottom: 16px;
   }
 
-  .resend-section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-  }
-
-  .resend-text {
-    color: #666d80;
-    font-size: 14px;
-    font-family: Nunito;
-  }
-
+  
   .resend-btn:hover:not(:disabled) {
     color: #0066cc;
     cursor: pointer;
@@ -518,6 +525,61 @@
     }
     .frame-1410103856 {
       gap: 12px;
+    }
+  }
+
+  /* Back button styles (upgraded) */
+  .button {
+    width: 100%;
+    height: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #E7FEFF;
+    box-shadow: 0px 4px 0px #438BFF;
+    border-radius: 12px;
+    outline: 2px rgba(231, 254, 255, 0.20) solid;
+    outline-offset: -2px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+    cursor: pointer;
+  }
+
+  .button:focus {
+    box-shadow: 0 0 0 4px rgba(67,139,255,0.12), 0px 4px 0px #438BFF;
+    outline: none;
+  }
+
+  .button:active {
+    transform: translateY(1px);
+    box-shadow: 0px 2px 0px #2b63b2;
+  }
+
+  .back_span {
+    color: #438BFF;
+    font-size: 18px;
+    font-family: 'DM Sans', 'Quicksand', sans-serif;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
+  }
+
+  .back {
+    text-align: center;
+    display: block;
+  }
+
+  @media (max-width: 480px) {
+    .button {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .back_span {
+      font-size: 16px;
     }
   }
 </style>

@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import drawtopialogo from "../../../assets/logo.png";
     import arrowLeft from "../../../assets/ArrowLeft.svg";
     import recordVideo from "../../../assets/record_video.png";
     import previewStory from "../../../assets/preview_story.png";
+    import checkwhite from "../../../assets/WhiteCheck.svg";
 
     let selectedCard: "record" | "preview" | null = null;
 
@@ -10,6 +12,14 @@
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             selectedCard = key;
+        }
+    }
+
+    function handleContinue() {
+        if (selectedCard === "record") {
+            goto("/record");
+        } else if (selectedCard === "preview") {
+            goto("/preview/default");
         }
     }
 </script>
@@ -51,11 +61,17 @@
                     on:click={() => (selectedCard = "record")}
                     on:keydown={(e) => handleKey(e, "record")}
                 >
-                    <img
-                        class="image"
-                        src={recordVideo}
-                        alt="Record a Reaction Video preview"
-                    />
+                    <div class="image">
+                        <img
+                            src={recordVideo}
+                            alt="Record a Reaction Video preview"
+                        />
+                        {#if selectedCard === "record"}
+                            <div class="frame-1410104049">
+                                <img src={checkwhite} alt="selected" class="vector" />
+                            </div>
+                        {/if}
+                    </div>
                     <div class="frame-10">
                         <div class="heading_02">
                             <div class="record-a-reaction-video">
@@ -69,7 +85,7 @@
                                 <span
                                     class="watchyourchildsfacelightupastheymeettalkinganimalsandtraveltodistantworldsandrecordthemomentforever_span"
                                 >
-                                    Watch your child’s face light up as they
+                                    Watch your child's face light up as they
                                     meet talking animals and travel to distant
                                     worlds — and record the moment forever!</span
                                 >
@@ -85,11 +101,17 @@
                     on:click={() => (selectedCard = "preview")}
                     on:keydown={(e) => handleKey(e, "preview")}
                 >
-                    <img
-                        class="image_01"
-                        src={previewStory}
-                        alt="Preview a Story"
-                    />
+                    <div class="image_01">
+                        <img
+                            src={previewStory}
+                            alt="Preview a Story"
+                        />
+                        {#if selectedCard === "preview"}
+                            <div class="frame-1410104049">
+                                <img src={checkwhite} alt="selected" class="vector" />
+                            </div>
+                        {/if}
+                    </div>
                     <div class="frame-10_01">
                         <div class="heading_03">
                             <div class="preview-a-story">
@@ -121,7 +143,7 @@
                     <div class="back"><span class="back_span">Back</span></div>
                 </div>
             </div>
-            <div class="frame-1410104246">
+            <div class="frame-1410104246" role="button" tabindex="0" on:click={handleContinue} on:keydown={(e) => e.key === "Enter" && handleContinue()}>
                 <div class="continue">
                     <span class="continue_span">Continue</span>
                 </div>
@@ -190,15 +212,20 @@
     }
 
     .image {
-        object-fit: cover;
-        width: 100%;
+        align-self: stretch;
         height: 280px;
         position: relative;
+        overflow: hidden;
         border-top-left-radius: 12px;
         border-top-right-radius: 12px;
-        border-left: 1px #f3f3f3 solid;
-        border-top: 1px #f3f3f3 solid;
-        border-right: 1px #f3f3f3 solid;
+        outline: 1px #173DB6 solid;
+        outline-offset: -1px;
+    }
+
+    .image img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
     }
 
     .recordareactionvideo_span {
@@ -228,13 +255,20 @@
     }
 
     .image_01 {
-        object-fit: cover;
-        width: 100%;
+        align-self: stretch;
         height: 280px;
         position: relative;
+        overflow: hidden;
         border-top-left-radius: 12px;
         border-top-right-radius: 12px;
-        border: 1px #d3d3d3 solid;
+        outline: 1px #173DB6 solid;
+        outline-offset: -1px;
+    }
+
+    .image_01 img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
     }
 
     .previewastory_span {
@@ -264,12 +298,22 @@
     }
 
     .vector {
-        width: 18px;
-        height: 15px;
-        left: 3px;
-        top: 4.5px;
+        width: 32.50px;
+        height: 32.50px;
+        object-fit: contain;
+    }
+
+    .frame-1410104049 {
+        width: 32px;
+        height: 32px;
+        right: 12px;
+        top: 12.63px;
         position: absolute;
-        background: black;
+        background: #173DB6;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .back_span {
@@ -333,6 +377,18 @@
     }
 
     .heading_03 {
+        align-self: stretch;
+        padding-top: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 8px;
+        display: flex;
+    }
+
+    .heading {
         align-self: stretch;
         padding-top: 8px;
         padding-left: 8px;
@@ -452,7 +508,8 @@
     }
 
     .card {
-        width: 402px;
+        width: 100%;
+        height: 100%;
         padding-bottom: 10px;
         background: white;
         border-radius: 20px;
@@ -467,13 +524,14 @@
     }
 
     .card.selected {
-        box-shadow: 0px 1px 8px #438bff;
-        outline: 2px #173db6 solid;
+        box-shadow: 0px 1px 8px #438BFF;
+        outline: 2px #173DB6 solid;
         outline-offset: -2px;
     }
 
     .card_01 {
-        width: 402px;
+        width: 100%;
+        height: 100%;
         padding-bottom: 10px;
         background: white;
         border-radius: 20px;
@@ -488,8 +546,8 @@
     }
 
     .card_01.selected {
-        box-shadow: 0px 1px 8px #438bff;
-        outline: 2px #173db6 solid;
+        box-shadow: 0px 1px 8px #438BFF;
+        outline: 2px #173DB6 solid;
         outline-offset: -2px;
     }
 

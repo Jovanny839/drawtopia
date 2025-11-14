@@ -5,13 +5,18 @@
 
   const dispatch = createEventDispatcher();
 
+  let agreed = false;
+
   function handleClose() {
     dispatch('close');
   }
 
   function handleSubmit() {
-    dispatch('submit');
+    if (agreed) {
+      dispatch('submit');
+    }
   }
+
 </script>
 <div class="information-helper-text">
   <div class="frame-1410103845">
@@ -42,18 +47,25 @@
         >
       </div>
     </div>
-    <div class="checkbox-label">
+    <label class="checkbox-label">
+      <input type="checkbox" bind:checked={agreed} class="checkbox-input" />
       <div class="checkbox">
-        <div class="square"></div>
+        <div class="square" class:checked={agreed}>
+          {#if agreed}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11.6667 3.5L5.25 9.91667L2.33334 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {/if}
+        </div>
       </div>
       <div>
         <span class="iagreetothetermsabove_span">
           I agree to the terms above</span
         >
       </div>
-    </div>
+    </label>
   </div>
-  <button class="button" on:click={handleSubmit}>
+  <button class="button" on:click={handleSubmit} disabled={!agreed}>
     <div class="submit-reaction">
       <span class="submitreaction_span">Submit Reaction</span>
     </div>
@@ -99,6 +111,15 @@
     background: white;
     border-radius: 6px;
     border: 1px #dfe1e7 solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .square.checked {
+    background: #438bff;
+    border-color: #438bff;
   }
 
   .iagreetothetermsabove_span {
@@ -145,6 +166,14 @@
     align-items: center;
     gap: 10px;
     display: inline-flex;
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .logo-text-full {
@@ -174,6 +203,15 @@
     overflow: hidden;
   }
 
+  .checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
   .frame-1410103839 {
     align-self: stretch;
     padding-left: 12px;
@@ -189,6 +227,8 @@
     align-items: center;
     gap: 8px;
     display: inline-flex;
+    cursor: pointer;
+    user-select: none;
   }
 
   .frame-1410103845 {
@@ -211,7 +251,6 @@
 
   .information-helper-text {
     width: 100%;
-    height: 100%;
     padding: 16px;
     left: 0px;
     top: 0px;

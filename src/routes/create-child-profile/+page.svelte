@@ -207,7 +207,7 @@
     //   type: 'success',
     //   message: 'Child profiles saved successfully! Redirecting to dashboard...'
     // });
-    goto("/dashboard");
+    goto("/gift/1");
   };
 
   const handleSaveChild = (data: {
@@ -284,14 +284,14 @@
       <div class="progress-bar">
         <div class="frame-1410103829">
           <div class="frame-1410103997">
-            <div class="step-1"><span class="step1_span">Step 1</span></div>
-            <div><span class="f2_span">1/2</span></div>
+            <div class="step-1"><span class="step1_span">{children.length > 0 ? "Step 2" : "Step 1"}</span></div>
+            <div><span class="f2_span">{children.length > 0 ? "2/2" : "1/2"}</span></div>
           </div>
           <div class="bar">
-            <div class="bar_01"></div>
+            <div class="bar_01" class:full={children.length > 0}></div>
           </div>
           <div class="setting-up-profile">
-            <span class="settingupprofile_span">Setting Up Profile</span>
+            <span class="settingupprofile_span">{children.length > 0 ? "Finish" : "Setting Up Profile"}</span>
           </div>
         </div>
       </div>
@@ -336,22 +336,6 @@
           />
         {/if}
         <!-- <StoryPreview {selectedAgeGroup} /> -->
-      </div>
-      <div class="frame-1410103821">
-        <div class="contact-us-hellodrawtopiacom">
-          <span class="contactushellodrawtopiacom_span"
-            >Contact us: hello@drawtopia.com</span
-          >
-        </div>
-        <div class="rectangle-34"></div>
-        <div class="frame-1410103820">
-          <div class="privacy-policy">
-            <span class="privacypolicy_span">Privacy Policy</span>
-          </div>
-          <div class="terms-of-service">
-            <span class="termsofservice_span">Terms of Service</span>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -474,6 +458,11 @@
     position: absolute;
     background: #438bff;
     border-radius: 12px;
+    transition: width 0.3s ease;
+  }
+
+  .bar_01.full {
+    width: 100%;
   }
 
   .settingupprofile_span {

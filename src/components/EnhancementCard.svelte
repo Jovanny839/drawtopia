@@ -1,7 +1,7 @@
 <script lang="ts">
   import purple_check from "../assets/purple-check.svg";
   import arrowUpDown from "../assets/CaretUpDown.svg";
-  import check from "../assets/Check.svg";
+  import check from "../assets/WhiteCheck.svg";
   import star from "../assets/Star.svg";
   import { onMount } from 'svelte';
   import { generateStyledImage } from "../lib/imageGeneration";
@@ -199,7 +199,7 @@
     <div class="frame-16" bind:this={containerRef}>
       <!-- Before Image (Right side) -->
       <div class="before-image">
-        <img src={currentAfterImage} alt="Before" />
+        <img src={currentAfterImage} alt="After" />
       </div>
       
       <!-- After Image (Left side, clipped) -->
@@ -213,7 +213,7 @@
             <div class="generating-text">Generating...</div>
           </div>
         {:else}
-          <img src={currentBeforeImage} alt="After" />
+          <img src={currentBeforeImage} alt="Before" />
         {/if}
       </div>
       
@@ -544,7 +544,7 @@
     width: 18px;
     height: 18px;
     position: relative;
-    background: #141414;
+    background: #438BFF;
     overflow: hidden;
     border-radius: 99999px;
   }

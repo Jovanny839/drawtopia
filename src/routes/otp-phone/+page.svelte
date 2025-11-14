@@ -9,6 +9,7 @@
   import { verifyPhone, resendPhoneOTP } from "../../lib/auth";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
+  import languageFlag from '../../assets/langbtnicon.svg';
 
   // Any Country Code Alpha-2 (ISO 3166)
   let selectedCountry: CountryCode | null = "HU";
@@ -384,6 +385,10 @@
 
 <div class="login-with-phone-number">
   <div class="form">
+    <div class="language-button">
+      <img src={languageFlag} alt="Language Flag" class="language-flag-img">
+      English
+    </div>
     <div class="logo-text-full">
       <div class="logo-img"></div>
     </div>
@@ -395,11 +400,11 @@
           </div>
           <div>
             <span class="logintocontinuewithyourdrawtopiajourney_span"
-              >We've sent a 6-digit code to your phone Number</span
-            >
-            <span class="donthaveaccountsignup_span_02"
+              >We've sent a 6-digit code to your phone Number <span class="donthaveaccountsignup_span_02"
               >{phoneFromStorage || value || '+36301234567'}</span
+            >. If you haven’t received it within 15 minutes, please click <span class="resend-btn" on:click={handleResendOTP}>Resend Code</span></span
             >
+            
           </div>
         </div>
       </div>
@@ -440,22 +445,11 @@
               <div class="spinner"></div>
               <span class="login_span">Processing...</span>
             {:else}
-              <div class=""><span class="">Back</span></div>
+              <div class="button">
+                <div class="back"><span class="back_span">Back</span></div>
+              </div>
             {/if}
           </button>
-          
-          <!-- Resend OTP option -->
-          <div class="resend-section">
-            <span class="resend-text">Didn't receive the code?</span>
-            <button 
-              type="button" 
-              class="resend-btn" 
-              on:click={handleResendOTP}
-              disabled={isResendingOTP}
-            >
-              {isResendingOTP ? 'Resending...' : 'Resend Code'}
-            </button>
-          </div>
         </div>
       </form>
     </div>
@@ -493,20 +487,6 @@
     word-wrap: break-word;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   .login_span {
     color: white;
     font-size: 18px;
@@ -518,6 +498,18 @@
 
   .login {
     text-align: center;
+  }
+
+  .language-button {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    width: 110px;
+    height: 42px;
+    border-radius: 100px;
+    border: 1px solid #ededed;
+    padding: 10px 20px 10px 16px;
+    align-items: center;
   }
 
   .donthaveaccountsignup_span_02 {
@@ -574,11 +566,6 @@
 
   .back_btn {
     align-self: stretch;
-    border: 2px solid #438bff;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
     color: #438bff;
     background-color: white;
     border-radius: 20px;
@@ -749,9 +736,46 @@
     transition: all 0.2s ease;
   }
 
-  .back_btn:hover:not(:disabled) {
+  /* .back_btn:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(67, 139, 255, 0.3);
+  } */
+
+  .back_btn:active {
+    transform: translateY(1px);
+    box-shadow: 0px 1px 0px #2b63b2;
+  }
+
+  /* Upgraded back button styles (from user) */
+  .back_span {
+    color: #438BFF;
+    font-size: 18px;
+    font-family: DM Sans;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
+  }
+
+  .back {
+    text-align: center;
+  }
+
+  .button {
+    width: 100%;
+    height: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #E7FEFF;
+    box-shadow: 0px 4px 0px #438BFF;
+    border-radius: 12px;
+    outline: 2px rgba(231, 254, 255, 0.20) solid;
+    outline-offset: -2px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
   }
 
   .resend-section {
@@ -760,6 +784,8 @@
     align-items: center;
     gap: 8px;
     margin-top: 16px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .resend-text {
@@ -768,17 +794,16 @@
     font-family: Nunito;
     font-weight: 400;
   }
-
+  
   .resend-btn {
-    background: none;
-    border: none;
-    color: #438bff;
-    font-size: 14px;
-    font-family: Nunito;
+    color: #438BFF;
+    font-size: 18px;
+    font-family: Quicksand;
     font-weight: 600;
+    line-height: 25.2px;
+    word-wrap: break-word;
+    text-decoration: none;
     cursor: pointer;
-    text-decoration: underline;
-    transition: all 0.2s ease;
   }
 
   .resend-btn:hover:not(:disabled) {

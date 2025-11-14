@@ -1,4 +1,5 @@
 <script>
+  import { onMount, onDestroy } from "svelte";
   import ArrowLeft from "../../../assets/ArrowLeft.svg";
   import arrowclockwise from "../../../assets/ArrowClockwise.svg";
   import floppydiskback from "../../../assets/FloppyDiskBack.svg";
@@ -8,6 +9,69 @@
 
   let showVideoConsentModal = false;
   let showReactionReadyModal = false;
+  
+  // Progress bar state
+  let progress = 0;
+  let isPaused = false;
+  let isStopButton = true; // true = "Stop Reaction", false = "Replay Reaction"
+  /** @type {ReturnType<typeof setInterval> | null} */
+  let progressInterval = null;
+  const PROGRESS_DURATION = 30000; // 30 seconds
+  const UPDATE_INTERVAL = 50; // Update every 50ms for smooth animation
+  const PROGRESS_INCREMENT = (100 / PROGRESS_DURATION) * UPDATE_INTERVAL;
+
+  function startProgress() {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+    }
+    
+    progressInterval = setInterval(() => {
+      if (!isPaused) {
+        progress = Math.min(100, progress + PROGRESS_INCREMENT);
+        if (progress >= 100) {
+          if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+          }
+        }
+      }
+    }, UPDATE_INTERVAL);
+  }
+
+  function stopProgress() {
+    isPaused = true;
+    isStopButton = false; // Change to "Replay Reaction"
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+  }
+
+  function replayProgress() {
+    isPaused = false;
+    isStopButton = true; // Change to "Stop Reaction"
+    startProgress();
+  }
+
+  function handleStopReplayClick() {
+    if (isStopButton) {
+      stopProgress();
+    } else {
+      replayProgress();
+    }
+  }
+
+  function handleRetakeClick() {
+    // Reset progress and restart
+    progress = 0;
+    isPaused = false;
+    isStopButton = true;
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+    startProgress();
+  }
 
   function openVideoConsentModal() {
     showVideoConsentModal = true;
@@ -25,6 +89,19 @@
   function closeReactionReady() {
     showReactionReadyModal = false;
   }
+
+  // Computed: is retake button enabled?
+  $: isRetakeEnabled = progress >= 100 || (isPaused && !isStopButton);
+
+  onMount(() => {
+    startProgress();
+  });
+
+  onDestroy(() => {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+    }
+  });
 </script>
 
 <div class="review-reaction-progress">
@@ -65,7 +142,7 @@
         <div class="frame-1410103854">
           <div class="frame-1410103855">
             <div class="bar"></div>
-            <div class="bar_01"></div>
+            <div class="bar_01" style="width: {progress}%"></div>
           </div>
           <div class="reviewing-your-reaction">
             <span class="reviewingyourreaction_span"
@@ -74,11 +151,22 @@
           </div>
         </div>
         <div class="frame-1410104189">
-          <div class="notification">
+          <div 
+            class="notification"
+            role="button"
+            tabindex="0"
+            on:click={handleStopReplayClick}
+            on:keydown={(e) => e.key === "Enter" && handleStopReplayClick()}
+            style="cursor: pointer;"
+          >
             <div class="stop">
               <div class="vector"></div>
             </div>
-            <div><span class="stopreaction_span">Stop Reaction</span></div>
+            <div>
+              <span class="stopreaction_span">
+                {isStopButton ? "Stop Reaction" : "Replay Reaction"}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -92,7 +180,15 @@
         </div>
       </div>
       <div class="frame-1410104195">
-        <div class="button_01">
+        <div 
+          class="button_01"
+          class:button_01--disabled={!isRetakeEnabled}
+          role="button"
+          tabindex={isRetakeEnabled ? 0 : -1}
+          on:click={isRetakeEnabled ? handleRetakeClick : undefined}
+          on:keydown={(e) => isRetakeEnabled && e.key === "Enter" && handleRetakeClick()}
+          style="cursor: {isRetakeEnabled ? 'pointer' : 'not-allowed'}; opacity: {isRetakeEnabled ? 1 : 0.5};"
+        >
           <img src={arrowclockwise} alt="arrow" />
           <div class="retake-reaction">
             <span class="retakereaction_span">Retake Reaction</span>
@@ -626,7 +722,6 @@
   }
   .modal-content--small {
     width: 530px;
-    height: 265px;
   }
   .button_02 {
     cursor: pointer;

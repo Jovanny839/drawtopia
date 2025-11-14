@@ -12,21 +12,24 @@
   import { storyCreation } from "../../../lib/stores/storyCreation";
   
   // Import icons for format features
-  import targetIcon from "../../../assets/Tag.svg";
-  import magnifyingIcon from "../../../assets/MagnifyingGlass.svg";
-  import personIcon from "../../../assets/PersonSimple.svg";
-  import playIcon from "../../../assets/Play.svg";
-  import bookIcon from "../../../assets/Book.svg";
-  import headphoneIcon from "../../../assets/SpeakerSimpleHigh.svg";
-  import clockIcon from "../../../assets/ClockCountdown.svg";
+  import targetIcon from "../../../assets/Inter-Target.svg";
+  import magnifyingIcon from "../../../assets/Inter-Binoculars.svg";
+  import personIcon from "../../../assets/Inter-User.svg";
+  import playIcon from "../../../assets/Inter-PlayCircle.svg";
+  import bookIcon from "../../../assets/Inter-BookOpenText.svg";
+  import headphoneIcon from "../../../assets/Inter-Headphones.svg";
   import storyAdventure from "../../../assets/story_adventure.png";
+  import storyAdventureEg from "../../../assets/inter_story_eg.png";
   import interactiveSearch from "../../../assets/interactive_search.png";
+  import interactiveSearchEg from "../../../assets/inter_search_eg.png";
   import xIcon from "../../../assets/X.svg";
+  import whiteCheck from "../../../assets/WhiteCheck.svg";
 
   let isMobile = false;
   let selectedFormat = ""; // "interactive" or "story"
   let characterName = "";
   let showPreviewModal = false;
+  let selectedPreviewCard = ""; // "interactive" or "story" for preview modal
 
   $: if (browser) {
     isMobile = window.innerWidth < 800;
@@ -73,6 +76,8 @@
 
   const handlePreviewBoth = () => {
     showPreviewModal = true;
+    // Initialize selected preview card based on current selected format
+    selectedPreviewCard = selectedFormat || "";
   };
 
   const handleCloseModal = () => {
@@ -88,6 +93,11 @@
   const handleTryStoryAdventure = () => {
     selectFormat("story");
     handleCloseModal();
+  };
+
+  const handlePreviewCardClick = (formatId: string) => {
+    selectedPreviewCard = formatId;
+    selectFormat(formatId);
   };
 </script>
 
@@ -157,10 +167,10 @@
         formatId="story"
         title="Story Adventure"
         features={[
-          { icon: bookIcon, text: "5 Pages Story" },
+          { icon: targetIcon, text: "5 Pages Story" },
           { icon: headphoneIcon, text: "Read & Listen" },
           { icon: personIcon, text: "Ages 3-12" },
-          { icon: clockIcon, text: "5-10 min read" }
+          { icon: bookIcon, text: "5-10 min read" }
         ]}
         imageSrc={storyAdventure}
         imageAlt="Story Adventure"
@@ -257,13 +267,25 @@
         <h2 id="preview-modal-title" class="preview-modal-title">Preview Book Formats</h2>
         
         <div class="preview-cards-container">
-          <div class="preview-card">
+          <div 
+            class="preview-card"
+            class:preview-card-selected={selectedPreviewCard === "interactive"}
+            on:click={() => handlePreviewCardClick("interactive")}
+            role="button"
+            tabindex="0"
+            on:keydown={(e) => e.key === "Enter" && handlePreviewCardClick("interactive")}
+          >
             <div class="preview-card-image-container">
               <img
-                src={interactiveSearch}
+                src={interactiveSearchEg}
                 alt="Interactive Search Example"
                 class="preview-card-image"
               />
+              {#if selectedPreviewCard === "interactive"}
+                <div class="preview-card-checkmark">
+                  <img src={whiteCheck} alt="selected" />
+                </div>
+              {/if}
             </div>
             <div class="preview-card-content">
               <h3 class="preview-card-title">Interactive Search Example</h3>
@@ -271,13 +293,25 @@
             </div>
           </div>
           
-          <div class="preview-card preview-card-highlighted">
+          <div 
+            class="preview-card"
+            class:preview-card-selected={selectedPreviewCard === "story"}
+            on:click={() => handlePreviewCardClick("story")}
+            role="button"
+            tabindex="0"
+            on:keydown={(e) => e.key === "Enter" && handlePreviewCardClick("story")}
+          >
             <div class="preview-card-image-container">
               <img
-                src={storyAdventure}
+                src={storyAdventureEg}
                 alt="Story Adventure Example"
                 class="preview-card-image"
               />
+              {#if selectedPreviewCard === "story"}
+                <div class="preview-card-checkmark">
+                  <img src={whiteCheck} alt="selected" />
+                </div>
+              {/if}
             </div>
             <div class="preview-card-content">
               <h3 class="preview-card-title">Story Adventure Example</h3>
@@ -807,17 +841,45 @@
     display: flex;
     flex-direction: column;
     max-width: 400px;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  .preview-card-highlighted {
-    border: 2px solid #438bff;
-    box-shadow: 0 2px 8px rgba(67, 139, 255, 0.2);
+  .preview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-card-selected {
+    border: 3px solid #8B5CF6;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  }
+
+  .preview-card-checkmark {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: #8B5CF6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+  }
+
+  .preview-card-checkmark img {
+    width: 18px;
+    height: 18px;
   }
 
   .preview-card-image-container {
     width: 100%;
     aspect-ratio: 1 / 0.75;
     overflow: hidden;
+    position: relative;
   }
 
   .preview-card-image {

@@ -422,7 +422,6 @@
     top: 50%;
     transform: translate(-50%, -50%);
     position: absolute;
-    background: black;
   }
 
   .vector::before,

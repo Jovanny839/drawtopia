@@ -1,10 +1,22 @@
-<script>
+<script lang="ts">
   import SmallImg from "../../../assets/small.png";
   import ArrowLeft from "../../../assets/ArrowLeft.svg";
   import Play from "../../../assets/Play.svg";
   import TreasureChest from "../../../assets/TreasureChest.svg";
   import girl from "../../../assets/girl.jpg";
   import MobileBackBtn from "../../../components/MobileBackBtn.svelte";
+  import { goto } from "$app/navigation";
+
+  function handleStartReveal() {
+    goto("/record/progress");
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleStartReveal();
+    }
+  }
 </script>
 
 <div class="review-reaction">
@@ -61,7 +73,7 @@
           <div class="back"><span class="back_span">Back</span></div>
         </div>
       </div>
-      <div class="button_01">
+      <div class="button_01" on:click={handleStartReveal} on:keydown={handleKeyDown} role="button" tabindex="0">
         <img src={Play} alt="play" />
         <div class="start-reveal">
           <span class="startreveal_span">Start Reveal</span>
@@ -342,6 +354,7 @@
     align-items: center;
     gap: 10px;
     display: flex;
+    cursor: pointer;
   }
 
   .heading {

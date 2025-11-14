@@ -1,4 +1,5 @@
 <script>
+    import { goto } from "$app/navigation";
   import GreenCheck from "../assets/green_check.svg"
   import { createEventDispatcher } from 'svelte';
 
@@ -6,6 +7,8 @@
 
   function close() {
     dispatch('close');
+
+    goto("/dashboard");
   }
 </script>
 <div class="pop-up">
@@ -88,7 +91,6 @@
 
 .pop-up {
   width: 100%;
-  height: 100%;
   padding-top: 24px;
   padding-bottom: 32px;
   padding-left: 24px;

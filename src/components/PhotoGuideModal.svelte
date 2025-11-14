@@ -43,8 +43,10 @@
           <div class="checklist-text"><span class="checklist-span">Wear appropriate clothing and no bare upper bodies.</span></div>
       </div>
   </div>
-  <div class="button" on:click={onClose} on:keydown={(e) => e.key === 'Enter' && onClose()} role="button" tabindex="0" style="cursor: pointer;">
+  <div class="rectangle-260"></div>
+  <div class="frame-1410104245" on:click={onClose} on:keydown={(e) => e.key === 'Enter' && onClose()} role="button" tabindex="0" style="cursor: pointer;">
       <div class="close"><span class="close_span">Close</span></div>
+      <div class="ellipse-1415"></div>
   </div>
 </div>
 
@@ -57,6 +59,12 @@
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.rectangle-260 {
+  width: 100%;
+  height: 1px;
+  background: #EDEDED;
 }
 
 .photoguidelinesforbestresults_span {
@@ -119,7 +127,7 @@
 }
 
 .close_span {
-  color: #438BFF;
+  color: white;
   font-size: 18px;
   font-family: Quicksand;
   font-weight: 600;
@@ -131,19 +139,29 @@
   text-align: center;
 }
 
-.button {
-  align-self: stretch;
-  height: 57px;
-  padding-left: 24px;
-  padding-right: 24px;
+.ellipse-1415 {
+  width: 248px;
+  height: 114px;
+  left: 139px;
+  top: 25px;
+  position: absolute;
+  background: radial-gradient(ellipse 42.11% 42.11% at 50.00% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 9999px;
+}
+
+.frame-1410104245 {
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
   padding-top: 16px;
   padding-bottom: 16px;
-  border-radius: 20px;
-  outline: 1px #438BFF solid;
-  outline-offset: -1px;
+  position: relative;
+  background: #438BFF;
+  overflow: hidden;
+  border-radius: 12px;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   display: inline-flex;
 }
 

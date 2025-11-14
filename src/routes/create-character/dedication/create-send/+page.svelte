@@ -4,12 +4,19 @@
     import star from "../../../../assets/star.png";
     import ArrowLeft from "../../../../assets/ArrowLeft.svg"
     import std_book_cover from "../../../../assets/std_book_cover.png"
+    import { goto } from "$app/navigation";
+    
     let dedicationMessage: string = "";
     const maxChars: number = 200;
+    
     function handleDedicationInput(event: Event) {
         const target = event.target as HTMLTextAreaElement | null;
         const value = target?.value ?? "";
         dedicationMessage = value.length > maxChars ? value.slice(0, maxChars) : value;
+    }
+    
+    function handleContinueToPreview() {
+        goto("/adventure-story/story-preview");
     }
 </script>
 
@@ -185,7 +192,7 @@
                     </div>
                 </div>
             </div>
-            <div class="frame-1410104246">
+            <div class="frame-1410104246" on:click={handleContinueToPreview} role="button" tabindex="0" on:keydown={(e) => e.key === 'Enter' && handleContinueToPreview()}>
                 <div class="continue-to-preview-story">
                     <span class="continuetopreviewstory_span"
                         >Continue to Preview Story</span
@@ -885,6 +892,16 @@
         align-items: center;
         gap: 8px;
         display: flex;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .frame-1410104246:hover {
+        background: #3578e5;
+    }
+    
+    .frame-1410104246:active {
+        background: #2d6bd1;
     }
 
     .heading_01 {

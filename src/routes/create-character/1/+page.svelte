@@ -10,9 +10,10 @@
   import shieldStar from "../../../assets/ShieldStar.svg";
   import animal from "../../../assets/animal.svg";
   import magical from "../../../assets/monster.svg";
-  import D3 from "../../../assets/3d.png";
-  import Cartoon from "../../../assets/cartoon.png";
-  import Anime from "../../../assets/anime.png";
+  import personFrame from "../../../assets/PersonFrame.svg";
+  import D3 from "../../../assets/3d_style.png";
+  import Cartoon from "../../../assets/cartoon_style.png";
+  import Anime from "../../../assets/anime_style.png";
   import { goto } from "$app/navigation";
   import { browser } from "$app/environment";
   import MobileStepProgressBar from "../../../components/MobileStepProgressBar.svelte";
@@ -21,10 +22,10 @@
   import { user } from "../../../lib/stores/auth";
   import { storyCreation } from "../../../lib/stores/storyCreation";
   import { onMount } from "svelte";
-  import PrimarySelect from "../../../components/PrimarySelect.svelte";
   import PrimaryInput from "../../../components/PrimaryInput.svelte";
   import AdvancedSelect from "../../../components/AdvancedSelect.svelte";
   import { getChildProfiles } from "../../../lib/database/childProfiles";
+  import ChildrenSelect from "../../../components/ChildrenSelect.svelte";
   
   let fileInput: HTMLInputElement;
   let isDragOver = false;
@@ -37,7 +38,7 @@
 
   // Form state
   let selectedChildProfileId = "";
-  let childProfiles: Array<{value: string, label: string}> = [];
+  let childProfiles: Array<{value: string, label: string, avatarUrl?: string}> = [];
   let characterName = "";
   let selectedCharacterType = "person";
   let selectedSpecialAbility = "";
@@ -78,7 +79,8 @@
         if (result.success && result.data) {
           childProfiles = result.data.map((profile: any) => ({
             value: profile.id,
-            label: profile.first_name
+            label: profile.first_name,
+            avatarUrl: profile.avatar_url
           }));
           // Set default selected child if available
           if (childProfileId && childProfiles.length > 0) {
@@ -212,6 +214,14 @@
     }
   };
 
+  // Validation: Check if all required fields are filled
+  $: isFormValid = 
+    !!uploadedImageUrl && 
+    !!selectedChildProfileId && 
+    !!characterName.trim() && 
+    (!!selectedSpecialAbility || !!customSpecialAbility.trim()) &&
+    !!selectedCharacterStyle;
+
   // Handle continue to next step
   const handleContinue = () => {
     // Validate required fields
@@ -252,11 +262,6 @@
       <div class="create-your-character">
         <span class="createyourcharacter_span">Create Your Character</span>
       </div>
-      {#if selectedChildProfileName}
-        <div class="selected-child-info">
-          <span class="selectedchild_span">Creating story for: {selectedChildProfileName}</span>
-        </div>
-      {/if}
       <div class="upload-your-drawing-or-draw-your-own-character-right-here">
         <span class="uploadyourdrawingordrawyourowncharacterrighthere_span"
           >Upload your drawing or draw your own character right here!</span
@@ -425,11 +430,11 @@
       <!-- Right Column: All option/form selecting boxes -->
       <div class="frame-1410104032-right">
         <!-- List of Children Card -->
-        <div class="heading_01">
+        <div class="right-column-container">
           <div class="list-of-children">
             <span class="listofchildren_span">List of Children</span>
           </div>
-          <PrimarySelect
+          <ChildrenSelect
             options={childProfiles}
             selectedOption={selectedChildProfileId}
             onChange={handleChildProfileChange}
@@ -439,189 +444,188 @@
         </div>
 
         <!-- Information Character Card -->
-        <div class="heading_01">
-          <div class="information-character">
-            <span class="informationcharacter_span">Information Character</span>
-          </div>
-          <div class="form">
-            <div class="whats-your-characters-name">
-              <span class="whatsyourcharactersname_span"
-                >What's your character's name?</span
-              >
-            </div>
-            <div class="frame-1410104040" style="width: 100%;">
-              <PrimaryInput
-                type="text"
-                bind:value={characterName}
-                placeholder="Enter your Character Name"
-                errors={{}}
-                disabled={false}
-              />
-              <div class="text-0200-characters">
-                <span class="f200characters_span">{characterName.length}/200 Characters</span>
-              </div>
-            </div>
-          </div>
-          <div class="form_01" style="width: 100%;">
-            <div class="what-type-of-character-is-this">
-              <span class="whattypeofcharacteristhis_span"
-                >What type of character is this?</span
-              >
-            </div>
-            <div class="frame-1410103942">
-              <!-- Person Character Type -->
-              <button 
-                class="character-option {selectedCharacterType === 'person' ? 'selected' : 'unselected'}"
-                on:click={() => selectCharacterType('person')}
-              >
-                <div class="frame-1410103940">
-                  <div class="person-icon-frame">
-                    <div class="vector"></div>
-                    <div class="vector_01"></div>
-                    <div class="vector_02"></div>
-                    <div class="vector_03"></div>
-                  </div>
-                  <div class="frame-1410103939">
-                    <div><span class="person_span">Person</span></div>
-                    <div><span class="ahumancharacter_span">A human character</span></div>
-                  </div>
-                </div>
-                <div class="frame-1410104043">
-                  <div class="ellipse-14"></div>
-                  {#if selectedCharacterType === 'person'}
-                    <div class="ellipse-13"></div>
-                  {/if}
-                </div>
-              </button>
-
-              <!-- Animal Character Type -->
-              <button 
-                class="character-option {selectedCharacterType === 'animal' ? 'selected' : 'unselected'}"
-                on:click={() => selectCharacterType('animal')}
-              >
-                <div class="frame-1410103940">
-                  <img src={animal} alt="animal" style="width: 24px; height: 24px;" />
-                  <div class="frame-1410103939">
-                    <div><span class="person_span">Animal</span></div>
-                    <div><span class="ahumancharacter_span">Pet or wild animal</span></div>
-                  </div>
-                </div>
-                <div class="frame-1410104043">
-                  <div class="ellipse-14"></div>
-                  {#if selectedCharacterType === 'animal'}
-                    <div class="ellipse-13"></div>
-                  {/if}
-                </div>
-              </button>
-
-              <!-- Magical Character Type -->
-              <button 
-                class="character-option {selectedCharacterType === 'magical' ? 'selected' : 'unselected'}"
-                on:click={() => selectCharacterType('magical')}
-              >
-                <div class="frame-1410103940">
-                  <img src={magical} alt="magical" style="width: 24px; height: 24px;" />
-                  <div class="frame-1410103939">
-                    <div><span class="person_span">Magical Features</span></div>
-                    <div><span class="ahumancharacter_span">Fairy, dragon, etc.</span></div>
-                  </div>
-                </div>
-                <div class="frame-1410104043">
-                  <div class="ellipse-14"></div>
-                  {#if selectedCharacterType === 'magical'}
-                    <div class="ellipse-13"></div>
-                  {/if}
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Special Ability Card -->
-        <div class="heading_01">
-          <div class="frame-1410104039" style="width: 100%;">
-            <div class="what-special-ability-does-your-character-have">
-              <span class="whatspecialabilitydoesyourcharacterhave_span"
-                >What special ability does your character have?</span
-              >
-            </div>
-            <AdvancedSelect
-              options={specialAbilityOptions}
-              selectedOption={selectedSpecialAbility}
-              onChange={(e) => {
-                selectedSpecialAbility = (e.target as HTMLInputElement).value;
-              }}
-              placeholder="Select special Ability"
-              id="specialAbilitySelect"
-            />
-          </div>
-          <div class="form_03" style="width: 100%;">
-            <div class="or-describe-your-own-special-power">
-              <span class="ordescribeyourownspecialpower_span"
-                >Or describe your own special power:</span
-              >
-            </div>
-            <div class="frame-1410104041">
-              <textarea 
-                bind:value={customSpecialAbility}
-                placeholder="Example: A friendly space alien with six arms and big eyes." 
-                class="input-placeholder_02 exampleafriendlyspacealienwithsixarmsandbigeyes_span"
-                maxlength="200"
-              ></textarea>
-              <div class="text-0200-characters_01">
-                <span class="f200characters_01_span">{customSpecialAbility.length}/200 Characters</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Select Character Style Card -->
-        <div class="heading_01">
-          <div class="select-character-style">
-            <span class="selectcharacterstyle_span">Select Character Style</span>
-          </div>
-          <div class="style-selection-container">
-            <div 
-              class="style-card {selectedCharacterStyle === '3d' ? 'selected' : ''}"
-              on:click={() => selectCharacterStyle('3d')}
-              role="button"
-              tabindex="0"
-              on:keydown={(e) => e.key === 'Enter' && selectCharacterStyle('3d')}
-            >
-              <img src={D3} alt="3D Realistic" class="style-image" />
-              <div class="style-info">
-                <div class="style-title">3D Realistic</div>
-                <div class="style-subtitle">Like your favorite animated movies.</div>
-              </div>
-            </div>
-            <div 
-              class="style-card {selectedCharacterStyle === 'cartoon' ? 'selected' : ''}"
-              on:click={() => selectCharacterStyle('cartoon')}
-              role="button"
-              tabindex="0"
-              on:keydown={(e) => e.key === 'Enter' && selectCharacterStyle('cartoon')}
-            >
-              <img src={Cartoon} alt="Cartoon style" class="style-image" />
-              <div class="style-info">
-                <div class="style-title">Cartoon style</div>
-                <div class="style-subtitle">Classic storybook style.</div>
-              </div>
-            </div>
-            <div 
-              class="style-card {selectedCharacterStyle === 'anime' ? 'selected' : ''}"
-              on:click={() => selectCharacterStyle('anime')}
-              role="button"
-              tabindex="0"
-              on:keydown={(e) => e.key === 'Enter' && selectCharacterStyle('anime')}
-            >
-              <img src={Anime} alt="Anime style" class="style-image" />
-              <div class="style-info">
-                <div class="style-title">Anime style</div>
-                <div class="style-subtitle">Japanese Anime Style.</div>
-              </div>
-            </div>
-          </div>
-        </div>
+         <div class="heading_01">
+           <div class="information-character">
+             <span class="informationcharacter_span">Information Character</span>
+           </div>
+           <div class="heading_02">
+             <div class="form">
+               <div class="whats-your-characters-name">
+                 <span class="whatsyourcharactersname_span"
+                   >What's your character's name?</span
+                 >
+               </div>
+               <div class="frame-1410104040" style="width: 100%;">
+                 <PrimaryInput
+                   type="text"
+                   bind:value={characterName}
+                   placeholder="Enter your Character Name"
+                   errors={{}}
+                   disabled={false}
+                 />
+                 <div class="text-0200-characters">
+                   <span class="f200characters_span">{characterName.length}/200 Characters</span>
+                 </div>
+               </div>
+             </div>
+             <div class="form_01" style="width: 100%;">
+               <div class="what-type-of-character-is-this">
+                 <span class="whattypeofcharacteristhis_span"
+                   >What type of character is this?</span
+                 >
+               </div>
+               <div class="frame-1410103942">
+                 <!-- Person Character Type -->
+                 <button 
+                   class="character-option {selectedCharacterType === 'person' ? 'selected' : 'unselected'}"
+                   on:click={() => selectCharacterType('person')}
+                 >
+                   <div class="frame-1410103940">
+                     <div class="person-icon-frame">
+                      <img src={personFrame} alt="personFrame" />
+                     </div>
+                     <div class="frame-1410103939">
+                       <div><span class="person_span">Person</span></div>
+                       <div><span class="ahumancharacter_span">A human character</span></div>
+                     </div>
+                   </div>
+                   <div class="frame-1410104043">
+                     <div class="ellipse-14"></div>
+                     {#if selectedCharacterType === 'person'}
+                       <div class="ellipse-13"></div>
+                     {/if}
+                   </div>
+                 </button>
+   
+                 <!-- Animal Character Type -->
+                 <button 
+                   class="character-option {selectedCharacterType === 'animal' ? 'selected' : 'unselected'}"
+                   on:click={() => selectCharacterType('animal')}
+                 >
+                   <div class="frame-1410103940">
+                     <img src={animal} alt="animal" style="width: 40px; height: 40px;" />
+                     <div class="frame-1410103939">
+                       <div><span class="person_span">Animal</span></div>
+                       <div><span class="ahumancharacter_span">Pet or wild animal</span></div>
+                     </div>
+                   </div>
+                   <div class="frame-1410104043">
+                     <div class="ellipse-14"></div>
+                     {#if selectedCharacterType === 'animal'}
+                       <div class="ellipse-13"></div>
+                     {/if}
+                   </div>
+                 </button>
+   
+                 <!-- Magical Character Type -->
+                 <button 
+                   class="character-option {selectedCharacterType === 'magical' ? 'selected' : 'unselected'}"
+                   on:click={() => selectCharacterType('magical')}
+                 >
+                   <div class="frame-1410103940">
+                     <img src={magical} alt="magical" style="width: 40px; height: 40px;" />
+                     <div class="frame-1410103939">
+                       <div><span class="person_span">Magical Features</span></div>
+                       <div><span class="ahumancharacter_span">Fairy, dragon, etc.</span></div>
+                     </div>
+                   </div>
+                   <div class="frame-1410104043">
+                     <div class="ellipse-14"></div>
+                     {#if selectedCharacterType === 'magical'}
+                       <div class="ellipse-13"></div>
+                     {/if}
+                   </div>
+                 </button>
+               </div>
+             </div>
+           </div>
+   
+           <!-- Special Ability Card -->
+           <div class="heading_02">
+             <div class="frame-1410104039" style="width: 100%;">
+               <div class="what-special-ability-does-your-character-have">
+                 <span class="whatspecialabilitydoesyourcharacterhave_span"
+                   >What special ability does your character have?</span
+                 >
+               </div>
+               <AdvancedSelect
+                 options={specialAbilityOptions}
+                 selectedOption={selectedSpecialAbility}
+                 onChange={(e) => {
+                   selectedSpecialAbility = (e.target as HTMLInputElement).value;
+                 }}
+                 placeholder="Select special Ability"
+                 id="specialAbilitySelect"
+               />
+             </div>
+             <div class="form_03" style="width: 100%;">
+               <div class="or-describe-your-own-special-power">
+                 <span class="ordescribeyourownspecialpower_span"
+                   >Or describe your own special power:</span
+                 >
+               </div>
+               <div class="frame-1410104041">
+                 <textarea 
+                   bind:value={customSpecialAbility}
+                   placeholder="Example: A friendly space alien with six arms and big eyes." 
+                   class="input-placeholder_02 exampleafriendlyspacealienwithsixarmsandbigeyes_span"
+                   maxlength="200"
+                 ></textarea>
+                 <div class="text-0200-characters_01">
+                   <span class="f200characters_01_span">{customSpecialAbility.length}/200 Characters</span>
+                 </div>
+               </div>
+             </div>
+           </div>
+   
+           <!-- Select Character Style Card -->
+           <div class="heading_02">
+             <div class="select-character-style">
+               <span class="selectcharacterstyle_span">Select Character Style</span>
+             </div>
+             <div class="style-selection-container">
+               <div 
+                 class="style-card {selectedCharacterStyle === '3d' ? 'selected' : ''}"
+                 on:click={() => selectCharacterStyle('3d')}
+                 role="button"
+                 tabindex="0"
+                 on:keydown={(e) => e.key === 'Enter' && selectCharacterStyle('3d')}
+               >
+                 <img src={D3} alt="3D Realistic" class="style-image" />
+                 <div class="style-info">
+                   <div class="style-title">3D Realistic</div>
+                   <div class="style-subtitle">Like your favorite animated movies.</div>
+                 </div>
+               </div>
+               <div 
+                 class="style-card {selectedCharacterStyle === 'cartoon' ? 'selected' : ''}"
+                 on:click={() => selectCharacterStyle('cartoon')}
+                 role="button"
+                 tabindex="0"
+                 on:keydown={(e) => e.key === 'Enter' && selectCharacterStyle('cartoon')}
+               >
+                 <img src={Cartoon} alt="Cartoon style" class="style-image" />
+                 <div class="style-info">
+                   <div class="style-title">Cartoon style</div>
+                   <div class="style-subtitle">Classic storybook style.</div>
+                 </div>
+               </div>
+               <div 
+                 class="style-card {selectedCharacterStyle === 'anime' ? 'selected' : ''}"
+                 on:click={() => selectCharacterStyle('anime')}
+                 role="button"
+                 tabindex="0"
+                 on:keydown={(e) => e.key === 'Enter' && selectCharacterStyle('anime')}
+               >
+                 <img src={Anime} alt="Anime style" class="style-image" />
+                 <div class="style-info">
+                   <div class="style-title">Anime style</div>
+                   <div class="style-subtitle">Japanese Anime Style.</div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
       </div>
     </div>
     <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -636,7 +640,7 @@
       <button 
         class="button-fill" 
         on:click={handleContinue}
-        disabled={uploading}
+        disabled={uploading || !isFormValid}
       >
         <div class="continue-to-enhancement-preview">
           <span class="continuetoenhancementpreview_span">
@@ -1183,6 +1187,23 @@
     display: flex;
   }
 
+  .right-column-container {
+    background: #EEF6FF;
+    align-self: stretch;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-radius: 20px;
+    outline: 1px #BCDBFF solid;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+    display: flex;
+  }
+
   .heading_01 {
     align-self: stretch;
     padding-left: 12px;
@@ -1191,11 +1212,29 @@
     padding-bottom: 16px;
     border-radius: 20px;
     outline: 1px #ededed solid;
+    background: white;
     outline-offset: -1px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 8px;
+    gap: 32px;
+    display: flex;
+  }
+
+  .heading_02 {
+    align-self: stretch;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-radius: 20px;
+    outline: 1px #ededed solid;
+    background: white;
+    outline-offset: -1px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 16px;
     display: flex;
   }
 
@@ -1551,9 +1590,9 @@
   /* Information Character styles */
   .informationcharacter_span {
     color: #121212;
-    font-size: 20px;
+    font-size: 24px;
     font-family: Quicksand;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 28px;
     word-wrap: break-word;
   }
@@ -1700,42 +1739,6 @@
     height: 40px;
     position: relative;
     overflow: hidden;
-  }
-
-  .vector {
-    width: 19.27px;
-    height: 19.27px;
-    left: 10.08px;
-    top: 0px;
-    position: absolute;
-    background: #ffbb85;
-  }
-
-  .vector_01 {
-    width: 33.37px;
-    height: 20.68px;
-    left: 3.28px;
-    top: 19.32px;
-    position: absolute;
-    background: #438bff;
-  }
-
-  .vector_02 {
-    width: 9.64px;
-    height: 19.27px;
-    left: 19.71px;
-    top: 0px;
-    position: absolute;
-    background: #f5a86c;
-  }
-
-  .vector_03 {
-    width: 16.94px;
-    height: 20.68px;
-    left: 19.71px;
-    top: 19.32px;
-    position: absolute;
-    background: #1b60f5;
   }
 
   /* Special Ability styles */
@@ -1941,8 +1944,8 @@
 
   .frame-1410103942 {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
   }
 
   @media (max-width: 800px) {

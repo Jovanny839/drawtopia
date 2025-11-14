@@ -10,6 +10,10 @@
   function closeModal() {
     dispatch('close');
   }
+
+  function handleGrantPermissions() {
+    dispatch('grant');
+  }
 </script>
 
 <div class="information-helper-text">
@@ -18,7 +22,9 @@
       <div class="logo-text-full">
         <div class="logo-img"></div>
       </div>
-      <img class="x" src={x} alt="x" />
+      <button type="button" class="x-button" on:click={closeModal} aria-label="Close modal">
+        <img class="x" src={x} alt="x" />
+      </button>
     </div>
     <div class="stroke"></div>
   </div>
@@ -80,7 +86,7 @@
       </div>
     </div>
   </div>
-  <div class="button">
+  <div class="button" role="button" tabindex="0" on:click={handleGrantPermissions} on:keydown={(e) => e.key === 'Enter' && handleGrantPermissions()}>
     <div class="grant-all-premission">
       <span class="grantallpremission_span">Grant All Premission</span>
     </div>
@@ -255,6 +261,7 @@
     align-items: center;
     gap: 10px;
     display: inline-flex;
+    cursor: pointer;
   }
 
   .logo-text-full {
@@ -263,12 +270,21 @@
     position: relative;
   }
 
+  .x-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .x {
     width: 24px;
     height: 24px;
     position: relative;
     overflow: hidden;
-    cursor: pointer;
   }
 
   .warningoctagon {
