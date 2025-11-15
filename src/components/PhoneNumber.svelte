@@ -7,7 +7,7 @@
     E164Number,
   } from "svelte-tel-input/types";
   import { hasFlag } from "country-flag-icons";
-  import caret from "../assets/CaretDown.svg";
+  import arrow from "../assets/Left Actionable.svg";
   export let valid: boolean;
   export let detailedValue: DetailedValue | null;
   export let selectedCountry: CountryCode | null;
@@ -85,21 +85,23 @@
       on:click={() => (showDropdown = !showDropdown)}
       aria-label="Select country"
     >
-      {#if selectedCountry && getFlagUrl(selectedCountry)}
-        <img
-          src={getFlagUrl(selectedCountry)}
-          alt={selectedCountry}
-          class="flag-icon"
-        />
-      {:else}
-        <span class="flag-placeholder">🏳️</span>
-      {/if}
-      {#if selectedCountryData}
-        <span class="dial-code">+{selectedCountryData.dialCode}</span>
-      {:else}
-        <span class="dial-code">Select</span>
-      {/if}
-      <img src={caret} alt="caret" class="dropdown-arrow" />
+      <div style="display: flex; align-items: center; gap: 4px;">
+        {#if selectedCountry && getFlagUrl(selectedCountry)}
+          <img
+            src={getFlagUrl(selectedCountry)}
+            alt={selectedCountry}
+            class="flag-icon"
+          />
+        {:else}
+          <span class="flag-placeholder">🏳️</span>
+        {/if}
+        {#if selectedCountryData}
+          <span class="dial-code">+{selectedCountryData.dialCode}</span>
+        {:else}
+          <span class="dial-code">Select</span>
+        {/if}
+      </div>
+      <img src={arrow} alt="">
     </button>
     {#if showDropdown}
       <div class="country-dropdown">
@@ -149,74 +151,103 @@
 <style>
   .wrapper {
     position: relative;
+    display: flex;
+    width: 100%;
+    gap: 0;
   }
 
   .wrapper :global(.basic-tel-input) {
     height: 50px;
-    width: 80%;
-    padding-left: 12px;
-    padding-right: 12px;
-    border-radius: 0px 10px 10px 0px;
+    flex: 1 1 0;
+    padding: 12px;
+    border-radius: 0px 8px 8px 0px;
     border: 1px solid;
     outline: none;
-    border-color: #bbb;
+    border-color: #DFE1E7;
     font-size: 16px;
+    font-family: DM Sans;
+    color: #727272;
+    background: white;
+    transition: border-color 0.2s ease;
+  }
+
+  .wrapper :global(.basic-tel-input:focus) {
+    border-color: #DFE1E7;
   }
 
   .country-select-wrapper {
     position: relative;
-    width: 20%;
-    min-width: 120px;
   }
 
   .country-select-button {
     height: 50px;
-    width: 100%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding-left: 12px;
-    padding-right: 12px;
-    border-radius: 10px 0px 0px 10px;
-    border: 1px solid #bbb;
+    gap: 4px;
+    padding: 12px;
+    border-radius: 8px 0px 0px 8px;
+    border: 1px solid #DFE1E7;
     border-right: none;
     outline: none;
     background-color: white;
     font-size: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-family: Quicksand;
+    font-weight: 500;
   }
 
   .country-select-button:hover {
-    background-color: #f8f9fa;
+    background-color: #fafafa;
+  }
+
+  .country-select-button:active {
+    background-color: #f5f5f5;
   }
 
   .country-select-button.invalid {
-    border-color: red;
+    border-color: #ff6b6b;
   }
 
   .flag-icon {
-    width: 24px;
-    height: 18px;
+    width: 20px;
+    height: 15px;
     object-fit: cover;
     border-radius: 2px;
+    flex-shrink: 0;
   }
 
   .flag-placeholder {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .dial-code {
     font-size: 16px;
-    color: #141414;
+    color: var(--Background-Black, #020E22);
     font-weight: 500;
+    font-family: Quicksand;
   }
 
   .dropdown-arrow {
-    margin-left: auto;
-    color: #666;
-    transition: transform 0.2s ease;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dropdown-arrow::after {
+    content: '';
+    width: 8px;
+    height: 4px;
+    border: 1.50px solid #18181B;
+    border-top: 1.50px solid #18181B;
+    border-right: 1.50px solid #18181B;
+    transform: rotate(45deg);
+    margin-top: -2px;
   }
 
   .country-select-button:hover .dropdown-arrow {
@@ -227,36 +258,46 @@
     position: absolute;
     top: 100%;
     left: 0;
-    right: 0;
+    right: auto;
     background: white;
-    border: 1px solid #bbb;
+    border: 1px solid #EDEDED;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     margin-top: 4px;
-    max-height: 230px;
+    max-height: 300px;
     width: max-content;
+    min-width: 100%;
+    padding-top: 4px;
+    padding-bottom: 4px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
 
   .dropdown-search {
-    padding: 8px;
-    border-bottom: 1px solid #ededed;
+    padding: 8px 12px;
+    border-bottom: 1px solid #EDEDED;
+    display: none;
   }
 
   .search-input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #DFE1E7;
     border-radius: 6px;
     font-size: 14px;
     outline: none;
+    font-family: DM Sans;
+    color: #727272;
   }
 
   .search-input:focus {
-    border-color: #bbb;
+    border-color: #DFE1E7;
+  }
+
+  .search-input::placeholder {
+    color: #B0B0B0;
   }
 
   .dropdown-list {
@@ -265,25 +306,31 @@
   }
 
   .country-option {
-    width: 100%;
+    width: 250px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 8px 16px;
     border: none;
     background: white;
     cursor: pointer;
     text-align: left;
     font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 500;
+    color: #141414;
     transition: background-color 0.2s ease;
   }
 
   .country-option:hover {
-    background-color: #f8f9fa;
+    background-color: #fafafa;
   }
 
   .country-option.selected {
-    background-color: #e3f2fd;
+    background-color: #fafafa;
+    color: #141414;
+    font-weight: 500;
   }
 
   .flag-icon-small {
@@ -292,26 +339,26 @@
     object-fit: cover;
     border-radius: 2px;
     flex-shrink: 0;
-  }
-
-  .country-name {
-    flex: 1;
-    color: #141414;
+    border: 1px #F2F2F2 solid;
+    outline: 1px #F2F2F2 solid;
+    outline-offset: -1px;
   }
 
   .country-dial-code {
-    color: #666;
+    color: #141414;
     font-weight: 500;
+    font-family: Quicksand;
+    font-size: 14px;
   }
 
   .no-results {
     padding: 16px;
     text-align: center;
-    color: #666;
+    color: #B0B0B0;
     font-size: 14px;
   }
 
   .wrapper :global(.invalid) {
-    border-color: red;
+    border-color: #ff6b6b;
   }
 </style>

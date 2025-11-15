@@ -137,17 +137,17 @@
 
   const handleGoogleSignUp = async (event: Event) => {
     event.preventDefault();
-    if (!validateForm(true)) return;
-    isLoading = true;
-    errors = {}; // Clear previous errors
+    // if (!validateForm(true)) return;
+    // isLoading = true;
+    // errors = {}; // Clear previous errors
 
     try {
       // Ensure we have all required data before proceeding
-      if (!firstName.trim() || !lastName.trim()) {
-        errors.general = "Please fill in all required fields before signing up with Google.";
-        isLoading = false;
-        return;
-      }
+      // if (!firstName.trim() || !lastName.trim()) {
+      //   errors.general = "Please fill in all required fields before signing up with Google.";
+      //   isLoading = false;
+      //   return;
+      // }
 
       // Store form data temporarily for after OAuth redirect
       sessionStorage.setItem('pendingGoogleSignup', JSON.stringify({

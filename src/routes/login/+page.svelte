@@ -354,13 +354,13 @@
           </div>
         </div>
       </div>
-      <form style="width: 100%;">
+      <form on:submit={handleSubmit} style="width: 100%;">
         <div class="frame-1410104077">
           {#if errors.general}
             <div class="error-banner">{errors.general}</div>
           {/if}
           <PrimaryBtn
-            text="Login"
+            text={loginMethod === 'phone' ? 'Login With Phone Number' : 'Login With Email'}
             {isLoading}
             spinner_name="Logging in..."
             onClick={handleSubmit}

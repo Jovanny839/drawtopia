@@ -22,7 +22,7 @@
   }
 
   .text-span_02 {
-    color: black;
+    color: #438BFF;
     font-size: 18px;
     font-family: Quicksand;
     font-weight: 600;
