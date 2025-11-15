@@ -154,7 +154,7 @@
                         >
                     </div>
                 </div>
-                <img class="book" src={selectedCoverDesign === 0 ? classicStorybook : selectedCoverDesign === 1 ? modernMinimalist : adventureTheme} />
+                <img class="book" src={selectedCoverDesign === 0 ? classicStorybook : selectedCoverDesign === 1 ? modernMinimalist : adventureTheme} alt="Book Cover Preview" />
             </div>
             <div class="frame-9">
                 <div class="information-cover">
@@ -291,6 +291,7 @@
                                 <img
                                     class="frame-1410104088"
                                     src={classicStorybook}
+                                    alt="Classic Storybook Cover"
                                 />
                                 <div class="frame-1410103940_04">
                                     <div class="frame-1410103939_04">
@@ -327,6 +328,7 @@
                                     <img
                                         class="frame-1410104088_01"
                                         src={modernMinimalist}
+                                        alt="modernMinimalist"
                                     />
                                     <div class="frame-1410103939_05">
                                         <div>
@@ -362,6 +364,7 @@
                                     <img
                                         class="frame-1410104088_02"
                                         src={adventureTheme}
+                                        alt="adventureTheme"
                                     />
                                     <div class="frame-1410103939_06">
                                         <div>

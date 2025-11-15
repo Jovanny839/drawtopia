@@ -154,36 +154,6 @@
 </div>
 
 <style>
-    .drawtopia {
-        width: 203.32px;
-        height: 38px;
-        left: 0px;
-        top: 0px;
-        position: absolute;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421258926392px 1.703526258468628px #871fff inset;
-    }
-
-    .subtract {
-        width: 28.39px;
-        height: 28.39px;
-        left: 121.55px;
-        top: 1.82px;
-        position: absolute;
-        transform: rotate(4deg);
-        transform-origin: top left;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421854972839px 1.703526496887207px #871fff inset;
-    }
-
     .howwouldyouliketoexperienceyourstory_span {
         color: #141414;
         font-size: 48px;

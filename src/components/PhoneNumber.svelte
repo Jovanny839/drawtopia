@@ -229,31 +229,6 @@
     font-family: Quicksand;
   }
 
-  .dropdown-arrow {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .dropdown-arrow::after {
-    content: '';
-    width: 8px;
-    height: 4px;
-    border: 1.50px solid #18181B;
-    border-top: 1.50px solid #18181B;
-    border-right: 1.50px solid #18181B;
-    transform: rotate(45deg);
-    margin-top: -2px;
-  }
-
-  .country-select-button:hover .dropdown-arrow {
-    color: #141414;
-  }
-
   .country-dropdown {
     position: absolute;
     top: 100%;

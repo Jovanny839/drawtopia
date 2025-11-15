@@ -301,44 +301,6 @@
 </div>
 
 <style>
-.ellipse-7 {
-    width: 40px;
-    height: 40px;
-    background: #D9D9D9;
-    border-radius: 9999px;
-}
-
-.alexsmith_span {
-    color: #121212;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.20px;
-    word-wrap: break-word;
-}
-
-.alex-smith {
-    align-self: stretch;
-}
-
-.familysubscription_span {
-    color: #727272;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 19.60px;
-    word-wrap: break-word;
-}
-
-.family-subscription {
-    align-self: stretch;
-}
-
-.caretdown-icon {
-    width: 24px;
-    height: 24px;
-}
-
 .arrowleft-icon {
     width: 24px;
     height: 24px;
@@ -352,12 +314,6 @@
 .camera-icon {
     width: 20px;
     height: 20px;
-}
-
-.form-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
 }
 
 .action-icon {
@@ -587,15 +543,6 @@
     border-radius: 9999px;
 }
 
-.heading {
-    flex: 1 1 0;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 2px;
-    display: inline-flex;
-}
-
 .frame-1410103915_01 {
     align-self: stretch;
     justify-content: flex-start;
@@ -665,13 +612,6 @@
 
 .drawtopialogo {
     width: 100%;
-}
-
-.caretdown {
-    width: 24px;
-    height: 24px;
-    position: relative;
-    overflow: hidden;
 }
 
 .arrowleft {
@@ -749,14 +689,6 @@
 .switch-button_01:focus {
     outline: 2px solid #A4ACB9;
     outline-offset: 2px;
-}
-
-.frame-1410103913 {
-    flex: 1 1 0;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: flex;
 }
 
 .frame-1410103916_01 {
@@ -856,22 +788,6 @@
     align-items: center;
     gap: 4px;
     display: inline-flex;
-}
-
-.profile-close {
-    width: 247px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    background: #FCFCFC;
-    border-radius: 20px;
-    outline: 1px #DCDCDC solid;
-    outline-offset: -1px;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: flex;
 }
 
 .frame-1410103917 {

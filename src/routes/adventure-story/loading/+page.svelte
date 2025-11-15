@@ -232,36 +232,6 @@
 </div>
 
 <style>
-    .drawtopia {
-        width: 203.32px;
-        height: 38px;
-        left: 0px;
-        top: 0px;
-        position: absolute;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421258926392px 1.703526258468628px #871fff inset;
-    }
-
-    .subtract {
-        width: 28.39px;
-        height: 28.39px;
-        left: 121.55px;
-        top: 1.82px;
-        position: absolute;
-        transform: rotate(4deg);
-        transform-origin: top left;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421854972839px 1.703526496887207px #871fff inset;
-    }
-
     .creatingyourstory_span {
         color: #141414;
         font-size: 48px;
@@ -532,15 +502,6 @@
         text-align: center;
     }
 
-    .vector_01 {
-        width: 35px;
-        height: 35px;
-        left: 2.5px;
-        top: 2.5px;
-        position: absolute;
-        background: #6912c5;
-    }
-
     .funfact_span {
         color: #6912c5;
         font-size: 20px;
@@ -573,15 +534,6 @@
         font-family: Quicksand;
         font-weight: 600;
         word-wrap: break-word;
-    }
-
-    .vector_02 {
-        width: 32.5px;
-        height: 32.5px;
-        left: 4px;
-        top: 4px;
-        position: absolute;
-        background: white;
     }
 
     .frame-2147227509_01 {
@@ -723,13 +675,6 @@
         width: 100%;
     }
 
-    .shieldstar {
-        width: 20px;
-        height: 20px;
-        position: relative;
-        overflow: hidden;
-    }
-
     .frame-1410103855 {
         align-self: stretch;
         position: relative;
@@ -738,22 +683,6 @@
         align-items: flex-start;
         gap: 8px;
         display: flex;
-    }
-
-    .shootingstar {
-        width: 40px;
-        height: 40px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .spinnergap {
-        width: 40px;
-        height: 40px;
-        left: 65px;
-        top: 89px;
-        position: absolute;
-        overflow: hidden;
     }
 
     .progress-bar_02 {

@@ -498,36 +498,6 @@
 </div>
 
 <style>
-    .drawtopia {
-        width: 203.32px;
-        height: 38px;
-        left: 0px;
-        top: 0px;
-        position: absolute;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421258926392px 1.703526258468628px #871fff inset;
-    }
-
-    .subtract {
-        width: 28.39px;
-        height: 28.39px;
-        left: 121.55px;
-        top: 1.82px;
-        position: absolute;
-        transform: rotate(4deg);
-        transform-origin: top left;
-        background: radial-gradient(
-            ellipse 50% 50% at 50% 50%,
-            #0fe3ef 44%,
-            #438bff 100%
-        );
-        box-shadow: 0px 0.5678421854972839px 1.703526496887207px #871fff inset;
-    }
-
     .hereyourpreviewstory_span {
         color: #141414;
         font-size: 48px;
@@ -554,15 +524,6 @@
     .review-your-personalized-story-details-before-completing-your-order {
         width: 1040px;
         text-align: center;
-    }
-
-    .vector {
-        width: 15px;
-        height: 15.63px;
-        left: 2.5px;
-        top: 3.12px;
-        position: absolute;
-        background: #438bff;
     }
 
     .ffreepagepreview_span {
@@ -795,15 +756,6 @@
         background: #ededed;
     }
 
-    .vector_01 {
-        width: 21px;
-        height: 18px;
-        left: 1.5px;
-        top: 4.5px;
-        position: absolute;
-        background: white;
-    }
-
     .style_span {
         color: #727272;
         font-size: 16px;
@@ -828,15 +780,6 @@
 
     .anime {
         align-self: stretch;
-    }
-
-    .vector_02 {
-        width: 19.5px;
-        height: 18.75px;
-        left: 2.25px;
-        top: 2.25px;
-        position: absolute;
-        background: white;
     }
 
     .enhancement_span {
@@ -865,15 +808,6 @@
         align-self: stretch;
     }
 
-    .vector_03 {
-        width: 19.5px;
-        height: 19.5px;
-        left: 2.25px;
-        top: 2.25px;
-        position: absolute;
-        background: white;
-    }
-
     .storyworld_span {
         color: #727272;
         font-size: 16px;
@@ -898,15 +832,6 @@
 
     .outer-space {
         align-self: stretch;
-    }
-
-    .vector_04 {
-        width: 18px;
-        height: 21.01px;
-        left: 2.25px;
-        top: 2.24px;
-        position: absolute;
-        background: white;
     }
 
     .difficultyadventuretype_span {
@@ -935,15 +860,6 @@
         width: 150px;
     }
 
-    .vector_05 {
-        width: 16.5px;
-        height: 20.25px;
-        left: 3.75px;
-        top: 1.5px;
-        position: absolute;
-        background: white;
-    }
-
     .format_span {
         color: #727272;
         font-size: 16px;
@@ -968,15 +884,6 @@
 
     .story-adventure {
         align-self: stretch;
-    }
-
-    .vector_06 {
-        width: 15px;
-        height: 20.25px;
-        left: 4.5px;
-        top: 2.25px;
-        position: absolute;
-        background: white;
     }
 
     .agegroup_span {
@@ -1128,15 +1035,6 @@
         border-radius: 12px;
     }
 
-    .vector_07 {
-        width: 12.5px;
-        height: 9px;
-        left: 2px;
-        top: 4px;
-        position: absolute;
-        background: #438bff;
-    }
-
     .digitalbook_span {
         color: #727272;
         font-size: 18px;
@@ -1144,15 +1042,6 @@
         font-weight: 700;
         line-height: 25.2px;
         word-wrap: break-word;
-    }
-
-    .vector_08 {
-        width: 12.5px;
-        height: 9px;
-        left: 2px;
-        top: 4px;
-        position: absolute;
-        background: #438bff;
     }
 
     .audioversion_span {
@@ -1164,15 +1053,6 @@
         word-wrap: break-word;
     }
 
-    .vector_09 {
-        width: 12.5px;
-        height: 9px;
-        left: 2px;
-        top: 4px;
-        position: absolute;
-        background: #438bff;
-    }
-
     .print-readypdf_span {
         color: #727272;
         font-size: 18px;
@@ -1180,15 +1060,6 @@
         font-weight: 700;
         line-height: 25.2px;
         word-wrap: break-word;
-    }
-
-    .vector_10 {
-        width: 18px;
-        height: 15px;
-        left: 3px;
-        top: 4.5px;
-        position: absolute;
-        background: black;
     }
 
     .backtostep_span {
@@ -1229,15 +1100,6 @@
             rgba(255, 255, 255, 0) 100%
         );
         border-radius: 9999px;
-    }
-
-    .vector_11 {
-        width: 18px;
-        height: 18px;
-        left: 3px;
-        top: 3px;
-        position: absolute;
-        background: white;
     }
 
     .generateandpreviewstory_span {
