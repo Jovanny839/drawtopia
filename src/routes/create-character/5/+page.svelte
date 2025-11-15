@@ -15,7 +15,7 @@
   import underwater from "../../../assets/underwater.png";
   import treasure from "../../../assets/treasurehunt.png";
   import helping from "../../../assets/helpfriend.png";
-  import globehemispherewest from "../../../assets/BlackGlobeHemiSphereWest.svg";
+  import globehemispherewest from "../../../assets/BlackGlobeHemisphereWest.svg";
   import { 
     generateStyledImage, 
     loadGeneratedImages,
