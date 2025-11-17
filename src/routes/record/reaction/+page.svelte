@@ -68,16 +68,16 @@
     </div>
     <div class="frame-1410103860">
       <div class="frame-1410103870">
-        <div class="button">
+        <div class="button" on:click={() => goto('/adventure-story/final')}>
           <img src={ArrowLeft} alt="arrow" />
           <div class="back"><span class="back_span">Back</span></div>
         </div>
       </div>
       <div class="button_01" on:click={handleStartReveal} on:keydown={handleKeyDown} role="button" tabindex="0">
-        <img src={Play} alt="play" />
         <div class="start-reveal">
           <span class="startreveal_span">Start Reveal</span>
         </div>
+        <img src={Play} alt="play" />
       </div>
     </div>
   </div>

@@ -31,7 +31,7 @@
     <div class="stroke"></div>
   </div>
   <div class="frame-1410103944">
-      <img src={shieldwarning} alt="shieldwarning" />
+    <img src={shieldwarning} alt="shieldwarning" class="shieldwarning" />
     <div class="frame-1410104192">
       <div>
         <span class="videoconsentagreement_span">Video Consent Agreement</span>
@@ -99,7 +99,7 @@
 
   .by-submitting-your-reaction-video-you-agree-that-your-video-may-be-used-publicly-within-the-drawtopia-app-and-may-appear-in-promotional-materials-highlight-reels-or-future-media-releases {
     align-self: stretch;
-    text-align: center;
+    text-align: left;
   }
 
   .square {
@@ -148,7 +148,6 @@
     align-self: stretch;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
     gap: 4px;
     display: flex;
   }
@@ -223,7 +222,6 @@
 
   .checkbox-label {
     border-radius: 6px;
-    justify-content: center;
     align-items: center;
     gap: 8px;
     display: inline-flex;
@@ -244,8 +242,8 @@
     align-self: stretch;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     gap: 16px;
+    text-align: left;
     display: flex;
   }
 
@@ -272,5 +270,10 @@
     background-position: center;
     width: 100%;
     height: 100%;
+  }
+
+  .shieldwarning {
+    width: 64px;
+    height: 64px;
   }
 </style>

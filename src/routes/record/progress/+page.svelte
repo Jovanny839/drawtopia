@@ -7,6 +7,11 @@
   import ReactionReady from "../../../components/ReactionReady.svelte";
   import MobileBackBtn from "../../../components/MobileBackBtn.svelte";
 
+  import stopIcon from "../../../assets/Stop.svg";
+  import playIcon from "../../../assets/Play.svg"
+  import storyImg from "../../../assets/classic_storybook.png";
+  import childImg from "../../../assets/child_example.png";
+
   let showVideoConsentModal = false;
   let showReactionReadyModal = false;
   
@@ -133,8 +138,8 @@
             <div class="image">
               <img
                 class="frame-1410104055"
-                src="https://placehold.co/713x827"
-                alt=""
+                src={storyImg}
+                alt="storyImg"
               />
             </div>
           </div>
@@ -159,9 +164,7 @@
             on:keydown={(e) => e.key === "Enter" && handleStopReplayClick()}
             style="cursor: pointer;"
           >
-            <div class="stop">
-              <div class="vector"></div>
-            </div>
+            <img src={isStopButton ? stopIcon : playIcon} alt="stop" class="margin:auto;">
             <div>
               <span class="stopreaction_span">
                 {isStopButton ? "Stop Reaction" : "Replay Reaction"}
@@ -170,7 +173,7 @@
           </div>
         </div>
       </div>
-      <img class="frame-1410104194" src="https://placehold.co/392x232" alt="" />
+      <img class="frame-1410104194" src={childImg} alt="" />
     </div>
     <div class="frame-1410103860">
       <div class="frame-1410103870">
@@ -180,20 +183,22 @@
         </div>
       </div>
       <div class="frame-1410104195">
-        <div 
-          class="button_01"
-          class:button_01--disabled={!isRetakeEnabled}
-          role="button"
-          tabindex={isRetakeEnabled ? 0 : -1}
-          on:click={isRetakeEnabled ? handleRetakeClick : undefined}
-          on:keydown={(e) => isRetakeEnabled && e.key === "Enter" && handleRetakeClick()}
-          style="cursor: {isRetakeEnabled ? 'pointer' : 'not-allowed'}; opacity: {isRetakeEnabled ? 1 : 0.5};"
-        >
-          <img src={arrowclockwise} alt="arrow" />
-          <div class="retake-reaction">
-            <span class="retakereaction_span">Retake Reaction</span>
+          <div 
+            class="frame-2147227421 button_01"
+            class:button_01--disabled={!isRetakeEnabled}
+            role="button"
+            tabindex={isRetakeEnabled ? 0 : -1}
+            on:click={isRetakeEnabled ? handleRetakeClick : undefined}
+            on:keydown={(e) => isRetakeEnabled && e.key === "Enter" && handleRetakeClick()}
+            style="cursor: {isRetakeEnabled ? 'pointer' : 'not-allowed'}; opacity: {isRetakeEnabled ? 1 : 0.5};"
+          >
+            <div class="arrowclockwise" aria-hidden="true">
+              <img src={arrowclockwise} alt="arrowclockwise">
+            </div>
+            <div class="retake-reaction">
+              <span class="retakereaction_span">Retake Reaction</span>
+            </div>
           </div>
-        </div>
         <div
           class="button_02"
           role="button"
@@ -329,15 +334,6 @@
   .reviewing-your-reaction {
     align-self: stretch;
     text-align: center;
-  }
-
-  .vector {
-    width: 22px;
-    height: 22px;
-    left: 5px;
-    top: 5px;
-    position: absolute;
-    background: black;
   }
 
   .stopreaction_span {
@@ -487,14 +483,7 @@
     gap: 8px;
     display: flex;
   }
-
-  .stop {
-    width: 32px;
-    height: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
+  
   .heading_01 {
     flex-direction: column;
     justify-content: flex-start;
@@ -796,5 +785,53 @@
       bottom: 150px;
       top: auto;
     }
+  }
+
+  /* Retake button upgraded styles (overrides) */
+  .vector {
+    width: 19.50px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    position: absolute;
+    background: #438BFF;
+  }
+
+  .retakereaction_span {
+    color: #438BFF;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
+  }
+
+  .retake-reaction {
+    text-align: center;
+  }
+
+  .arrowclockwise {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .frame-2147227421 {
+    height: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background: #E7FEFF;
+    box-shadow: 0px 4px 0px #438BFF;
+    overflow: hidden;
+    border-radius: 12px;
+    outline: 1px rgba(255, 250, 238, 0.20) solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    display: inline-flex;
   }
 </style>

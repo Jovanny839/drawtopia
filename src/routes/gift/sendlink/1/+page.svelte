@@ -38,7 +38,7 @@
     ];
 
     let parentEmail = "";
-    let selectedAgeGroup = "3-6";
+    let selectedAgeGroup = "";
     let childName = "";
     let dedicationMessage = "";
     let selectedOccasion = "";

@@ -5,10 +5,12 @@
     import drawtopialogo from "../../../assets/logo.png";
     import arrowLeft from "../../../assets/ArrowLeft.svg";
     import caretdown from "../../../assets/CaretDown.svg";
+    import camera from "../../../assets/Camera.svg";
     import { goto } from "$app/navigation";
     import { auth } from "../../../lib/stores/auth";
     import { getUserProfile } from "../../../lib/auth";
     import { supabase } from "../../../lib/supabase";
+    import { uploadAvatar } from "../../../lib/storage";
     import AccountDropdown from "../../../components/AccountDropdown.svelte";
 
     // User data state
@@ -26,6 +28,9 @@
     let email = "Drawtopia@gmail.com";
     let accountLanguage = "English";
     let isSaving = false;
+    let isUploading = false;
+    let uploadProgress = 0;
+    let fileInput: HTMLInputElement | null = null;
 
     // Load user info from localStorage
     function loadUserInfoFromStorage() {
@@ -155,7 +160,6 @@
                 .update({
                     first_name: firstName,
                     last_name: lastName,
-                    full_name: `${firstName} ${lastName}`.trim(),
                     email: email,
                     updated_at: new Date().toISOString()
                 })
@@ -190,8 +194,81 @@
     }
 
     function handleEditProfilePicture() {
-        // TODO: Implement profile picture editing
-        console.log("Edit profile picture clicked");
+        // Trigger the hidden file input to open file picker
+        if (fileInput) {
+            fileInput.click();
+        }
+    }
+
+    async function handleFileSelected(event: Event) {
+        const target = event.target as HTMLInputElement;
+        if (!target || !target.files || target.files.length === 0) return;
+        const file = target.files[0];
+        // Basic client-side validation
+        if (!file) return;
+
+        const authState = get(auth);
+        const userId = authState?.user?.id;
+
+        isUploading = true;
+        uploadProgress = 0;
+
+        try {
+            const result = await uploadAvatar(file, userId, (p) => {
+                uploadProgress = p;
+            });
+
+            if (!result.success) {
+                alert(result.error || 'Failed to upload image');
+                return;
+            }
+
+            if (result.url) {
+                // Update UI
+                userAvatarUrl = result.url;
+                userProfilePicture = result.url;
+
+                // Update users table avatar_url
+                if (userId) {
+                    const { error } = await supabase
+                        .from('users')
+                        .update({ avatar_url: result.url, updated_at: new Date().toISOString() })
+                        .eq('id', userId);
+                    if (error) {
+                        console.error('Failed to update users table avatar_url:', error);
+                    }
+
+                    // Attempt to update auth user metadata so other parts of the app pick it up
+                    try {
+                        await supabase.auth.updateUser({ data: { avatar_url: result.url } });
+                    } catch (err) {
+                        // Non-fatal
+                        console.warn('Could not update auth user metadata:', err);
+                    }
+
+                    // Update localStorage cache
+                    try {
+                        const saved = localStorage.getItem('userInfo');
+                        const parsed = saved ? JSON.parse(saved) : {};
+                        parsed.avatar_url = result.url;
+                        localStorage.setItem('userInfo', JSON.stringify(parsed));
+                    } catch (err) {
+                        console.warn('Failed to update localStorage userInfo:', err);
+                    }
+                }
+            }
+
+        } catch (err) {
+            console.error('Error uploading avatar:', err);
+            alert('An error occurred while uploading the image.');
+        } finally {
+            isUploading = false;
+            uploadProgress = 0;
+            // Reset file input so same file can be selected again if needed
+            if (fileInput) {
+                fileInput.value = '';
+            }
+        }
     }
 </script>
 
@@ -228,13 +305,29 @@
                     <div class="frame-1410103915_01">
                         <div><span class="profilepicture_span">Profile Picture</span></div>
                     </div>
+                    
                     <div class="edit-profile-picture-link">
-                        <button class="edit-link" on:click={handleEditProfilePicture}>
+                        <div class="edit-link">
                             <span class="editprofilepicture_span">Edit Profile Picture</span>
-                        </button>
+                        </div>
                     </div>
                     <div class="profile-picture-wrapper">
                         <img class="ellipse-10" src={userProfilePicture} alt="User profile" />
+                        <button class="camera-button" title="Change profile picture" on:click={handleEditProfilePicture}>
+                            <img src={camera} alt="camera" class="camera-icon" />
+                        </button>
+                        <!-- Hidden file input triggered by camera button -->
+                        <input
+                            type="file"
+                            accept="image/*"
+                            bind:this={fileInput}
+                            on:change={handleFileSelected}
+                            style="display:none"
+                        />
+
+                        {#if isUploading}
+                            <div class="upload-progress" aria-hidden="true">Uploading {uploadProgress}%</div>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -396,30 +489,32 @@
     word-wrap: break-word;
 }
 
-.editprofilepicture_span {
-    color: #727272;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 400;
-    line-height: 25.20px;
-    word-wrap: break-word;
-    text-decoration: underline;
-    cursor: pointer;
+.camera-icon {
+    width: 20px;
+    height: 20px;
 }
 
-.edit-profile-picture-link {
-    margin-top: 4px;
-}
-
-.edit-link {
-    background: none;
+.camera-button {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    background: #438BFF;
+    border-radius: 50%;
     border: none;
-    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
+    box-shadow: 0px 2px 8px rgba(67, 139, 255, 0.3);
+    transition: all 0.2s ease;
 }
 
-.edit-link:hover .editprofilepicture_span {
-    color: #438BFF;
+.camera-button:hover {
+    background: #3570E0;
+    transform: scale(1.1);
+    box-shadow: 0px 4px 12px rgba(67, 139, 255, 0.4);
 }
 
 .ellipse-10 {
@@ -427,8 +522,6 @@
     height: 120px;
     background: #D9D9D9;
     border-radius: 9999px;
-    object-fit: cover;
-    margin-top: 16px;
 }
 
 .rectangle-39,
@@ -719,6 +812,19 @@
 .profile-picture-wrapper {
     position: relative;
     display: inline-block;
+}
+
+.upload-progress {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -32px;
+    background: white;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    color: #333;
 }
 
 .form-label-wrapper {

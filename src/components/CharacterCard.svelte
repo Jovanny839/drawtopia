@@ -4,7 +4,7 @@
   import animal from "../assets/animal.svg";
   import monster from "../assets/monster.svg";
   import Star from "../assets/Star.svg";
-  import eye from "../assets/eye.svg";
+  import eye from "../assets/BlueEye.svg";
 
   import { createEventDispatcher } from "svelte";
 

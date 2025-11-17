@@ -10,24 +10,27 @@
   <div class="logo-text-full">
     <div class="logo-img"></div>
   </div>
-  <div class="profile-close">
-    <div class="frame-1410103913">
-      <img
-        class="ellipse-7"
-        src={avatarUrl}
-        alt="user avatar"
-      />
-      <div class="heading">
-        <div class="alex-smith">
-          <span class="alexsmith_span">{userName}</span>
-        </div>
-        <div class="premium-plan">
-          <span class="premiumplan_span">{userPlan}</span>
+
+  <slot name="profile">
+    <div class="profile-close">
+      <div class="frame-1410103913">
+        <img
+          class="ellipse-7"
+          src={avatarUrl}
+          alt="user avatar"
+        />
+        <div class="heading">
+          <div class="alex-smith">
+            <span class="alexsmith_span">{userName}</span>
+          </div>
+          <div class="premium-plan">
+            <span class="premiumplan_span">{userPlan}</span>
+          </div>
         </div>
       </div>
+      <img class="" src={caretdown} alt="vector" />
     </div>
-    <img class="" src={caretdown} alt="vector" />
-  </div>
+  </slot>
 </div>
 
 <style>

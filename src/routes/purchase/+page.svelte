@@ -1,14 +1,27 @@
 <script>
   import Navbar from "../../components/Navbar.svelte";
-  import eye from "../../assets/eye.svg";
+  import eye from "../../assets/WhiteEye.svg";
   import arrowleft from "../../assets/ArrowLeft.svg";
   import purplecheck from "../../assets/purple-check.svg";
   import MobileBackBtn from "../../components/MobileBackBtn.svelte";
+
+  import physicalBookImg from "../../assets/physical-book.png";
+  import digitalBookImage from "../../assets/digital-book.png";
+  import bundleBookImage from "../../assets/bundle-book.png";
+  import classicStoryImage from "../../assets/classic_storybook.png";
+
+  import { goto } from '$app/navigation';
 
   const handleBack = () => {
     // Navigate back in browser history
     if (typeof window !== 'undefined') {
       window.history.back();
+    }
+  };
+
+  const handleContinue = () => {
+    if (typeof window !== 'undefined') {
+      goto('/additional');
     }
   };
 </script>
@@ -35,8 +48,9 @@
       <div class="frame-1410104091">
         <img
           class="frame-1410104089"
-          src="https://placehold.co/91x90"
+          src={classicStoryImage}
           alt="story preview"
+          style="object-fit: cover; object-position:top;"
         />
         <div class="frame-1410104090">
           <div class="lunas-magic-adventure">
@@ -49,10 +63,10 @@
           </div>
         </div>
         <div class="button">
-            <img class="eye" src={eye} alt="eye" />
           <div class="view-story">
             <span class="viewstory_span">View Story</span>
           </div>
+          <img class="eye" src={eye} alt="eye" />
         </div>
       </div>
     </div>
@@ -65,7 +79,7 @@
           <div class="frame-1410103909">
             <div class="select">
               <div class="frame-1410103837">
-                <div class="ellipse-13"></div>
+                <img src={digitalBookImage} alt="digitalBookImage" style="width: 100%;">
               </div>
               <div class="frame-1410103964">
                 <div class="frame-1410103960">
@@ -94,9 +108,7 @@
             </div>
             <div class="select_01">
               <div class="frame-1410103837_01">
-                <div class="frame-1410104118">
-                  <img class="" src={purplecheck} alt="eye" />
-                </div>
+                <img src={physicalBookImg} alt="physicalBookImg" style="width: 100%;">
               </div>
               <div class="frame-1410103965">
                 <div class="frame-1410103960_01">
@@ -125,7 +137,7 @@
             </div>
             <div class="select_02">
               <div class="frame-1410103837_02">
-                <div class="ellipse-13_01"></div>
+                <img src={bundleBookImage} alt="bundleBookImage" style="width: 100%;">
               </div>
               <div class="frame-1410103966">
                 <div class="frame-1410103960_02">
@@ -180,7 +192,13 @@
           <div class="back"><span class="back_span">Back</span></div>
         </div>
         <div class="button_05">
-          <div class="continue">
+          <div
+            class="continue"
+            role="button"
+            tabindex="0"
+            on:click={handleContinue}
+            on:keydown={(e) => e.key === 'Enter' && handleContinue()}
+          >
             <span class="continue_span">Continue</span>
           </div>
         </div>
@@ -265,11 +283,11 @@
   }
 
   .viewstory_span {
-    color: black;
-    font-size: 20px;
+    color: white;
+    font-size: 18px;
     font-family: Quicksand;
-    font-weight: 500;
-    line-height: 28px;
+    font-weight: 600;
+    line-height: 25.2px;
     word-wrap: break-word;
   }
 
@@ -377,7 +395,7 @@
   }
 
   .f00_01_span {
-    color: #6912c5;
+    color: #173db6;
     font-size: 24px;
     font-family: Quicksand;
     font-weight: 600;
@@ -391,7 +409,7 @@
   }
 
   .buyphysical_span {
-    color: #6912c5;
+    color: #438bff;
     font-size: 18px;
     font-family: Quicksand;
     font-weight: 600;
@@ -612,8 +630,8 @@
     align-self: stretch;
     padding-left: 24px;
     padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     background: white;
     border-radius: 12px;
     outline: 1px #dcdcdc solid;
@@ -646,12 +664,13 @@
     align-self: stretch;
     padding-left: 24px;
     padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    background: #f5f2ff;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background: #e7feff;
+    box-shadow: 0px 4px 0px #438bff;
     border-radius: 12px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
+    outline: 2px rgba(231, 254, 255, 0.2) solid;
+    outline-offset: -2px;
     justify-content: center;
     align-items: center;
     gap: 10px;
@@ -680,8 +699,8 @@
     align-self: stretch;
     padding-left: 24px;
     padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
     border-radius: 12px;
     outline: 1px #dcdcdc solid;
@@ -707,12 +726,25 @@
     padding-right: 24px;
     padding-top: 16px;
     padding-bottom: 16px;
+    position: relative;
     background: #438bff;
     border-radius: 20px;
     justify-content: center;
     align-items: center;
     gap: 10px;
     display: flex;
+  }
+
+  .button_05::after {
+    content: '';
+    width: 248px;
+    height: 114px;
+    left: -44px;
+    top: 15px;
+    position: absolute;
+    background: radial-gradient(ellipse 42.11% 42.11% at 50% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 9999px;
+    pointer-events: none;
   }
 
   .frame-1410103820 {
@@ -740,12 +772,10 @@
 
   .frame-1410103837 {
     align-self: stretch;
-    height: 316px;
     padding: 12px;
     background: #e9e9e9;
     overflow: hidden;
     border-radius: 16px;
-    background-image: url(https://placehold.co/381x316);
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -768,11 +798,9 @@
 
   .frame-1410103837_02 {
     align-self: stretch;
-    height: 316px;
     padding: 12px;
     overflow: hidden;
     border-radius: 16px;
-    background-image: url(https://placehold.co/381x316);
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -832,31 +860,39 @@
   }
 
   .button {
-    height: 57px;
-    padding-left: 24px;
-    padding-right: 24px;
     padding-top: 16px;
     padding-bottom: 16px;
-    background: white;
+    padding-left: 28px;
+    padding-right: 24px;
+    position: relative;
+    background: #438bff;
     border-radius: 20px;
-    outline: 1px #ededed solid;
-    outline-offset: -1px;
     justify-content: center;
     align-items: center;
     gap: 10px;
     display: flex;
   }
 
+  .button::after {
+    content: '';
+    width: 248px;
+    height: 114px;
+    left: -44px;
+    top: 15px;
+    position: absolute;
+    background: radial-gradient(ellipse 42.11% 42.11% at 50% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
   .frame-1410103837_01 {
     align-self: stretch;
-    height: 316px;
     padding: 12px;
     background: #e9e9e9;
     overflow: hidden;
     border-radius: 16px;
-    outline: 1px #6912c5 solid;
+    outline: 1px #173db6 solid;
     outline-offset: -1px;
-    background-image: url(https://placehold.co/381x316);
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -940,20 +976,22 @@
     align-items: flex-start;
     gap: 12px;
     display: inline-flex;
+    background: white;
   }
 
   .select_01 {
     flex: 1 1 0;
     padding: 12px;
-    box-shadow: 0px 1px 8px #871fff;
+    box-shadow: 0px 1px 8px #438bff;
     border-radius: 16px;
-    outline: 2px #6912c5 solid;
+    outline: 2px #173db6 solid;
     outline-offset: -2px;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     gap: 12px;
     display: inline-flex;
+    background: white;
   }
 
   .select_02 {
@@ -967,6 +1005,7 @@
     align-items: flex-start;
     gap: 12px;
     display: inline-flex;
+    background: white;
   }
 
   .frame-1410103904 {

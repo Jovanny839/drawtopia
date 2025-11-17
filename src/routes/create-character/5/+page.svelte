@@ -353,6 +353,23 @@
     </div>
     <MobileStepProgressBar currentStep={4} />
     <ProgressBar currentStep={4} />
+    <div class="frame-1410104027">
+      <div class="star-container">
+        <StarEmoticon />
+      </div>
+      <div class="message-container">
+        <div class="polygon-1"></div>
+        <div class="message-content">
+          <div
+            class="lets-bring-your-character-to-life-upload-a-drawing-or-photo"
+          >
+            <span class="letsbringyourcharactertolifeuploadadrawingorphoto_span"
+              >Let's craft the perfect world for your story!</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="rectangle-261"></div>
     <div class="frame-1410103884">
       <div class="step-1-choose-story-world">
@@ -1035,6 +1052,13 @@
     display: flex;
   }
 
+  .frame-1410104027 {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 100%;
+  }
+
   .heading_01 {
     align-self: stretch;
     padding-left: 8px;
@@ -1245,33 +1269,6 @@
     overflow: hidden;
   }
 
-  .star-container {
-    flex-shrink: 0;
-    width: 88px;
-    height: 88px;
-  }
-
-  .message-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-left: 12px;
-  }
-
-  .message-content {
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    background: #d9eaff;
-    border-radius: 24px;
-    margin-left: 22px;
-    max-width: 446px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   .frame-1410103821 {
     align-self: stretch;
     flex-direction: column;
@@ -1310,23 +1307,6 @@
     display: inline-flex;
   }
 
-  .button_01 {
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
-    border-radius: 20px;
-    outline: 1px #dcdcdc solid;
-    outline-offset: -1px;
-    background-color: white;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: inline-flex;
-    width: 200px;
-  }
-
   .heading {
     align-self: stretch;
     flex-direction: column;
@@ -1334,13 +1314,6 @@
     align-items: center;
     gap: 16px;
     display: flex;
-  }
-
-  .frame-1410104027 {
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    width: 100%;
   }
 
   .frame-1410103818 {
@@ -1385,36 +1358,6 @@
     height: 100%;
   }
 
-  .continuetostyleselection_span {
-    color: white;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.2px;
-    word-wrap: break-word;
-  }
-
-  .continue-to-style-selection {
-    text-align: center;
-  }
-
-  .button-fill {
-    width: 300px;
-    height: 100%;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    background: #438bff;
-    border-radius: 20px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    display: inline-flex;
-  }
-
-
-
   .frame-1410103852 {
     align-self: stretch;
     justify-content: flex-start;
@@ -1423,8 +1366,55 @@
     display: inline-flex;
   }
 
-  .mobile-full-width {
-    width: 100% !important;
+  .star-container {
+    flex-shrink: 0;
+    width: 88px;
+    height: 88px;
+  }
+
+  .message-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 12px;
+  }
+
+  .polygon-1 {
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 12px solid transparent;
+    /* border-bottom: 12px solid transparent; */
+    border-right: 18px solid #d9eaff;
+  }
+
+  .message-content {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #d9eaff;
+    border-radius: 24px;
+    margin-left: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .lets-bring-your-character-to-life-upload-a-drawing-or-photo {
+    /* width: 600px; */
+  }
+
+  .letsbringyourcharactertolifeuploadadrawingorphoto_span {
+    color: black;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.2px;
+    word-wrap: break-word;
   }
 
   @media (max-width: 800px) {
@@ -1461,6 +1451,15 @@
     .card_04 {
       width: 100%;
       flex: none;
+    }
+    .star-container {
+      width: 25%;
+    }
+    .message-container {
+      max-width: 75%;
+    }
+    .message-content {
+      width: 90%;
     }
   }
 </style>

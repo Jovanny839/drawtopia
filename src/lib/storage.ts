@@ -16,7 +16,7 @@ export interface UploadResult {
  * @param userId - The user ID (optional, for organizing files)
  * @returns Promise with upload result
  */
-export async function uploadAvatar(file: File, userId?: string): Promise<UploadResult> {
+export async function uploadAvatar(file: File, userId?: string, onProgress?: (progress: number) => void): Promise<UploadResult> {
   try {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -42,6 +42,13 @@ export async function uploadAvatar(file: File, userId?: string): Promise<UploadR
     const fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const fileName = `${userId || 'user'}_${timestamp}_${randomString}.${fileExtension}`;
 
+    // Simulate progress for better UX (call onProgress if provided)
+    if (onProgress) {
+      onProgress(10);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      onProgress(30);
+    }
+
     // Upload to Supabase storage
     const { data, error } = await supabase.storage
       .from('avatars')
@@ -49,6 +56,11 @@ export async function uploadAvatar(file: File, userId?: string): Promise<UploadR
         cacheControl: '3600',
         upsert: false
       });
+
+    if (onProgress) {
+      onProgress(80);
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
 
     if (error) {
       console.error('Upload error:', error);
@@ -62,6 +74,10 @@ export async function uploadAvatar(file: File, userId?: string): Promise<UploadR
     const { data: urlData } = supabase.storage
       .from('avatars')
       .getPublicUrl(data.path);
+
+    if (onProgress) {
+      onProgress(100);
+    }
 
     return {
       success: true,

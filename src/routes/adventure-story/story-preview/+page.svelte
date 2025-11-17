@@ -458,7 +458,7 @@
         </div>
         <div class="frame-1410103860">
             <div class="frame-1410103870">
-                <div class="button">
+                <div class="button" on:click={() => {goto('/create-character/dedication/create-send')}}>
                     <div class="arrowleft">
                         <img
                             src={arrowleft}
@@ -1767,6 +1767,7 @@
         align-items: center;
         gap: 12px;
         display: flex;
+        cursor: pointer;
     }
 
     .frame-2147227646 {

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Navbar from "../../components/Navbar.svelte";
+  import AccountDropdown from "../../components/AccountDropdown.svelte";
   import OrderSuccessModal from "../../components/OrderSuccessModal.svelte";
   import MobileOrderSummary from "../../components/MobileOrderSummary.svelte";
   import shoppaylogo from "../../assets/shoppay.svg";
@@ -65,7 +66,9 @@
 </script>
 
 <div class="my-chart-improved">
-  <Navbar />
+  <Navbar>
+    <AccountDropdown slot="profile" />
+  </Navbar>
   <!-- Mobile Back Button -->
   <div class="mobile-back-button">
     <div

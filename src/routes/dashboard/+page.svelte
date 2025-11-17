@@ -623,6 +623,23 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
         </div>
 
         <div 
+        class="parent-menu-dropdown_01" 
+          class:active={activeMenu === "characters"}
+          on:click={() => handleMenuClick("characters")}
+          role="button"
+          tabindex="0"
+          on:keydown={(e) => e.key === "Enter" && handleMenuClick("characters")}
+        >
+        <div class="sidebar-menu-parent_01">
+            <div class="title-icon_01">
+              <div class="baby">
+                <img src={userSquare} alt="characters" class="baby" />
+              </div>
+              <div><span class="childprofiles_span">Characters</span></div>
+            </div>
+          </div>
+        </div>
+        <div 
           class="parent-menu-dropdown_01" 
           class:active={activeMenu === "child-profiles"}
           on:click={() => handleMenuClick("child-profiles")}
@@ -636,23 +653,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
                 <img src={baby} alt="baby" class="baby" />
               </div>
               <div><span class="childprofiles_span">Child Profiles</span></div>
-            </div>
-          </div>
-        </div>
-        <div 
-          class="parent-menu-dropdown_01" 
-          class:active={activeMenu === "characters"}
-          on:click={() => handleMenuClick("characters")}
-          role="button"
-          tabindex="0"
-          on:keydown={(e) => e.key === "Enter" && handleMenuClick("characters")}
-        >
-          <div class="sidebar-menu-parent_01">
-            <div class="title-icon_01">
-              <div class="baby">
-                <img src={userSquare} alt="characters" class="baby" />
-              </div>
-              <div><span class="childprofiles_span">Characters</span></div>
             </div>
           </div>
         </div>
@@ -764,7 +764,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     </div>
   {/if}
 
-  <div class="frame-1410104150">
+  <div class="frame-1410104150_02">
     <div class="sidebarpenaksir-kasir">
       <div class="sidebarheader_01">
         <div class="title">
@@ -2114,6 +2114,15 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     align-items: flex-start;
     display: inline-flex;
     width: 100%;
+    padding: 32px;
+  }
+
+  .frame-1410104150_02 {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: inline-flex;
+    width: 100%;
   }
 
   .parent-dashboard {
@@ -2873,7 +2882,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   .frame-1410104150 {
     width: 100%;
     height: 100%;
-    padding: 32px;
     background: white;
     border-radius: 8px;
     flex-direction: column;

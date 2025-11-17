@@ -555,6 +555,8 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="heading_02">
             <div class="form_01" style="width: 100%;">
               <div class="what-type-of-character-is-this">
                 <span class="whattypeofcharacteristhis_span"

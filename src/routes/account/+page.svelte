@@ -7,7 +7,7 @@
     import pencilSimple from "../../assets/WhitePencilSimple.svg";
     import check from "../../assets/Check.svg";
     import x from "../../assets/X.svg";
-    import camera from "../../assets/Camera.svg";
+    
     import globe from "../../assets/GlobeHemisphereWest.svg";
     import envelope from "../../assets/Envelope.svg";
     import userSquare from "../../assets/UserSquare.svg";
@@ -209,9 +209,6 @@
                     </div>
                     <div class="profile-picture-wrapper">
                         <img class="ellipse-10" src={userProfilePicture} alt="User profile" />
-                        <button class="camera-button" title="Change profile picture">
-                            <img src={camera} alt="camera" class="camera-icon" />
-                        </button>
                     </div>
                 </div>
                 <div class="rectangle-39"></div>
@@ -311,9 +308,15 @@
     height: 20px;
 }
 
-.camera-icon {
-    width: 20px;
-    height: 20px;
+.editprofilepicture_span {
+    color: #727272;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 400;
+    line-height: 25.20px;
+    word-wrap: break-word;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .action-icon {
@@ -905,27 +908,28 @@
     display: inline-block;
 }
 
-.camera-button {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: 36px;
-    height: 36px;
-    background: #438BFF;
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0px 2px 8px rgba(67, 139, 255, 0.3);
-    transition: all 0.2s ease;
+.edit-profile-picture-link {
+    margin-top: 4px;
 }
 
-.camera-button:hover {
-    background: #3570E0;
-    transform: scale(1.1);
-    box-shadow: 0px 4px 12px rgba(67, 139, 255, 0.4);
+.edit-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.edit-link:hover .editprofilepicture_span {
+    color: #438BFF;
+}
+
+.ellipse-10 {
+    width: 120px;
+    height: 120px;
+    background: #D9D9D9;
+    border-radius: 9999px;
+    object-fit: cover;
+    margin-top: 16px;
 }
 
 .form-label-wrapper {

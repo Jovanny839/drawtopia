@@ -61,9 +61,14 @@
     
             <div class="tip-question">
                 <img src={star} alt="star" class="tip-question-star" />
-                <div class="tip-question-container">
-                    <div class="tip-question-text">
-                        <span> How do you hisyam want to give your gift? </span>
+                <div style="display:flex; flex-direciton:row;">
+                    <svg class="tip-shape" style="transform: translate(10px, 0px); z-index: 0;" viewBox="0 0 21.5 82" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <polygon points="0,50 21.5,30 21.5,50" class="tip-shape-fill" />
+                    </svg>
+                    <div class="tip-question-container">
+                        <div class="tip-question-text">
+                            <span> How do you hisyam want to give your gift? </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -463,9 +468,9 @@
     .tip-question-container {
         width: 431px;
         height: 82px;
+        z-index: 2;
     }
     .tip-question-text {
-        margin-left: 21.5px;
         width: 393px;
         height: 57px;
         border-radius: 24px;
@@ -476,11 +481,28 @@
         font-weight: 600;
         line-height: 140%;
         color: #141414;
+        z-index: 100;
         font-family: Quicksand;
     }
 
     .tip-question-star {
         width: 88px;
         height: 88px;
+    }
+
+    .tip-shape {
+        width: 21.5px;
+        height: 88px;
+        flex: 0 0 21.5px;
+    }
+    .tip-shape-fill {
+        fill: #d9eaff;
+        stroke: none;
+        opacity: 1;
+    }
+    .tip-shape-stroke {
+        stroke: #438bff;
+        stroke-width: 3;
+        stroke-linejoin: round;
     }
 </style>

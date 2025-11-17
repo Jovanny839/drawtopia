@@ -1,7 +1,13 @@
 <script>
   import Navbar from "../../components/Navbar.svelte";
+  import AccountDropdown from "../../components/AccountDropdown.svelte";
+  import { goto } from '$app/navigation';
   import purplecheck from "../../assets/purple-check.svg";
   import arrowleft from "../../assets/ArrowLeft.svg";
+
+  import giantImage from "../../assets/Giant-book.png";
+  import splendidImage from "../../assets/splendid-book.png";
+  import stickerImage from "../../assets/sticker-pack.png";
 
   const handleBack = () => {
     // Navigate back in browser history
@@ -9,9 +15,20 @@
       window.history.back();
     }
   };
+
+  const handleContinue = () => {
+    if (typeof window !== 'undefined') {
+      goto('/chart');
+    }
+  };
 </script>
 <div class="additional-items-screen-preview">
-  <Navbar />
+  <div class="navbar">
+    <div class="logo-text-full">
+      <div class="logo-img"></div>
+    </div>
+    <AccountDropdown />
+  </div>
   
   <!-- Mobile Back Button -->
   <div class="mobile-back-button">
@@ -31,7 +48,7 @@
       <div class="frame-1410103954">
           <div class="frame-1410103903">
               <div class="frame-1410103837">
-                  <div class="ellipse-13"></div>
+                <img src={giantImage} alt="giantImage" style="width: 100%;">
               </div>
               <div class="frame-1410103957">
                   <div class="heading_02">
@@ -45,7 +62,8 @@
           </div>
           <div class="frame-1410103904">
               <div class="frame-1410103837_01">
-                <img src={purplecheck} alt="the splendid book" />
+                <img src={splendidImage} alt="the splendid book" style="width: 100%; object-fit: cover
+              "/>
               </div>
               <div class="frame-1410103956">
                   <div class="heading_03">
@@ -59,7 +77,7 @@
           </div>
           <div class="frame-1410103905">
               <div class="frame-1410103837_02">
-                  <div class="ellipse-13_01"></div>
+                <img src={stickerImage} alt="stickerImage" style="width: 100%;">
               </div>
               <div class="frame-1410103955">
                   <div class="heading_04">
@@ -80,7 +98,15 @@
               <div class="back"><span class="back_span">Back</span></div>
           </div>
           <div class="button_04">
-              <div class="continue"><span class="continue_span">Continue</span></div>
+              <div
+                class="continue"
+                role="button"
+                tabindex="0"
+                on:click={handleContinue}
+                on:keydown={(e) => e.key === 'Enter' && handleContinue()}
+              >
+                <span class="continue_span">Continue</span>
+              </div>
           </div>
       </div>
   </div>
@@ -189,13 +215,6 @@
 
 .look-inside_01 {
   text-align: center;
-}
-
-.ellipse-13_01 {
-  width: 32px;
-  height: 32px;
-  background: white;
-  border-radius: 9999px;
 }
 
 .stikerpack_span {
@@ -422,12 +441,10 @@
 
 .frame-1410103837 {
   align-self: stretch;
-  height: 298px;
   padding: 12px;
   background: #E9E9E9;
   overflow: hidden;
   border-radius: 16px;
-  background-image: url(https://placehold.co/379x298);
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -437,14 +454,12 @@
 
 .frame-1410103837_01 {
   align-self: stretch;
-  height: 298px;
   padding: 12px;
   background: #E9E9E9;
   overflow: hidden;
   border-radius: 16px;
   outline: 1px #6912C5 solid;
   outline-offset: -1px;
-  background-image: url(https://placehold.co/379x298);
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -454,12 +469,10 @@
 
 .frame-1410103837_02 {
   align-self: stretch;
-  height: 298px;
   padding: 12px;
   background: #F3F8FF;
   overflow: hidden;
   border-radius: 16px;
-  background-image: url(https://placehold.co/379x298);
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -764,5 +777,36 @@
   .button_03 {
     display: none;
   }
+}
+
+/* Small header styles for page-level navbar wrapper */
+.navbar {
+  width: 100%;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 24px;
+  padding-right: 12px;
+  background: white;
+  border-radius: 20px;
+  outline: 1px #ededed solid;
+  outline-offset: -1px;
+  justify-content: space-between;
+  align-items: center;
+  display: inline-flex;
+}
+
+.logo-text-full {
+  width: 203.32px;
+  height: 38px;
+  position: relative;
+}
+
+.logo-img {
+  background-image: url("../../assets/logo.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100%;
+  height: 100%;
 }
 </style>

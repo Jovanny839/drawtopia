@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { browser } from "$app/environment";
   import { storyCreation } from "../lib/stores/storyCreation";
-  import eye from "../assets/eye.svg";
+  import eye from "../assets/BlueEye.svg";
   import Plus from "../assets/Plus.svg";
 
   export let item: any;

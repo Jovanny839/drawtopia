@@ -9,10 +9,11 @@
   import { onMount, onDestroy } from "svelte";
   import plusIcon from "../assets/Gray-Plus.svg";
   import blueplusIcon from "../assets/blue-plus.svg";
+  import spinner from "../assets/Spinner.svg";
 
   export let showPhotoGuideModal = false;
   export let selectedAgeGroup = "";
-  export let selectedRelationship = "parent";
+  export let selectedRelationship = "";
   export let onAvatarUploaded: ((url: string) => void) | undefined = undefined;
   export let userId: string | undefined = undefined;
   export let onAddChild: ((childData: any) => void) | undefined = undefined;
@@ -33,6 +34,7 @@
   let fileInput: HTMLInputElement;
   let uploading = false;
   let uploadError = "";
+  let uploadProgress = 0;
   let showSuccessMessage = false;
   let savingProfiles = false;
   let saveError = "";
@@ -108,23 +110,29 @@
       return;
     }
 
+    uploadProgress = 0;
     uploading = true;
     try {
-      const result = await uploadAvatar(file, userId);
+      const result = await uploadAvatar(file, userId, (p: number) => {
+        uploadProgress = Math.max(0, Math.min(100, Math.round(p)));
+      });
 
       if (result.success && result.url) {
         uploadedAvatarUrl = result.url;
         if (onAvatarUploaded) {
           onAvatarUploaded(result.url);
         }
+        uploadProgress = 100;
         console.log("Avatar uploaded successfully:", result.url);
       } else {
         uploadError = result.error || "Failed to upload avatar";
         console.error("Upload failed:", result.error);
+        uploadProgress = 0;
       }
     } catch (error) {
       uploadError = "An error occurred while uploading";
       console.error("Upload error:", error);
+      uploadProgress = 0;
     } finally {
       uploading = false;
     }
@@ -144,6 +152,7 @@
     imagePreviewUrl = null;
     uploadedAvatarUrl = null;
     uploadError = "";
+    uploadProgress = 0;
     if (fileInput) {
       fileInput.value = "";
     }
@@ -189,7 +198,7 @@
   const resetForm = () => {
     firstName = "";
     selectedAgeGroup = "";
-    selectedRelationship = "parent";
+    selectedRelationship = "";
     removeImage();
     errors = {
       firstName: "",
@@ -317,11 +326,25 @@
         <div class="image" style="cursor: pointer;">
           {#if imagePreviewUrl}
             <div class="image-preview">
-              <img src={imagePreviewUrl} alt="Selected" class="preview-image" />
+              {#if uploadedAvatarUrl}
+                <img src={imagePreviewUrl} alt="Selected" class="preview-image" />
+              {/if}
               {#if uploading}
-                <div class="upload-status">
-                  <div class="spinner"></div>
-                  <span>Uploading...</span>
+                <div style="width: 500px;">
+                  <div class="frame-1410103823">
+                      <div class="frame-1410104033">
+                          <!-- <div class="spinner"> -->
+                            <img src={spinner} alt="spinner" class="spinner">
+                          <!-- </div> -->
+                          <div class="uploading"><span class="uploading_span">Uploading...</span></div>
+                      </div>
+                      <div class="frame-1410103823_01">
+                          <div class="bar">
+                              <div class="bar_01" style="width: {uploadProgress}%"></div>
+                          </div>
+                          <div class="text-50"><span class="f0_span">{uploadProgress}%</span></div>
+                      </div>
+                  </div>
                 </div>
               {:else if uploadedAvatarUrl}
                 <div class="upload-success">
@@ -359,23 +382,25 @@
               role="button"
               tabindex="0"
             >
-              <div class="uploadsimple">
-                <div class="vector_01"></div>
-              </div>
-              <div class="frame-1410103823">
-                <div class="click-to-upload-or-drag-and-drop">
-                  <span class="clicktouploadordraganddrop_span">
-                    {#if isDragOver}
-                      Drop your image here
-                    {:else}
-                      Click to upload or drag and drop
-                    {/if}
-                  </span>
+              <div style="display: flex; flex-direction:column; gap: 16px;">
+                <div class="uploadsimple" style="margin: auto;">
+                  <div class="vector_01"></div>
                 </div>
-                <div class="png-jpg-gif-up-to-5mb">
-                  <span class="pngjpggifupto5mb_span"
-                    >PNG, JPG, WebP Up to 5MB</span
-                  >
+                <div class="frame-1410103823">
+                  <div class="click-to-upload-or-drag-and-drop">
+                    <span class="clicktouploadordraganddrop_span">
+                      {#if isDragOver}
+                        Drop your image here
+                      {:else}
+                        Click to upload or drag and drop
+                      {/if}
+                    </span>
+                  </div>
+                  <div class="png-jpg-gif-up-to-5mb">
+                    <span class="pngjpggifupto5mb_span"
+                      >PNG, JPG, WebP Up to 5MB</span
+                    >
+                  </div>
                 </div>
               </div>
             </div>
@@ -399,7 +424,7 @@
         <div class="make-sure-only-one-person-in-clearly-visible-see-details">
           <span class="makesureonlyonepersoninclearlyvisibleseedetails_span_01"
             >make sure only one person in clearly visible.
-          </span><span
+          </span>&nbsp;<span
             class="makesureonlyonepersoninclearlyvisibleseedetails_span_02"
             on:click={openPhotoGuideModal}
             on:keydown={(e) => e.key === "Enter" && openPhotoGuideModal()}
@@ -439,6 +464,7 @@
           { value: "11-12", label: "👦🏽 Ages 11-12 (Independent Readers)" },
         ]}
         bind:selectedOption={selectedAgeGroup}
+        placeholder="Select Age Group"
         onChange={() => {}}
       />
       {#if errors.ageGroup}
@@ -505,7 +531,6 @@
           >Select Your Relationship*</span
         >
       </div>
-      <!-- <div class="input-placeholder_02"> -->
       <AdvancedSelect
         options={[
           { value: "parent", label: "Parent" },
@@ -517,6 +542,7 @@
           { value: "guardian", label: "Guardian" },
         ]}
         bind:selectedOption={selectedRelationship}
+        placeholder="Select your Relationship"
         onChange={() => {}}
       />
       {#if errors.relationship}
@@ -686,12 +712,12 @@
   }
   .image {
     align-self: stretch;
-    height: 133px;
+    height: 250px;
     position: relative;
     background: #f8fafb;
     overflow: hidden;
     border-radius: 10px;
-    outline: 2px #ededed solid;
+    outline: 2px #ededed dashed;
     outline-offset: -2px;
   }
 
@@ -817,8 +843,8 @@
     display: flex;
   }
   .uploadsimple {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     position: relative;
     overflow: hidden;
     transition: transform 0.2s ease;
@@ -1242,5 +1268,92 @@
     .form {
       gap: 12px;
     }
+  }
+
+  /* Upload progress styles (added) */
+  .vector {
+    width: 20.25px;
+    height: 20.25px;
+    left: 1.88px;
+    top: 1.88px;
+    position: absolute;
+    background: #438BFF;
+  }
+
+  .uploading_span {
+    color: #438BFF;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 700;
+    line-height: 22.40px;
+    word-wrap: break-word;
+  }
+
+  .uploading {
+    text-align: center;
+  }
+
+  .bar_01 {
+    height: 6px;
+    background: #438BFF;
+    border-radius: 12px;
+  }
+
+  .f0_span {
+    color: #438BFF;
+    font-size: 14px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 19.60px;
+    word-wrap: break-word;
+  }
+
+  .text-50 {
+    text-align: center;
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar {
+    align-self: stretch;
+    background: #EEF6FF;
+    overflow: hidden;
+    border-radius: 12px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+    display: flex;
+  }
+
+  .frame-1410104033 {
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    display: inline-flex;
+  }
+
+  .frame-1410103823_01 {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    display: flex;
+  }
+
+  .frame-1410103823 {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    display: inline-flex;
   }
 </style>
