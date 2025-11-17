@@ -128,9 +128,9 @@
       errors.password = "Password must be at least 6 characters";
     }
 
-    if (!acceptedTerms) {
-      errors.terms = "You must accept the terms and conditions";
-    }
+    // if (!acceptedTerms) {
+    //   errors.terms = "You must accept the terms and conditions";
+    // }
 
     return Object.keys(errors).length === 0;
   };
@@ -439,12 +439,6 @@
       <div
         class="by-creating-an-account-you-agree-to-our-terms-of-service-and-privacy-policy"
       >
-        <input
-          type="checkbox"
-          id="terms"
-          bind:checked={acceptedTerms}
-          style="width: 16px; height: 16px;"
-        />&nbsp;
         <span class="policy_terms_1"
           >By creating an account, you agree to our
         </span>
