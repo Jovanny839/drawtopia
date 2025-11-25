@@ -5,6 +5,7 @@
   import favorblueicon from "../../../assets/favorblueicon.svg";
   import hintpurpleicon from "../../../assets/hintpurpleicon.svg";
   import cupgreenicon from "../../../assets/cupgreenicon.svg";
+  import arrowclockwise from "../../../assets/WhiteArrowClockwise.svg";
   
   import magicalforest from "../../../assets/magicalforest.png";
   import enchantedcastle from "../../../assets/enchantedcastle.png";
@@ -216,8 +217,19 @@
     </div>
 
     <div class="actions">
-      <button class="btn secondary" on:click={handlePlayAgain}>↻ Play Again</button>
-      <button class="btn ghost">⬇ Download PDF</button>
+      <div class="button" on:click={handlePlayAgain} style="cursor:pointer;">
+        <div class="arrowclockwise">
+          <div class="vector"></div>
+        </div>
+        <div class="play-again"><span class="playagain_span">Play Again</span></div>
+        <div class="ellipse-1415"></div>
+      </div>
+      <div class="button download-pdf-btn" style="cursor:pointer;">
+        <div class="downloadsimple">
+          <div class="vector downloadpdf-vector"></div>
+        </div>
+        <div class="download-pdf"><span class="downloadpdf_span">Download PDF</span></div>
+      </div>
       <button class="btn">🔗 Share Result</button>
       <button class="btn go-home" on:click={handleGoHome}>🏠 Go Home</button>
     </div>
@@ -451,6 +463,103 @@
     .metrics {
       grid-template-columns: repeat(2, 1fr);
     }
+  }
+ 
+/* Play Again Button Custom Styles */
+.button {
+  width: 194px;
+  height: 57px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  position: relative;
+  background: #438BFF;
+  overflow: hidden;
+  border-radius: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+}
+.arrowclockwise {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.vector {
+  width: 19.50px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  position: absolute;
+  background: white;
+}
+.playagain_span {
+  color: white;
+  font-size: 18px;
+  font-family: Quicksand;
+  font-weight: 600;
+  line-height: 25.20px;
+  word-wrap: break-word;
+}
+.play-again {
+  text-align: center;
+}
+  .ellipse-1415 {
+  width: 248px;
+  height: 114px;
+  left: -37px;
+  top: 15px;
+  position: absolute;
+  background: radial-gradient(ellipse 42.11% 42.11% at 50.00% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 9999px;
+
+}
+
+  /* Download PDF Button Custom Styles */
+  .download-pdf-btn {
+    width: 231px;
+    height: 52px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background: #E7FEFF;
+    box-shadow: 0px 4px 0px #438BFF;
+    border-radius: 12px;
+    outline: 2px rgba(231, 254, 255, 0.20) solid;
+    outline-offset: -2px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+  }
+  .downloadsimple {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .downloadpdf-vector {
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 2.25px;
+    position: absolute;
+    background: #438BFF;
+  }
+  .downloadpdf_span {
+    color: #438BFF;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
+  }
+  .download-pdf {
+    text-align: center;
   }
 </style>
 

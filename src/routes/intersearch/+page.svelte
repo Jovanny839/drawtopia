@@ -35,13 +35,15 @@
             alert('Please select both a story world and difficulty');
             return;
         }
-        
+
         // Store selections in sessionStorage
         if (typeof window !== 'undefined') {
             sessionStorage.setItem('intersearch_world', selectedScene);
             sessionStorage.setItem('intersearch_difficulty', selectedDifficulty);
+            // Always force re-generation of scenes
+            sessionStorage.setItem('intersearch_regenerate', 'true');
         }
-        
+
         // Navigate to intersearch/1
         goto('/intersearch/1');
     }

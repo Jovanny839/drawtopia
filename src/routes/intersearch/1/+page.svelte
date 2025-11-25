@@ -11,6 +11,10 @@
   import lockKeyIcon from "../../../assets/LockKey.svg";
   import timeIcon from "../../../assets/redtimeicon.svg";
   import hintIcon from "../../../assets/hintpurpleicon.svg";
+  import shareIcon from '../../../assets/share.svg';
+  import dotsThreeOutline from '../../../assets/dotsthreeoutline.svg';
+  import originalPrompts from '../../../lib/prompt.json';
+  import { enhance } from "$app/forms";
 
   let activePage = 1;
   const totalPages = 5;
@@ -21,6 +25,8 @@
   let selectedWorld: string | null = null;
   let selectedDifficulty: string | null = null;
   let characterImageUrl: string | null = null;
+  let selectedStyle: string | null = null;
+  let selectedEnhancement: string | null = null;
 
   // Drag selection state
   let imageWrapperRef: HTMLDivElement | null = null;
@@ -73,42 +79,76 @@
     ],
   };
 
-  // Get prompts for each scene based on world
-  function getScenePrompts(world: string): string[] {
+  // Get prompts for each scene based on world and difficulty
+  function getScenePrompts(world: string, difficulty?: string, style?: string, enhancement?: string): string[] {
+    // Upgraded prompts for hidden-object puzzle illustration
     const basePrompts: { [key: string]: string[] } = {
       "enchanted-forest": [
-        "Enhance this character image into a vibrant magical forest scene. The character searches for Luna among glowing plants, talking animals, and hidden treasures. Keep the character's original style and quality while enriching the magical woodland background with mystery and wonder.",
-        "Enhance this character image into an enchanted castle scene. The character explores ancient halls filled with magical artifacts, hidden passages, and mystical creatures. Maintain the character's personality while adding mysterious castle details and enchanting atmosphere.",
-        "Enhance this character image into a sparkling crystal cave scene. The character searches among glowing crystals, reflective pools, and hidden gems. Preserve the character's features while creating a dazzling underground wonderland.",
-        "Enhance this character image into a colorful rainbow meadow scene. The character wanders through fields of flowers, butterflies, and magical rainbows. Keep the character's style while adding vibrant colors and joyful atmosphere.",
-        "Enhance this character image into a mystical starlight library scene. The character explores bookshelves filled with glowing books, floating tomes, and magical knowledge. Maintain character authenticity while adding ethereal library elements.",
-        "Enhance this character image into a whispering woods scene. The character listens carefully among ancient trees, mysterious shadows, and soft whispers. Preserve character features while creating an atmospheric woodland setting.",
-        "Enhance this character image into a moonlit grove scene. The character searches under moonbeams, silvery leaves, and peaceful night creatures. Keep character style while adding serene nighttime magic.",
-        "Enhance this character image into a victory celebration scene. The character celebrates finding Luna with friends, confetti, and joyful decorations in the magical forest. Maintain character personality while adding festive celebration elements.",
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied enchanted forest environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied enchanted castle environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied crystal cave environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied rainbow meadow environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied starlight library environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied whispering woods environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied moonlit grove environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied enchanted forest environment image (victory celebration)\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
       ],
       "outer-space": [
-        "Enhance this character image into a cosmic space station scene. The character searches for Luna among space modules, alien technology, and distant planets. Keep the character's original style while adding futuristic space elements and cosmic atmosphere.",
-        "Enhance this character image into an alien planet scene. The character explores strange landscapes, colorful alien plants, and mysterious extraterrestrial life. Maintain character features while creating an otherworldly environment.",
-        "Enhance this character image into an asteroid field scene. The character navigates through floating rocks, space debris, and twinkling stars. Preserve character style while adding dynamic space adventure elements.",
-        "Enhance this character image into a nebula garden scene. The character wanders through colorful cosmic clouds, glowing space flowers, and shimmering stardust. Keep character authenticity while adding vibrant nebula details.",
-        "Enhance this character image into a star library scene. The character explores shelves of glowing star-books, cosmic knowledge, and floating constellations. Maintain character personality while adding mystical space library elements.",
-        "Enhance this character image into a galaxy maze scene. The character navigates through swirling galaxies, cosmic pathways, and stellar patterns. Preserve character features while creating an intricate space labyrinth.",
-        "Enhance this character image into a comet trail scene. The character follows a glowing comet through space, among shooting stars and cosmic winds. Keep character style while adding dynamic movement and space excitement.",
-        "Enhance this character image into a victory celebration scene. The character celebrates finding Luna with alien friends, space confetti, and cosmic decorations. Maintain character personality while adding festive space celebration elements.",
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied cosmic space station environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied alien planet environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied asteroid field environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied nebula garden environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied star library environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied galaxy maze environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied comet trail environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied cosmic space station environment image (victory celebration)\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
       ],
       "underwater-kingdom": [
-        "Enhance this character image into a vibrant coral reef scene. The character searches for Luna among colorful corals, tropical fish, and underwater plants. Keep the character's original style while adding rich aquatic details and marine life.",
-        "Enhance this character image into a sunken palace scene. The character explores ancient underwater ruins, treasure chambers, and mysterious aquatic architecture. Maintain character features while creating a majestic underwater kingdom.",
-        "Enhance this character image into a pearl cave scene. The character searches among glowing pearls, shimmering shells, and hidden underwater treasures. Preserve character style while adding lustrous cave details.",
-        "Enhance this character image into a kelp forest scene. The character swims through swaying seaweed, hidden sea creatures, and underwater pathways. Keep character authenticity while adding dynamic kelp forest elements.",
-        "Enhance this character image into a treasure library scene. The character explores underwater bookshelves filled with aquatic scrolls, glowing sea maps, and ocean knowledge. Maintain character personality while adding mystical underwater library details.",
-        "Enhance this character image into an abyss deep scene. The character searches in the mysterious depths among bioluminescent creatures, dark waters, and hidden secrets. Preserve character features while creating an atmospheric deep-sea setting.",
-        "Enhance this character image into a mermaid garden scene. The character discovers beautiful underwater gardens, friendly sea creatures, and magical aquatic flowers. Keep character style while adding enchanting garden details.",
-        "Enhance this character image into a victory celebration scene. The character celebrates finding Luna with sea friends, underwater confetti, and festive marine decorations. Maintain character personality while adding joyful aquatic celebration elements.",
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied coral reef environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied sunken palace environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied pearl cave environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied kelp forest environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied treasure library environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied abyss deep environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied mermaid garden environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied coral reef environment image (victory celebration)\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
       ],
     };
 
-    return basePrompts[world] || basePrompts["enchanted-forest"];
+    const prompts = basePrompts[world] || basePrompts["enchanted-forest"];
+
+    // Difficulty modifiers appended to each prompt
+    const difficultyExtras: { [key: string]: string } = {
+      easy: `\n\nDifficulty modifiers:\n* Character 15-20% Visible\n* 5-8 other elements\n* Age 3-6 (Recommended)`,
+      medium: `\n\nDifficulty modifiers:\n* Character 10-15% Visible\n* 10-15 other elements\n* Age 7-10 (Recommended)`,
+      hard: `\n\nDifficulty modifiers:\n* Character 8-12% Visible\n* 15-25 other elements\n* Age 11-12 (Recommended)`,
+    };
+
+    const extra = difficulty ? difficultyExtras[difficulty] || "" : "";
+
+    // Style and enhancement extras
+    const styleExtra = style
+      ? `\n\nStyle guidelines:\n* Render character and scene in the selected style: ${style}.\n* Keep the character's likeness and visual language consistent with the supplied character image.`
+      : "";
+  
+    // Safely resolve enhancement text from prompt data (avoid complex keyof indexing in template)
+    const enhancementExtra = (() => {
+      if (!enhancement) return "";
+      // Cast to any to bypass strict indexed access typing and possible TS parse issues inside template literal
+      const enhancementValue = (originalPrompts as any)[style as any]?.[enhancement as any] ?? "";
+      return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene).`;
+    })();
+
+    console.log(enhancementExtra);
+  
+    const combinedExtra = `${extra}${styleExtra}${enhancementExtra}`;
+
+    // Return prompts augmented with difficulty extras when provided
+    if (combinedExtra) {
+      return prompts.map((p) => p + combinedExtra);
+    }
+
+    return prompts;
   }
 
   async function generateAllImages() {
@@ -118,7 +158,12 @@
     generatedImages = [];
 
     try {
-      const prompts = getScenePrompts(selectedWorld);
+      const prompts = getScenePrompts(
+        selectedWorld!,
+        selectedDifficulty ?? undefined,
+        selectedStyle ?? undefined,
+        selectedEnhancement ?? undefined
+      );
       const promises = prompts.map(async (prompt, index) => {
         // Generate image using the prompt directly via API
         const response = await fetch(
@@ -205,6 +250,9 @@
       selectedWorld = sessionStorage.getItem("intersearch_world");
       selectedDifficulty = sessionStorage.getItem("intersearch_difficulty");
       characterImageUrl = sessionStorage.getItem("characterImageUrl");
+      // Also retrieve selected style and enhancement from character creation
+      selectedStyle = sessionStorage.getItem('selectedStyle');
+      selectedEnhancement = sessionStorage.getItem('selectedEnhancement');
 
       // Check if we need to regenerate scenes (from Play Again button)
       const shouldRegenerate = sessionStorage.getItem("intersearch_regenerate") === "true";
@@ -788,10 +836,20 @@
     <img class="preview-logo" src={logo} alt="Drawtopia Logo" />
   </div>
   <div class="preview-content-container">
-    <div class="preview-header-title">
-      Your Search Adventure : Where is Luna?
-      <div class="preview-header-note">
-        FREE PREVIEW · Other pages available after purchased
+    <div class="preview-header-row">
+      <div class="preview-header-title">
+        Your Search Adventure : Where is Luna?
+        <div class="preview-header-note">
+          FREE PREVIEW &#8226; Other pages available after purchased
+        </div>
+      </div>
+      <div class="preview-header-actions">
+        <button class="preview-header-btn" aria-label="Share">
+          <img src={shareIcon} alt="Share" />
+        </button>
+        <button class="preview-header-btn" aria-label="More options">
+          <img src={dotsThreeOutline} alt="More" />
+        </button>
       </div>
     </div>
     <div class="preview-book-area">
@@ -805,16 +863,6 @@
         </div>
       {:else if generatedImages.length > 0}
         <div class="scene-view-container">
-          <div class="scene-info-header">
-            <div class="scene-counter">
-              Scene {currentSceneIndex + 1} of {generatedImages.length}
-            </div>
-            <div class="scene-title">
-              {sceneTitles[selectedWorld || "enchanted-forest"]?.[
-                currentSceneIndex
-              ] || `Scene ${currentSceneIndex + 1}`}
-            </div>
-          </div>
 
           <div class="scene-image-container">
             <div 
@@ -1022,15 +1070,20 @@
     align-items: center;
     gap: 24px;
     width: 1240px;
-    height: 1335px;
     border-radius: 20px;
     outline: 1px #dcdcdc solid;
     padding: 12px;
   }
 
+  .preview-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 8px;
+    padding-top: 8px;
+  }
   .preview-header-title {
-    width: 1216px;
-    gap: 12px;
     display: flex;
     flex-direction: column;
     font-family: Quicksand, sans-serif;
@@ -1038,7 +1091,43 @@
     font-size: 32px;
     color: #23243c;
     letter-spacing: 0.01em;
-    margin-bottom: 24px;
+    margin-bottom: 0;
+    gap: 8px;
+  }
+  .preview-header-note {
+    font-family: Nunito, sans-serif;
+    font-size: 14px;
+    color: #888;
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  .preview-header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 4px;
+  }
+  .preview-header-btn {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 2px #0001;
+    outline: none;
+  }
+  .preview-header-btn:hover {
+    background: #f5f7fa;
+    box-shadow: 0 2px 8px #0001;
+  }
+  .preview-header-btn img {
+    width: 22px;
+    height: 22px;
+    display: block;
   }
   .preview-header-note {
     font-family: Nunito, sans-serif;
@@ -1051,7 +1140,6 @@
     align-items: center;
     gap: 12px;
     width: 1216px;
-    height: 1078px;
     background-color: #f8fafb;
     border-radius: 12px;
     padding: 12px;
@@ -1244,7 +1332,6 @@
     align-items: center;
     gap: 24px;
     width: 1216px;
-    height: 1078px;
     background-color: #f8fafb;
     border-radius: 12px;
     padding: 12px;
@@ -1309,36 +1396,6 @@
     border: 2px dashed #438bff;
     pointer-events: none;
     z-index: 10;
-  }
-
-  .scene-navigation-controls {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 24px;
-    margin-top: 24px;
-  }
-
-  .scene-nav-btn {
-    font-family: Nunito, sans-serif;
-    font-size: 13px;
-    border: none;
-    background: #f6f9fd;
-    color: #a8a8ac;
-    border-radius: 6px;
-    padding: 6px 16px;
-    cursor: pointer;
-    height: 57px;
-    width: 151px;
-  }
-
-  .scene-nav-btn:hover:not(:disabled) {
-    background: #edf4fd;
-  }
-
-  .scene-nav-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
   }
 
   /* Found Luna Modal */
@@ -1536,16 +1593,8 @@
       height: auto;
       padding: 0;
     }
-    .scene-info-header {
-      padding: 0 10px;
-    }
     .scene-image-container {
       height: 60vh; /* Adjust for smaller screens */
-    }
-
-    .scene-navigation-controls {
-      padding: 0 10px;
-      margin-top: 10px;
     }
 
     .found-modal-container {
@@ -1557,16 +1606,8 @@
       font-size: 24px;
     }
 
-    .found-character-image {
-      width: 150px;
-      height: 150px;
-    }
-
     .stat-item {
       font-size: 16px;
-    }
-    .scene-nav-btn {
-      width: 120px; /* Adjust button width for smaller screens */
     }
   }
 
