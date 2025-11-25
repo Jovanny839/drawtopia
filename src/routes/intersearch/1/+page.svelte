@@ -12,7 +12,7 @@
   import timeIcon from "../../../assets/redtimeicon.svg";
   import hintIcon from "../../../assets/hintpurpleicon.svg";
   import shareIcon from '../../../assets/Share.svg';
-  import dotsThreeOutline from '../../../assets/dotsthreeoutline.svg';
+  import dotsThreeOutline from '../../../assets/DotsThreeOutline.svg';
   import originalPrompts from '../../../lib/prompt.json';
   import { enhance } from "$app/forms";
 
