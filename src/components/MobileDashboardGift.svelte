@@ -126,43 +126,6 @@
 </div>
 
 <style>
-  .drawtopia {
-    width: 170.15px;
-    height: 31.80px;
-    left: 0px;
-    top: 0px;
-    position: absolute;
-    background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #0FE3EF 44%, #438BFF 100%);
-    box-shadow: 0px 0.4752003252506256px 1.4256008863449097px #871FFF inset;
-  }
-
-  .drawtopia-logo {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .subtract {
-    width: 23.76px;
-    height: 23.76px;
-    left: 101.72px;
-    top: 1.53px;
-    position: absolute;
-    transform: rotate(4deg);
-    transform-origin: top left;
-    background: radial-gradient(ellipse 50.00% 50.00% at 50.00% 50.00%, #0FE3EF 44%, #438BFF 100%);
-    box-shadow: 0px 0.4752003848552704px 1.4256011247634888px #871FFF inset;
-  }
-
-  .vector_01 {
-    width: 24px;
-    height: 18px;
-    left: 4px;
-    top: 7px;
-    position: absolute;
-    background: var(--Color-Neutral-Black, #121212);
-  }
-
   .giftstatus_span {
     color: #141414;
     font-size: 24px;

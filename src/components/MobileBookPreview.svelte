@@ -2,7 +2,7 @@
   import ArrowLeft from "../assets/ArrowLeft.svg";
   import userCircle from "../assets/UserCircle.svg";
   import sparkle from "../assets/Sparkle.svg";
-  import paintbrush from "../assets/Paintbrush.svg";
+  import paintbrush from "../assets/PaintBrush.svg";
   import calendarPlus from "../assets/CalendarPlus.svg";
   import calendarDots from "../assets/CalendarDots.svg";
   import bookBookmark from "../assets/BookBookmark.svg";
@@ -217,16 +217,6 @@
 </div>
 
 <style>
-  /* Vector icons */
-  .vector {
-    width: 15px;
-    height: 12.50px;
-    left: 2.50px;
-    top: 3.75px;
-    position: absolute;
-    background: black;
-  }
-
   .arrow-left-icon {
     width: 100%;
     height: 100%;
@@ -263,73 +253,10 @@
     object-fit: contain;
   }
 
-  .vector_04 {
-    width: 15px;
-    height: 16.25px;
-    left: 2.50px;
-    top: 1.25px;
-    position: absolute;
-    background: #727272;
-  }
-
-  .vector_05 {
-    width: 15px;
-    height: 16.25px;
-    left: 2.50px;
-    top: 1.25px;
-    position: absolute;
-    background: #727272;
-  }
-
-  .vector_06 {
-    width: 13.75px;
-    height: 16.25px;
-    left: 3.13px;
-    top: 1.88px;
-    position: absolute;
-    background: #727272;
-  }
-
-  .vector_07 {
-    width: 17.50px;
-    height: 16.88px;
-    left: 1.25px;
-    top: 1.88px;
-    position: absolute;
-    background: black;
-  }
-
   .bookopenuser-icon {
     width: 100%;
     height: 100%;
     object-fit: contain;
-  }
-
-  .vector_09 {
-    width: 15px;
-    height: 15px;
-    left: 2.50px;
-    top: 2.50px;
-    position: absolute;
-    background: white;
-  }
-
-  .vector_10 {
-    width: 15.62px;
-    height: 15.63px;
-    left: 2.50px;
-    top: 1.88px;
-    position: absolute;
-    background: #438BFF;
-  }
-
-  .vector_11 {
-    width: 15px;
-    height: 16.25px;
-    left: 2.50px;
-    top: 1.25px;
-    position: absolute;
-    background: #DF1C41;
   }
 
   /* Text spans */
