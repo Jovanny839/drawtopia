@@ -40,6 +40,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   import ChildCard from "../../components/ChildCard.svelte";
   import AdvancedSelect from "../../components/AdvancedSelect.svelte";
   import CharacterDetailsModal from "../../components/CharacterDetailsModal.svelte";
+  import MobileDashboardComponent from "../../components/MobileDashboardComponent.svelte";
 
   // Sidebar library switch state
   let libraryView: "all" | "characters" | "children" = "all";
@@ -72,6 +73,16 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   let showCharacterModal = false;
   let selectedCharacter: any = null;
   let characterBooks: any[] = [];
+  
+  // Responsive detection
+  let isMobile = false;
+  
+  // Check screen size on mount and window resize
+  const checkScreenSize = () => {
+    if (browser) {
+      isMobile = window.innerWidth <= 800;
+    }
+  };
 
   // Filter states for dashboard dropdowns
   let selectedFormat: string = "all";
@@ -497,6 +508,14 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
 
   // Fetch profiles, stories, and gifts when component mounts and user is available
   onMount(() => {
+    // Check initial screen size
+    checkScreenSize();
+    
+    // Listen for window resize events
+    if (browser) {
+      window.addEventListener('resize', checkScreenSize);
+    }
+    
     const unsubscribe = user.subscribe(($user) => {
       if ($user?.id) {
         fetchChildProfiles($user.id);
@@ -525,7 +544,12 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
       }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      if (browser) {
+        window.removeEventListener('resize', checkScreenSize);
+      }
+    };
   });
 
   // Handle Add Children button click
@@ -558,6 +582,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   };
 </script>
 
+{#if !isMobile}
 <div class="parent-dashboard">
   <div class="navigation">
     <div class="sidebarheader">
@@ -1205,6 +1230,60 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
           </div>
         </div>
       {/if}
+
+      {#if activeMenu === "characters"}
+        <div class="frame-1410104150_01">
+          <div class="frame-1410104154_01">
+            <div class="frame-1410104155_01">
+              <div class="frame-1410104151_01">
+                <div class="story-library_01">
+                  <span class="storylibrary_01_span">Your Character Library</span>
+                </div>
+                <div class="browse-and-manage-all-created-stories">
+                  <span class="browseandmanageallcreatedstories_span">Select a character to use in your new book</span>
+                </div>
+              </div>
+              <div class="frame-1410103899">
+                <div class="frame-1410103898">
+                  <img
+                    src={magnifyingglass}
+                    alt="magnifyingglass"
+                    class="magnifyingglass"
+                  />
+                  <div class="search-stories">
+                    <span class="searchstories_span">Search Characters</span>
+                  </div>
+                </div>
+                <div class="dropdown">
+                  <div class="dropdown_01">
+                    <div class="all-stories">
+                      <span class="allstories_span">All Characters</span>
+                    </div>
+                    <img src={caretdown} alt="caretdown" class="caretdown" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="frame-1410103894">
+              {#if loading}
+                <div class="loading-message">Loading characters...</div>
+              {:else if error}
+                <div class="error-message">{error}</div>
+              {:else if characters.length === 0}
+                <div class="empty-message">No characters found</div>
+              {:else}
+                {#each characters as character}
+                  <CharacterCard 
+                    item={character} 
+                    booksCount={character.booksCount || 0}
+                    on:characterPreview={handleCharacterPreview}
+                  />
+                {/each}
+              {/if}
+            </div>
+          </div>
+        </div>
+      {/if}
       
       {#if activeMenu === "gift-tracking"}
         <GiftTrackingComponent {gifts} {loadingGifts} {giftsError} />
@@ -1212,7 +1291,11 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     </div>
   </div>
 </div>
+{/if}
 
+{#if isMobile}
+<MobileDashboardComponent />
+{/if}
 <!-- Gift Select Modal -->
 {#if showGiftSelectModal}
   <div
@@ -2783,7 +2866,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
 
   .filter-select-wrapper {
     flex: 1;
-    min-width: 0;
+    min-width: 250px;
   }
 
   .filter-select-wrapper :global(.container) {

@@ -220,9 +220,7 @@
         </div>
       </div>
     </div>
-    <div class="caretdown" aria-hidden="true">
-      <img src={caretdown} alt="" />
-    </div>
+    <img src={caretdown} alt="" class="caretdown" />
   </button>
 
   {#if isOpen}
@@ -461,9 +459,57 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 800px) {
     .profile-close {
+      width: 100%;
+      height: 100%;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      padding-left: 3px;
+      padding-right: 4px;
+      background: #fcfcfc;
+      border-radius: 20px;
+      outline: 1px #dcdcdc solid;
+      outline-offset: -1px;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 2px;
+      display: inline-flex;
+    }
+
+    .frame-1410103913 {
+      width: 26px;
+      height: 26px;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 12px;
+      display: flex;
+    }
+
+    .ellipse-7 {
+      width: 26px;
+      height: 26px;
+      background: #d9d9d9;
+      border-radius: 9999px;
+    }
+
+    .heading {
       display: none;
+    }
+
+    .caretdown {
+      width: 12px;
+      height: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .caretdown img {
+      width: 12px;
+      height: 12px;
+      position: absolute;
+      left: 1.88px;
+      top: 4.13px;
     }
   }
 </style>
