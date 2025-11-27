@@ -3,7 +3,7 @@
   import archive from "../assets/Archive.svg";
   import check from "../assets/Check.svg";
   import arrowsClockwise from "../assets/ArrowsClockwise.svg";
-  import eye from "../assets/Eye.svg";
+  import eye from "../assets/eye.svg";
   import Book from "../assets/Book.svg";
 
   const dispatch = createEventDispatcher();
