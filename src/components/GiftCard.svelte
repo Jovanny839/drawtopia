@@ -1,14 +1,28 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import archive from "../assets/Archive.svg";
-  import check from "../assets/Check.svg";
   import arrowsClockwise from "../assets/ArrowsClockwise.svg";
-  import eye from "../assets/eye.svg";
-  import Book from "../assets/Book.svg";
+  import Archieve from "../assets/Archive.svg";
+  import blueEye from "../assets/BlueEye.svg";
+  import heart from "../assets/Heart.svg";
 
   const dispatch = createEventDispatcher();
 
   export let gift: any;
+
+  // Helper functions to safely get gift data with fallbacks
+  $: sendTo = gift?.sendTo || gift?.delivery_email || "Unknown";
+  $: sentDate = gift?.sentDate || (gift?.created_at ? new Date(gift.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Unknown");
+  $: deliveryDate = gift?.deliveryDate || (gift?.delivery_time ? new Date(gift.delivery_time).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Unknown");
+  $: age = gift?.age || (gift?.ageGroup ? (() => {
+    const match = gift.ageGroup.match(/(\d+)-(\d+)/);
+    if (match) {
+      const min = parseInt(match[1]);
+      const max = parseInt(match[2]);
+      return Math.floor((min + max) / 2);
+    }
+    return parseInt(gift.ageGroup.split("-")[0]) || 7;
+  })() : 7);
 
   // Handle button clicks
   function handleResendLink() {
@@ -36,7 +50,7 @@
           <div class="frame-1410104152">
             <div class="gift-for-emma-age-7">
               <span class="giftforemmaage7_span">
-                Gift for: {gift.childName} (age {gift.age})
+                Gift for: {gift.childName || "Unknown"} (age {age})
               </span>
             </div>
           </div>
@@ -49,7 +63,7 @@
         <div class="frame-1410104124">
           <div>
             <span class="sendtoparentemailcom_span_01">Send To : </span>
-            <span class="sendtoparentemailcom_span_02">{gift.sendTo}</span>
+            <span class="sendtoparentemailcom_span_02">{sendTo}</span>
           </div>
         </div>
         <div class="frame-1410104126">
@@ -66,9 +80,7 @@
         <div class="frame-2147227625">
           {#if gift.status === 'pending'}
             <div class="archive">
-              <div class="vector_03">
-                <img src={archive} alt="Archive" />
-              </div>
+              <img src={archive} alt="Archive" />
             </div>
             <div class="link-sent-waiting-for-storybook-creation">
               <span class="linksentwaitingforstorybookcreation_span">
@@ -77,19 +89,18 @@
             </div>
           {:else}
             <div class="check">
-              <div class="vector_06">
-                <img src={check} alt="Check" />
-              </div>
+              
+                <img src={Archieve} alt="Archieve" />
             </div>
             <div class="book-created-delivered-oct-20">
               <span class="bookcreateddeliveredoct20_span">
-                Book created! Delivered {gift.deliveryDate}
+                Book created! Delivered {deliveryDate}
               </span>
             </div>
           {/if}
         </div>
         <div class="sent-oct-15-2024">
-          <span class="sentoct152024_span">Sent: {gift.sentDate}</span>
+          <span class="sentoct152024_span">Sent: {sentDate}</span>
         </div>
       </div>
     </div>
@@ -107,9 +118,7 @@
         >
           <div class="ellipse-1415_01"></div>
           <div class="arrowsclockwise">
-            <div class="vector_04">
-              <img src={arrowsClockwise} alt="Resend" />
-            </div>
+            <img src={arrowsClockwise} alt="Resend" />
           </div>
           <div class="resend-link">
             <span class="resendlink_span">Resend Link</span>
@@ -124,9 +133,7 @@
           tabindex="0"
         >
           <div class="eye">
-            <div class="vector_05">
-              <img src={eye} alt="View" />
-            </div>
+            <img src={blueEye} alt="View" class="blue-eye" />
           </div>
           <div class="view-gift">
             <span class="viewgift_span">View Gift</span>
@@ -141,9 +148,7 @@
           tabindex="0"
         >
           <div class="eye_01">
-            <div class="vector_07">
-              <img src={eye} alt="View" />
-            </div>
+              <img src={heart} alt="View Book" />
           </div>
           <div class="view-book">
             <span class="viewbook_span">View Book</span>
@@ -158,9 +163,7 @@
           tabindex="0"
         >
           <div class="heart">
-            <div class="vector_08">
-              <img src={Book} alt="Send Thank You" />
-            </div>
+              <img src={heart} alt="Send Thank You" />
           </div>
           <div class="send-thank-you">
             <span class="sendthankyou_span">Send Thank You</span>
@@ -295,13 +298,8 @@
     text-align: center;
   }
 
-  .vector_05 {
-    width: 15px;
-    height: 10px;
-    left: 0.50px;
-    top: 3px;
-    position: absolute;
-    background: #438BFF;
+  .blue-eye {
+    width: 100%;
   }
 
   .viewgift_span {
@@ -533,8 +531,8 @@
   .button_02 {
     flex: 1 1 0;
     height: 41px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 12px;
+    padding-right: 12px;
     padding-top: 12px;
     padding-bottom: 12px;
     background: #E7FEFF;
@@ -558,8 +556,8 @@
 
   .button_03 {
     flex: 1 1 0;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 12px;
+    padding-right: 12px;
     padding-top: 12px;
     padding-bottom: 12px;
     position: relative;
@@ -567,7 +565,7 @@
     border-radius: 12px;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
     display: flex;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -614,8 +612,8 @@
     align-self: stretch;
     padding-top: 12px;
     padding-bottom: 12px;
-    padding-left: 14px;
-    padding-right: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
     background: #FFF6E0;
     border-radius: 12px;
     outline: 1px #FFBE4C solid;

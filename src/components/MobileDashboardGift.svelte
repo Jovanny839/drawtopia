@@ -16,54 +16,57 @@
     age: number;
     sendTo: string;
     occasion: string;
-    status: 'pending' | 'completed';
+    status: "pending" | "completed";
     sentDate: string;
     deliveryDate?: string;
   }
 
   // Handle button clicks
   function handleAddChildren() {
-    dispatch('addChildren');
+    dispatch("addChildren");
   }
 
   function handleResendLink(giftId: string) {
-    dispatch('resendLink', { giftId });
+    dispatch("resendLink", { giftId });
   }
 
   function handleViewGift(giftId: string) {
-    dispatch('viewGift', { giftId });
+    dispatch("viewGift", { giftId });
   }
 
   function handleViewBook(giftId: string) {
-    dispatch('viewBook', { giftId });
+    dispatch("viewBook", { giftId });
   }
 
   function handleSendThankYou(giftId: string) {
-    dispatch('sendThankYou', { giftId });
+    dispatch("sendThankYou", { giftId });
   }
 
   // Default sample data if no gifts provided
-  $: sampleGifts = gifts.length > 0 ? gifts : [
-    {
-      id: '1',
-      childName: 'Emma',
-      age: 7,
-      sendTo: 'parent@email.com',
-      occasion: 'Birthday',
-      status: 'pending',
-      sentDate: 'Oct 15, 2024'
-    },
-    {
-      id: '2',
-      childName: 'Liam',
-      age: 5,
-      sendTo: 'sister@email.com',
-      occasion: 'First day at School',
-      status: 'completed',
-      sentDate: 'Oct 10, 2024',
-      deliveryDate: 'Oct 20'
-    }
-  ];
+  $: sampleGifts =
+    gifts.length > 0
+      ? gifts
+      : [
+          {
+            id: "1",
+            childName: "Emma",
+            age: 7,
+            sendTo: "parent@email.com",
+            occasion: "Birthday",
+            status: "pending",
+            sentDate: "Oct 15, 2024",
+          },
+          {
+            id: "2",
+            childName: "Liam",
+            age: 5,
+            sendTo: "sister@email.com",
+            occasion: "First day at School",
+            status: "completed",
+            sentDate: "Oct 10, 2024",
+            deliveryDate: "Oct 20",
+          },
+        ];
 </script>
 
 <div class="dashboard-story-library">
@@ -80,18 +83,17 @@
             </span>
           </div>
         </div>
-        
-        <div 
+
+        <div
           class="frame-1410104246"
           on:click={handleAddChildren}
-          on:keydown={(e) => (e.key === "Enter" || e.key === " ") && handleAddChildren()}
+          on:keydown={(e) =>
+            (e.key === "Enter" || e.key === " ") && handleAddChildren()}
           role="button"
           tabindex="0"
         >
           <div class="usercircleplus">
-            <div class="vector_02">
-              <img src={userCirclePlus} alt="Add user" />
-            </div>
+            <img src={userCirclePlus} alt="Add user" class="user-circle-plus" />
           </div>
           <div class="add-children">
             <span class="addchildren_span">Add Children</span>
@@ -104,15 +106,16 @@
     <div class="frame-1410104169">
       {#if loading}
         <div class="loading-state">
-          <p>Loading gifts...</p>
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Loading gifts...</p>
         </div>
       {:else if error}
         <div class="error-state">
-          <p>{error}</p>
+          <p class="error-text">{error}</p>
         </div>
       {:else}
         {#each sampleGifts as gift}
-          <GiftCard 
+          <GiftCard
             {gift}
             on:resendLink={(e) => handleResendLink(e.detail.giftId)}
             on:viewGift={(e) => handleViewGift(e.detail.giftId)}
@@ -131,7 +134,7 @@
     font-size: 24px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 28.80px;
+    line-height: 28.8px;
     word-wrap: break-word;
   }
 
@@ -144,7 +147,7 @@
     font-size: 16px;
     font-family: DM Sans;
     font-weight: 400;
-    line-height: 22.40px;
+    line-height: 22.4px;
     word-wrap: break-word;
   }
 
@@ -166,7 +169,7 @@
     font-size: 16px;
     font-family: DM Sans;
     font-weight: 600;
-    line-height: 22.40px;
+    line-height: 22.4px;
     word-wrap: break-word;
   }
 
@@ -180,7 +183,11 @@
     left: 52px;
     top: 17px;
     position: absolute;
-    background: radial-gradient(ellipse 42.11% 42.11% at 50.00% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
+    background: radial-gradient(
+      ellipse 42.11% 42.11% at 50% 52.94%,
+      white 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
     border-radius: 9999px;
   }
 
@@ -209,7 +216,7 @@
     padding-top: 12px;
     padding-bottom: 12px;
     position: relative;
-    background: #438BFF;
+    background: #438bff;
     overflow: hidden;
     border-radius: 12px;
     justify-content: center;
@@ -231,13 +238,9 @@
     overflow: hidden;
   }
 
-  .vector_02 {
-    width: 16.24px;
-    height: 16.24px;
-    left: 1.89px;
-    top: 1.88px;
+  .user-circle-plus {
+    width: 100%;
     position: absolute;
-    background: white;
   }
 
   .frame-1410104169 {
@@ -274,18 +277,51 @@
     display: inline-flex;
   }
 
+  /* Loading, Error, and Empty States */
   .loading-state,
   .error-state {
-    text-align: center;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 40px 20px;
-    color: #727272;
+    text-align: center;
   }
 
-  .loading-state p,
-  .error-state p {
-    margin: 0;
-    font-family: "DM Sans", sans-serif;
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #438bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+
+  .loading-text {
+    color: #666d80;
     font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .error-text {
+    color: #dc2626;
+    font-size: 16px;
+    font-family: Quicksand;
+    font-weight: 500;
+    margin: 0;
   }
 
   .frame-1410104150 {

@@ -268,6 +268,37 @@
       .filter((char) => char.id);
   };
 
+  // Helper to convert age range to a single age for display
+  const getAgeFromRange = (ageRange: string): number => {
+    if (!ageRange) return 7;
+    // Extract middle age from range like "3-6" -> 4 or "7-10" -> 8
+    const match = ageRange.match(/(\d+)-(\d+)/);
+    if (match) {
+      const min = parseInt(match[1]);
+      const max = parseInt(match[2]);
+      return Math.floor((min + max) / 2);
+    }
+    // Handle single ages like "11-12" -> 11
+    return parseInt(ageRange.split("-")[0]) || 7;
+  };
+
+  // Helper to format date for display
+  const formatDate = (dateString: string | undefined): string => {
+    if (!dateString) return "Unknown";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Unknown";
+      // Format as "Oct 15, 2024"
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      return "Unknown";
+    }
+  };
+
   const fetchGifts = async () => {
     try {
       loadingGifts = true;
@@ -277,10 +308,14 @@
         gifts = result.data.map((gift: Gift) => ({
           id: gift.id,
           childName: gift.child_name,
+          age: getAgeFromRange(gift.age_group),
           ageGroup: gift.age_group,
-          status: gift.status,
+          status: gift.status === 'completed' ? 'completed' : 'pending',
           giftFrom: gift.relationship,
           occasion: gift.occasion,
+          sendTo: gift.delivery_email || "Unknown",
+          sentDate: formatDate(gift.created_at),
+          deliveryDate: formatDate(gift.delivery_time),
           expectedDelivery: gift.delivery_time
             ? new Date(gift.delivery_time).toLocaleDateString("en-GB")
             : "Unknown",
