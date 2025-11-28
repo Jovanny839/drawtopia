@@ -4,6 +4,7 @@
   import { page } from "$app/stores";
   import { browser } from "$app/environment";
   import BackBtn from "../../../components/BackBtn.svelte";
+  import MobileBackBtn from "../../../components/MobileBackBtn.svelte";
   import PersonInfo from "../../../components/PersonInfo.svelte";
   import PhotoGuideModal from "../../../components/PhotoGuideModal.svelte";
   import { user, authLoading, isAuthenticated } from "../../../lib/stores/auth";
@@ -165,6 +166,7 @@
           <div class="logo-img"></div>
         </div>
       </div>
+      <MobileBackBtn backText="Back" backRoute="/dashboard" />
       <div class="back-btn-container">
         <BackBtn />
       </div>
@@ -312,6 +314,13 @@
                   >
                     <span class="continuetostorycreation_span">Save Changes</span>
                   </button>
+                  <button
+                    class="button_cancel"
+                    on:click={() => goto('/dashboard')}
+                    type="button"
+                  >
+                    <span class="cancel_span">Cancel</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -360,6 +369,13 @@
     gap: 24px;
     display: inline-flex;
     flex-direction: column;
+  }
+
+  @media (max-width: 800px) {
+    .main-pane {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 
   .createchildprofile_span {
@@ -617,7 +633,7 @@
   }
 
   /* Mobile responsive styles */
-  @media (max-width: 768px) {
+  @media (max-width: 800px) {
     .profile-creation-default {
       padding-left: 16px;
       padding-right: 16px;
@@ -626,20 +642,26 @@
       padding-bottom: 40px;
     }
 
+    .main-pane {
+      width: 100%;
+      max-width: 100%;
+    }
+
     .frame-1410103818 {
-      flex-direction: column-reverse;
-      gap: 32px;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
     }
 
     .createchildprofile_span {
-      font-size: 48px;
-      line-height: 67.2px;
+      font-size: 32px;
+      line-height: 44.8px;
       text-align: center;
     }
 
     .tellusaboutyourchildsowecanpersonalizetheirdrawtopiaexperience_span {
-      font-size: 18px;
-      line-height: 21.6px;
+      font-size: 16px;
+      line-height: 22.4px;
       text-align: center;
     }
 
@@ -661,8 +683,8 @@
     .step1_span,
     .f2_span,
     .settingupprofile_span {
-      font-size: 18px;
-      line-height: 25.2px;
+      font-size: 16px;
+      line-height: 22.4px;
     }
 
     .frame-5 {
@@ -674,7 +696,92 @@
     }
 
     .back-btn-container {
-      padding: 0 8px;
+      display: none;
+    }
+
+    .edit-form-container {
+      width: 100%;
+    }
+
+    .frame-10 {
+      padding: 16px;
+      gap: 16px;
+    }
+
+    .personalinformation_span {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .uploadaphotoofchildsname_span {
+      font-size: 14px;
+      line-height: 19.6px;
+    }
+
+    .childsfirstname_span,
+    .agegroup_span,
+    .yourrelationship_span {
+      font-size: 14px;
+      line-height: 19.6px;
+    }
+
+    .image {
+      height: 120px;
+    }
+
+    .input-field,
+    .select-field {
+      height: 48px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .text-input,
+    .select-input {
+      font-size: 14px;
+      line-height: 19.6px;
+    }
+
+    .button_02,
+    .button_cancel {
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
+
+    .continuetostorycreation_span,
+    .cancel_span {
+      font-size: 16px;
+      line-height: 22.4px;
+    }
+
+    .frame-1410103935 {
+      gap: 16px;
+    }
+
+    .frame-1410103851 {
+      gap: 12px;
+    }
+
+    .frame-1410103850 {
+      gap: 16px;
+    }
+
+    .frame-1410103991 {
+      gap: 16px;
+    }
+
+    .frame-1410103821 {
+      padding-top: 16px;
+      gap: 12px;
+    }
+
+    .contactushellodrawtopiacom_span,
+    .privacypolicy_span,
+    .termsofservice_span {
+      font-size: 14px;
+      line-height: 19.6px;
     }
 
     .modal-container {
@@ -690,16 +797,18 @@
       padding-left: 12px;
       padding-right: 12px;
       gap: 16px;
+      padding-top: 12px;
+      padding-bottom: 32px;
     }
 
     .createchildprofile_span {
-      font-size: 48px;
-      line-height: 67.2px;
+      font-size: 28px;
+      line-height: 39.2px;
     }
 
     .tellusaboutyourchildsowecanpersonalizetheirdrawtopiaexperience_span {
-      font-size: 18px;
-      line-height: 21.6px;
+      font-size: 14px;
+      line-height: 19.6px;
     }
 
     .navbar {
@@ -718,7 +827,42 @@
     }
 
     .frame-1410103818 {
-      gap: 24px;
+      gap: 16px;
+    }
+
+    .frame-10 {
+      padding: 12px;
+      gap: 12px;
+    }
+
+    .personalinformation_span {
+      font-size: 18px;
+      line-height: 25.2px;
+    }
+
+    .image {
+      height: 100px;
+    }
+
+    .input-field,
+    .select-field {
+      height: 44px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .button_02,
+    .button_cancel {
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .continuetostorycreation_span,
+    .cancel_span {
+      font-size: 14px;
+      line-height: 19.6px;
     }
 
     .modal-container {
@@ -754,6 +898,12 @@
     width: 100%;
     display: inline-flex;
     justify-content: flex-start;
+  }
+
+  @media (max-width: 800px) {
+    .back-btn-container {
+      display: none;
+    }
   }
 
   .loading-container {
@@ -1172,6 +1322,39 @@
     align-items: flex-start;
     gap: 12px;
     display: flex;
+  }
+
+  .button_cancel {
+    align-self: stretch;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
+    border-radius: 20px;
+    outline: 1px #DCDCDC solid;
+    outline-offset: -1px;
+    background: white;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+  }
+
+  .button_cancel:hover {
+    background: #F8FAFB;
+  }
+
+  .cancel_span {
+    color: black;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
   }
 
   .image-preview {

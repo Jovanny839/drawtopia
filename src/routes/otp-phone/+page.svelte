@@ -10,6 +10,7 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import languageFlag from '../../assets/langbtnicon.svg';
+  import logo from '../../assets/logo.png';
 
   // Any Country Code Alpha-2 (ISO 3166)
   let selectedCountry: CountryCode | null = "HU";
@@ -385,12 +386,17 @@
 
 <div class="login-with-phone-number">
   <div class="form">
-    <div class="language-button">
-      <img src={languageFlag} alt="Language Flag" class="language-flag-img">
-      English
-    </div>
-    <div class="logo-text-full">
-      <div class="logo-img"></div>
+    <div class="header">
+      <div class="">
+        <img src={logo} alt="" class="mobile-logo">
+      </div>
+      <div class="language-button">
+        <img src={languageFlag} alt="Language Flag" class="language-flag-img">
+        English
+      </div>
+      <div class="logo-text-full">
+        <div class="logo-img"></div>
+      </div>
     </div>
     <div class="container">
       <div class="form_01">
@@ -398,13 +404,13 @@
           <div class="welcome-to-drawtopia">
             <span class="welcometodrawtopia_span">Check Your Messages!</span>
           </div>
-          <div>
-            <span class="logintocontinuewithyourdrawtopiajourney_span"
-              >We've sent a 6-digit code to your phone Number <span class="donthaveaccountsignup_span_02"
-              >{phoneFromStorage || value || '+36301234567'}</span
-            >. If you haven’t received it within 15 minutes, please click <span class="resend-btn" on:click={handleResendOTP}>Resend Code</span></span
-            >
-            
+          <div class="weve-sent-a-6-digit-code-to-your-phone-number">
+            <span class="wevesenta6-digitcodetoyourphonenumber_span_01">We've sent a 6-digit code to your phone number </span>
+            <span class="wevesenta6-digitcodetoyourphonenumber_span_02">{phoneFromStorage || value || '+36301234567'}</span>
+            <span class="wevesenta6-digitcodetoyourphonenumber_span_03">. </span>
+            <span class="wevesenta6-digitcodetoyourphonenumber_span_04">If you haven't received it within 15 minutes, please click </span>
+            <span class="wevesenta6-digitcodetoyourphonenumber_span_05" on:click={handleResendOTP} on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleResendOTP(); } }} role="button" tabindex="0">Resend code</span>
+            <span class="wevesenta6-digitcodetoyourphonenumber_span_06">.</span>
           </div>
         </div>
       </div>
@@ -435,21 +441,21 @@
           <button type="submit" class="continue_btn" disabled={isLoading}>
             {#if isLoading}
               <div class="spinner"></div>
-              <span class="login_span">Logging in...</span>
+              <span class="login_span">Verifying...</span>
             {:else}
               <div class="login"><span class="login_span">Continue</span></div>
             {/if}
           </button>
-          <button type="button" class="back_btn" disabled={isLoading} on:click={handleBack}>
-            {#if isLoading}
-              <div class="spinner"></div>
-              <span class="login_span">Processing...</span>
-            {:else}
-              <div class="button">
-                <div class="back"><span class="back_span">Back</span></div>
-              </div>
-            {/if}
-          </button>
+          <div
+            class="button"
+            role="button"
+            tabindex="0"
+            aria-label="Go back to signup"
+            on:click={handleBack}
+            on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleBack(); }}
+          >
+            <div class="back"><span class="back_span">Back</span></div>
+          </div>
         </div>
       </form>
     </div>
@@ -460,10 +466,10 @@
 <style>
   .welcometodrawtopia_span {
     color: #141414;
-    font-size: 40px;
+    font-size: 32px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 56px;
+    line-height: 38.40px;
     word-wrap: break-word;
   }
 
@@ -478,12 +484,68 @@
     width: 100%;
     height: 100%;
   }
-  .logintocontinuewithyourdrawtopiajourney_span {
-    color: #666d80;
-    font-size: 20px;
-    font-family: Nunito;
+
+  .weve-sent-a-6-digit-code-to-your-phone-number {
+    align-self: stretch;
+  }
+
+  .wevesenta6-digitcodetoyourphonenumber_span_01 {
+    color: #727272;
+    font-size: 14px;
+    font-family: DM Sans;
     font-weight: 400;
-    line-height: 28px;
+    line-height: 19.60px;
+    word-wrap: break-word;
+  }
+
+  .wevesenta6-digitcodetoyourphonenumber_span_02 {
+    color: #141414;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 500;
+    line-height: 19.60px;
+    word-wrap: break-word;
+  }
+
+  .wevesenta6-digitcodetoyourphonenumber_span_03 {
+    color: #141414;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 19.60px;
+    word-wrap: break-word;
+  }
+
+  .wevesenta6-digitcodetoyourphonenumber_span_04 {
+    color: #727272;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 19.60px;
+    word-wrap: break-word;
+  }
+
+  .wevesenta6-digitcodetoyourphonenumber_span_05 {
+    color: #438BFF;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    text-decoration: underline;
+    line-height: 19.60px;
+    word-wrap: break-word;
+    cursor: pointer;
+  }
+
+  .wevesenta6-digitcodetoyourphonenumber_span_05:hover {
+    color: #0066cc;
+  }
+
+  .wevesenta6-digitcodetoyourphonenumber_span_06 {
+    color: #438BFF;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 19.60px;
     word-wrap: break-word;
   }
 
@@ -500,6 +562,17 @@
     text-align: center;
   }
 
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .mobile-logo {
+    width: 100%;
+    display: none;
+  }
+
   .language-button {
     display: flex;
     flex-direction: row;
@@ -510,15 +583,6 @@
     border: 1px solid #ededed;
     padding: 10px 20px 10px 16px;
     align-items: center;
-  }
-
-  .donthaveaccountsignup_span_02 {
-    color: black;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.2px;
-    word-wrap: break-word;
   }
 
 
@@ -665,10 +729,10 @@
   }
   .f_span {
     color: #141414;
-    font-size: 32px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 44.8px;
+    font-size: 24px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 28.80px;
     word-wrap: break-word;
   }
 
@@ -677,19 +741,20 @@
     text-align: center;
     height: 75px;
     width: 100%;
-    min-width: 30px;
     padding-left: 10px;
     padding-right: 10px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     background: white;
     overflow: hidden;
     border-radius: 12px;
-    border: 1px solid #bbb;
+    outline: 1px #DCDCDC solid;
+    outline-offset: -1px;
     justify-content: center;
     align-items: center;
     gap: 10px;
     display: flex;
+    border: none;
   }
 
   .frame-1410103856 {
@@ -726,40 +791,7 @@
     box-shadow: 0 4px 8px rgba(67, 139, 255, 0.3);
   }
 
-  .back_btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  .back_btn {
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  /* .back_btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(67, 139, 255, 0.3);
-  } */
-
-  .back_btn:active {
-    transform: translateY(1px);
-    box-shadow: 0px 1px 0px #2b63b2;
-  }
-
-  /* Upgraded back button styles (from user) */
-  .back_span {
-    color: #438BFF;
-    font-size: 18px;
-    font-family: DM Sans;
-    font-weight: 600;
-    line-height: 25.20px;
-    word-wrap: break-word;
-  }
-
-  .back {
-    text-align: center;
-  }
-
+  /* Back button styles (upgraded) */
   .button {
     width: 100%;
     height: 100%;
@@ -776,43 +808,31 @@
     align-items: center;
     gap: 10px;
     display: inline-flex;
-  }
-
-  .resend-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .resend-text {
-    color: #666d80;
-    font-size: 14px;
-    font-family: Nunito;
-    font-weight: 400;
-  }
-  
-  .resend-btn {
-    color: #438BFF;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.2px;
-    word-wrap: break-word;
-    text-decoration: none;
     cursor: pointer;
   }
 
-  .resend-btn:hover:not(:disabled) {
-    color: #2563eb;
+  .back_span {
+    color: #438BFF;
+    font-size: 18px;
+    font-family: 'DM Sans', 'Quicksand', sans-serif;
+    font-weight: 600;
+    line-height: 25.20px;
+    word-wrap: break-word;
   }
 
-  .resend-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  .back {
+    text-align: center;
+    display: block;
+  }
+
+  .button:focus {
+    box-shadow: 0 0 0 4px rgba(67,139,255,0.12), 0px 4px 0px #438BFF;
+    outline: none;
+  }
+
+  .button:active {
+    transform: translateY(1px);
+    box-shadow: 0px 2px 0px #2b63b2;
   }
 
   @media (max-width: 768px) {
@@ -822,17 +842,123 @@
       min-height: 100vh;
     }
 
+    .header {
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      gap: 0;
+      align-items: center;
+      margin-bottom: 0;
+      margin-top: 50px;
+    }
+    
+    .language-button {
+      justify-content: center;
+      align-items: center;
+    }
+
     .form {
       width: 100%;
       height: auto;
       min-height: 100vh;
+      padding: 16px;
+      justify-content: flex-start;
+    }
+
+    .container {
+      gap: 32px;
+    }
+
+    .welcometodrawtopia_span {
+      font-size: 32px;
+      line-height: 38.40px;
+    }
+
+    .wevesenta6-digitcodetoyourphonenumber_span_01,
+    .wevesenta6-digitcodetoyourphonenumber_span_02,
+    .wevesenta6-digitcodetoyourphonenumber_span_03,
+    .wevesenta6-digitcodetoyourphonenumber_span_04,
+    .wevesenta6-digitcodetoyourphonenumber_span_05,
+    .wevesenta6-digitcodetoyourphonenumber_span_06 {
+      font-size: 14px;
+      line-height: 19.60px;
     }
 
     .background-image {
       display: none;
     }
+
+    .logo-text-full {
+      display: none;
+    }
+
+    .mobile-logo {
+      display: inline;
+      width: 200px;
+      height: auto;
+    }
+
     .frame-1410103856 {
       gap: 12px;
+    }
+
+    .input-placeholder {
+      height: 60px;
+      padding-left: 8px;
+      padding-right: 8px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .f_span {
+      font-size: 24px;
+      line-height: 28.80px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .button {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .back_span {
+      font-size: 16px;
+    }
+
+    .welcometodrawtopia_span {
+      font-size: 28px;
+      line-height: 33.60px;
+    }
+
+    .wevesenta6-digitcodetoyourphonenumber_span_01,
+    .wevesenta6-digitcodetoyourphonenumber_span_02,
+    .wevesenta6-digitcodetoyourphonenumber_span_03,
+    .wevesenta6-digitcodetoyourphonenumber_span_04,
+    .wevesenta6-digitcodetoyourphonenumber_span_05,
+    .wevesenta6-digitcodetoyourphonenumber_span_06 {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .input-placeholder {
+      height: 55px;
+      gap: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .container {
+      gap: 24px;
+    }
+
+    .f_span {
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    .mobile-logo {
+      width: 200px;
     }
   }
 </style>

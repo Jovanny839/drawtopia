@@ -11,6 +11,7 @@
     import globe from "../../assets/GlobeHemisphereWest.svg";
     import envelope from "../../assets/Envelope.svg";
     import userSquare from "../../assets/UserSquare.svg";
+    import selectLayerIcon from "../../assets/List.svg";
     import { goto } from "$app/navigation";
     import { user, auth } from "../../lib/stores/auth";
     import { getUserProfile } from "../../lib/auth";
@@ -174,11 +175,16 @@
         <div class="logo-text-full">
             <img src={drawtopialogo} alt="drawtopialogo" class="drawtopialogo">
         </div>
-        <AccountDropdown 
-            avatarUrl={userAvatarUrl}
-            userName={userName}
-            userPlan={subscriptionPlan}
-        />
+        <div class="frame-2147227655">
+            <AccountDropdown 
+                avatarUrl={userAvatarUrl}
+                userName={userName}
+                userPlan={subscriptionPlan}
+            />
+            <div class="icon-list" role="button" tabindex="0">
+                <img src={selectLayerIcon} alt="menu" />
+            </div>
+        </div>
     </div>
     <div class="frame-1410103919">
         <div class="frame-1410103869">
@@ -207,34 +213,26 @@
                     <div class="frame-1410103915_01">
                         <div><span class="profilepicture_span">Profile Picture</span></div>
                     </div>
-                    <div class="profile-picture-wrapper">
-                        <img class="ellipse-10" src={userProfilePicture} alt="User profile" />
-                    </div>
+                    <img class="ellipse-10" src={userProfilePicture} alt="User profile" />
                 </div>
                 <div class="rectangle-39"></div>
                 <div class="form">
                     <div class="frame-1410103918">
-                        <div class="form-label-wrapper">
-                            <div><span class="name_span">Name</span></div>
-                        </div>
+                        <div><span class="name_span">Name</span></div>
                         <div class="drawtopia-kids"><span class="drawtopiakids_span">{userName}</span></div>
                     </div>
                 </div>
                 <div class="rectangle-38"></div>
                 <div class="form_01">
                     <div class="frame-1410103918_01">
-                        <div class="form-label-wrapper">
-                            <div><span class="email_span">Email</span></div>
-                        </div>
+                        <div><span class="email_span">Email</span></div>
                         <div class="drawtopiagmailcom"><span class="drawtopiagmailcom_span">{userEmail}</span></div>
                     </div>
                 </div>
                 <div class="rectangle-37"></div>
                 <div class="form_02">
                     <div class="frame-1410103918_02">
-                        <div class="form-label-wrapper">
-                            <div><span class="languagebooks_span">Language Books</span></div>
-                        </div>
+                        <div><span class="languagebooks_span">Language Books</span></div>
                         <div class="english"><span class="english_span">English</span></div>
                     </div>
                 </div>
@@ -249,7 +247,7 @@
                 </div>
                 <div class="form_03">
                     <div class="frame-1410103918_03">
-                        <div><span class="onboardingemails_span">Onboarding emails</span></div>
+                        <div class="onboarding-emails"><span class="onboardingemails_span">Onboarding emails</span></div>
                         <div class="guides-and-tips-to-help-you-get-started"><span class="guidesandtipstohelpyougetstarted_span">Guides and tips to help you get started</span></div>
                     </div>
                     <button 
@@ -266,7 +264,7 @@
                 <div class="rectangle-38_01"></div>
                 <div class="form_04">
                     <div class="frame-1410103918_04">
-                        <div><span class="productupdatesannouncements_span">Product updates & announcements</span></div>
+                        <div class="product-updates-announcements"><span class="productupdatesannouncements_span">Product updates & announcements</span></div>
                         <div class="new-features-improvements-and-news"><span class="newfeaturesimprovementsandnews_span">New features, improvements, and news</span></div>
                     </div>
                     <button 
@@ -299,8 +297,8 @@
 
 <style>
 .arrowleft-icon {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 15px;
 }
 
 .edit-icon {
@@ -347,15 +345,15 @@
 }
 
 .profile {
-    flex: 1 1 0;
+    align-self: stretch;
 }
 
 .editprofile_span {
     color: white;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 600;
-    line-height: 25.20px;
+    line-height: 22.40px;
     word-wrap: break-word;
 }
 
@@ -366,8 +364,8 @@
 .ellipse-1415 {
     width: 248px;
     height: 114px;
-    left: -46px;
-    top: 15px;
+    left: 48px;
+    top: 4px;
     position: absolute;
     background: radial-gradient(ellipse 42.11% 42.11% at 50.00% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
     border-radius: 9999px;
@@ -378,15 +376,16 @@
     font-size: 20px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 28px;
+    line-height: 24px;
     word-wrap: break-word;
 }
 
 .ellipse-10 {
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
     background: #D9D9D9;
     border-radius: 9999px;
+    object-fit: cover;
 }
 
 .rectangle-39 {
@@ -397,19 +396,19 @@
 
 .name_span {
     color: black;
-    font-size: 20px;
-    font-family: Quicksand;
+    font-size: 18px;
+    font-family: DM Sans;
     font-weight: 600;
-    line-height: 28px;
+    line-height: 25.20px;
     word-wrap: break-word;
 }
 
 .drawtopiakids_span {
     color: #727272;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 400;
-    line-height: 25.20px;
+    line-height: 22.40px;
     word-wrap: break-word;
 }
 
@@ -425,19 +424,19 @@
 
 .email_span {
     color: black;
-    font-size: 20px;
-    font-family: Quicksand;
+    font-size: 18px;
+    font-family: DM Sans;
     font-weight: 600;
-    line-height: 28px;
+    line-height: 25.20px;
     word-wrap: break-word;
 }
 
 .drawtopiagmailcom_span {
     color: #727272;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 400;
-    line-height: 25.20px;
+    line-height: 22.40px;
     word-wrap: break-word;
 }
 
@@ -453,19 +452,19 @@
 
 .languagebooks_span {
     color: black;
-    font-size: 20px;
-    font-family: Quicksand;
+    font-size: 18px;
+    font-family: DM Sans;
     font-weight: 600;
-    line-height: 28px;
+    line-height: 25.20px;
     word-wrap: break-word;
 }
 
 .english_span {
     color: #727272;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 400;
-    line-height: 25.20px;
+    line-height: 22.40px;
     word-wrap: break-word;
 }
 
@@ -475,28 +474,32 @@
 
 .emailpreferences_span {
     color: black;
-    font-size: 24px;
+    font-size: 20px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 28.80px;
+    line-height: 24px;
     word-wrap: break-word;
 }
 
 .onboardingemails_span {
     color: black;
-    font-size: 20px;
-    font-family: Quicksand;
+    font-size: 18px;
+    font-family: DM Sans;
     font-weight: 600;
-    line-height: 28px;
+    line-height: 25.20px;
     word-wrap: break-word;
+}
+
+.onboarding-emails {
+    align-self: stretch;
 }
 
 .guidesandtipstohelpyougetstarted_span {
     color: #727272;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 400;
-    line-height: 25.20px;
+    line-height: 22.40px;
     word-wrap: break-word;
 }
 
@@ -519,19 +522,23 @@
 
 .productupdatesannouncements_span {
     color: black;
-    font-size: 20px;
-    font-family: Quicksand;
+    font-size: 18px;
+    font-family: DM Sans;
     font-weight: 600;
-    line-height: 28px;
+    line-height: 25.20px;
     word-wrap: break-word;
+}
+
+.product-updates-announcements {
+    align-self: stretch;
 }
 
 .newfeaturesimprovementsandnews_span {
     color: #727272;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 400;
-    line-height: 25.20px;
+    line-height: 22.40px;
     word-wrap: break-word;
 }
 
@@ -608,13 +615,15 @@
 }
 
 .logo-text-full {
-    width: 203.32px;
-    height: 38px;
+    width: 170.15px;
+    height: 31.80px;
     position: relative;
 }
 
 .drawtopialogo {
     width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .arrowleft {
@@ -625,18 +634,19 @@
 }
 
 .button_01 {
+    align-self: stretch;
     padding-left: 24px;
     padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     position: relative;
     background: #438BFF;
     box-shadow: 0px 4px 4px rgba(255, 255, 255, 0.25);
-    border-radius: 20px;
+    border-radius: 12px;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    display: flex;
+    display: inline-flex;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -660,6 +670,7 @@
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .switch-button:hover {
@@ -683,6 +694,7 @@
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .switch-button_01:hover {
@@ -766,10 +778,11 @@
 }
 
 .frame-1410103915 {
-    flex: 1 1 0;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 32px;
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
     display: flex;
 }
 
@@ -779,7 +792,7 @@
     padding-bottom: 5px;
     justify-content: center;
     align-items: center;
-    gap: 4px;
+    gap: 12px;
     display: inline-flex;
 }
 
@@ -789,7 +802,7 @@
     padding-bottom: 5px;
     justify-content: center;
     align-items: center;
-    gap: 4px;
+    gap: 12px;
     display: inline-flex;
 }
 
@@ -811,9 +824,8 @@
 
 .frame-1410103916 {
     align-self: stretch;
-    height: 57px;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     gap: 24px;
     display: inline-flex;
 }
@@ -827,16 +839,42 @@
     display: flex;
 }
 
+.frame-2147227655 {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    display: flex;
+}
+
+.icon-list {
+    width: 32px;
+    height: 32px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.icon-list:hover {
+    opacity: 0.7;
+}
+
+.icon-list:active {
+    opacity: 0.5;
+}
+
+.icon-list img {
+    width: 24px;
+    height: 18px;
+}
+
 .navbar {
-    width: 100%;
+    align-self: stretch;
     padding-top: 12px;
     padding-bottom: 12px;
-    padding-left: 24px;
-    padding-right: 12px;
-    background: white;
     border-radius: 20px;
-    outline: 1px #EDEDED solid;
-    outline-offset: -1px;
     justify-content: space-between;
     align-items: center;
     display: inline-flex;
@@ -851,7 +889,7 @@
 
 .frame-1410103888 {
     align-self: stretch;
-    padding: 24px;
+    padding: 16px;
     background: white;
     overflow: hidden;
     border-radius: 20px;
@@ -866,7 +904,7 @@
 
 .frame-1410103889 {
     align-self: stretch;
-    padding: 24px;
+    padding: 16px;
     overflow: hidden;
     border-radius: 20px;
     outline: 1px #DCDCDC solid;
@@ -879,7 +917,7 @@
 }
 
 .frame-1410103919 {
-    width: 100%;
+    align-self: stretch;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -891,15 +929,15 @@
     width: 100%;
     height: 100%;
     padding-top: 24px;
-    padding-bottom: 48px;
-    padding-left: 100px;
-    padding-right: 100px;
+    padding-bottom: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
     background: white;
     overflow: hidden;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 53px;
+    gap: 32px;
     display: inline-flex;
 }
 
@@ -923,15 +961,6 @@
     color: #438BFF;
 }
 
-.ellipse-10 {
-    width: 120px;
-    height: 120px;
-    background: #D9D9D9;
-    border-radius: 9999px;
-    object-fit: cover;
-    margin-top: 16px;
-}
-
 .form-label-wrapper {
     display: flex;
     align-items: center;
@@ -940,7 +969,7 @@
 
 .action-buttons {
     align-self: stretch;
-    padding: 24px;
+    padding: 16px;
     background: white;
     border-radius: 20px;
     outline: 1px #DCDCDC solid;
@@ -954,20 +983,20 @@
 .save-button {
     padding-left: 24px;
     padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     background: #438BFF;
     color: white;
     border: none;
-    border-radius: 20px;
+    border-radius: 12px;
     box-shadow: 0px 4px 4px rgba(255, 255, 255, 0.25);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 600;
     transition: all 0.2s ease;
 }
@@ -981,20 +1010,20 @@
 .cancel-button {
     padding-left: 24px;
     padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     background: white;
     color: #727272;
     border: 1px #DCDCDC solid;
-    border-radius: 20px;
+    border-radius: 12px;
     box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    font-size: 18px;
-    font-family: Quicksand;
+    font-size: 16px;
+    font-family: DM Sans;
     font-weight: 600;
     transition: all 0.2s ease;
 }
@@ -1002,5 +1031,219 @@
 .cancel-button:hover {
     background: #F5F5F5;
     border-color: #B0B0B0;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .account-settings {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 16px;
+        padding-bottom: 24px;
+        gap: 24px;
+    }
+
+    .navbar {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .logo-text-full {
+        width: 140px;
+        height: 26px;
+    }
+
+    .frame-1410103888,
+    .frame-1410103889 {
+        padding: 12px;
+        gap: 24px;
+    }
+
+    .frame-1410103916 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .frame-1410103915 {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .profile_span {
+        font-size: 20px;
+        line-height: 24px;
+    }
+
+    .button_01 {
+        width: 100%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .editprofile_span {
+        font-size: 14px;
+    }
+
+    .frame-1410103917 {
+        gap: 12px;
+    }
+
+    .frame-1410103916_01 {
+        gap: 16px;
+    }
+
+    .profilepicture_span {
+        font-size: 18px;
+        line-height: 22px;
+    }
+
+    .ellipse-10 {
+        width: 64px;
+        height: 64px;
+    }
+
+    .name_span,
+    .email_span,
+    .languagebooks_span {
+        font-size: 16px;
+        line-height: 22px;
+    }
+
+    .drawtopiakids_span,
+    .drawtopiagmailcom_span,
+    .english_span {
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .emailpreferences_span {
+        font-size: 18px;
+        line-height: 22px;
+    }
+
+    .onboardingemails_span,
+    .productupdatesannouncements_span {
+        font-size: 16px;
+        line-height: 22px;
+    }
+
+    .guidesandtipstohelpyougetstarted_span,
+    .newfeaturesimprovementsandnews_span {
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .form_03,
+    .form_04 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .switch-button,
+    .switch-button_01 {
+        width: 48px;
+        padding: 5px;
+    }
+
+    .ellipse-11,
+    .ellipse-11_01 {
+        width: 18px;
+        height: 18px;
+    }
+
+    .frame-1410103869 {
+        gap: 16px;
+    }
+
+    .button {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .accountsettings_01_span {
+        font-size: 16px;
+        line-height: 22px;
+    }
+
+    .arrowleft-icon {
+        width: 16px;
+        height: 14px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .save-button,
+    .cancel-button {
+        width: 100%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-settings {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 12px;
+        gap: 20px;
+    }
+
+    .frame-1410103888,
+    .frame-1410103889 {
+        padding: 10px;
+        gap: 20px;
+        border-radius: 16px;
+    }
+
+    .frame-1410103919 {
+        gap: 20px;
+    }
+
+    .frame-1410103916_01,
+    .frame-1410103916_02 {
+        gap: 12px;
+    }
+
+    .frame-1410103917,
+    .frame-1410103917_01 {
+        gap: 10px;
+    }
+
+    .profile_span {
+        font-size: 18px;
+        line-height: 22px;
+    }
+
+    .emailpreferences_span {
+        font-size: 16px;
+        line-height: 20px;
+    }
+
+    .button_01 {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .form_03,
+    .form_04 {
+        gap: 6px;
+    }
+
+    .switch-button,
+    .switch-button_01 {
+        width: 44px;
+        padding: 4px;
+    }
 }
 </style>

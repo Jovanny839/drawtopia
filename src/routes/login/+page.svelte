@@ -16,6 +16,7 @@
   import { onMount } from "svelte";
 
   import languageFlag from "../../assets/langbtnicon.svg";
+  import logo from "../../assets/logo.png";
 
   // Check if user is already authenticated
   onMount(() => {
@@ -235,12 +236,17 @@
 
 <div class="login-with-phone-number">
   <div class="form">
-    <div class="language-button">
-      <img src={languageFlag} alt="Language Flag" class="language-flag-img">
-      English
-    </div>
-    <div class="logo-text-full">
-      <div class="logo-img"></div>
+    <div class="header">
+      <div>
+        <img src={logo} alt="" class="mobile-logo">
+      </div>
+      <div class="language-button">
+        <img src={languageFlag} alt="Language Flag" class="language-flag-img">
+        English
+      </div>
+      <div class="logo-text-full">
+        <div class="logo-img"></div>
+      </div>
     </div>
     <div class="container">
       <div class="form_01">
@@ -379,6 +385,12 @@
 </div>
 
 <style>
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
   .welcometodrawtopia_span {
     color: #141414;
     font-size: 40px;
@@ -513,7 +525,10 @@
     display: flex;
   }
 
-
+  .mobile-logo {
+    width: 200px;
+    display: none;
+  }
 
   .logo-text-full {
     width: 290px;
@@ -747,14 +762,42 @@
       min-height: 100vh;
     }
 
+    .header {
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+    }
+    
+    .language-button {
+      justify-content: center;
+      align-items: center;
+    }
+
     .form {
       width: 100%;
       height: auto;
       min-height: 100vh;
+      padding: 16px;
+    }
+
+    .logintocontinuewithyourdrawtopiajourney_span {
+      font-size: 16px;
+    }
+
+    .welcometodrawtopia_span {
+      font-size: 32px;
     }
 
     .background-image {
       display: none;
+    }
+
+    .logo-text-full {
+      display: none;
+    }
+
+    .mobile-logo {
+      display: inline;
     }
   }
 </style>

@@ -6,6 +6,7 @@
   import { onMount } from "svelte";
   import { addNotification } from "$lib/stores/notification";
   import languageFlag from "../../assets/langbtnicon.svg";
+  import logo from "../../assets/logo.png";
 
   // OTP related variables
   let otpValues: string[] = ["", "", "", "", "", ""];
@@ -213,12 +214,17 @@
 
 <div class="login-with-phone-number">
   <div class="form">
-    <div class="language-button">
-      <img src={languageFlag} alt="Language Flag" class="language-flag-img">
-      English
-    </div>
-    <div class="logo-text-full">
-      <div class="logo-img"></div>
+    <div class="header">
+      <div class="">
+        <img src={logo} alt="" class="mobile-logo">
+      </div>
+      <div class="language-button">
+        <img src={languageFlag} alt="Language Flag" class="language-flag-img">
+        English
+      </div>
+      <div class="logo-text-full">
+        <div class="logo-img"></div>
+      </div>
     </div>
     <div class="container">
       <div class="form_01">
@@ -226,16 +232,13 @@
           <div class="welcome-to-drawtopia">
             <span class="welcometodrawtopia_span">Check Your Email</span>
           </div>
-          <div>
-            <span class="logintocontinuewithyourdrawtopiajourney_span"
-              >We've sent a 6-digit code to your email address</span
-            >
-            <span class="donthaveaccountsignup_span_02"
-              >{email || "your email"}</span
-            >
-            <span class="logintocontinuewithyourdrawtopiajourney_span">
-              If you haven’t received it within 15 minutes, please click <span class="resend-btn" on:click={handleResendOTP}>Resend Code</span>
-            </span>
+          <div class="weve-sent-a-6-digit-code-to-your-email-address-logoipsumgmailcom-if-you-havent-received-it-within-15-minutes-please-click-resend-code">
+            <span class="wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_01">We've sent a 6-digit code to your email address </span>
+            <span class="wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_02">{email || "your email"}</span>
+            <span class="wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_03">. </span>
+            <span class="wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_04">If you haven't received it within 15 minutes, please click </span>
+            <span class="wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_05" on:click={handleResendOTP} on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleResendOTP(); } }} role="button" tabindex="0">Resend code</span>
+            <span class="wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_06">.</span>
           </div>
         </div>
       </div>
@@ -289,10 +292,10 @@
 <style>
   .welcometodrawtopia_span {
     color: #141414;
-    font-size: 40px;
+    font-size: 32px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 56px;
+    line-height: 38.40px;
     word-wrap: break-word;
   }
 
@@ -316,23 +319,79 @@
     word-wrap: break-word;
   }
 
-  .donthaveaccountsignup_span_02 {
-    color: black;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.2px;
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .mobile-logo {
+    width: 100%;
+    display: none;
+  }
+
+  .weve-sent-a-6-digit-code-to-your-email-address-logoipsumgmailcom-if-you-havent-received-it-within-15-minutes-please-click-resend-code {
+    align-self: stretch;
+  }
+
+  .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_01 {
+    color: #727272;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 19.60px;
     word-wrap: break-word;
   }
 
-  .resend-btn {
-    color: #438BFF;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    line-height: 25.2px;
+  .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_02 {
+    color: #141414;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 500;
+    line-height: 19.60px;
     word-wrap: break-word;
-    text-decoration: none;
+  }
+
+  .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_03 {
+    color: #141414;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 19.60px;
+    word-wrap: break-word;
+  }
+
+  .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_04 {
+    color: #727272;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 19.60px;
+    word-wrap: break-word;
+  }
+
+  .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_05 {
+    color: #438BFF;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    text-decoration: underline;
+    line-height: 19.60px;
+    word-wrap: break-word;
+    cursor: pointer;
+  }
+
+  .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_05:hover {
+    color: #0066cc;
+  }
+
+  .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_06 {
+    color: #438BFF;
+    font-size: 14px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 19.60px;
+    word-wrap: break-word;
   }
 
   .background-image {
@@ -450,23 +509,13 @@
     margin-bottom: 16px;
   }
 
-  
-  .resend-btn:hover:not(:disabled) {
-    color: #0066cc;
-    cursor: pointer;
-  }
-
-  .resend-btn:disabled {
-    color: #999;
-    cursor: not-allowed;
-  }
 
   .f_span {
     color: #141414;
-    font-size: 32px;
-    font-family: Nunito;
-    font-weight: 400;
-    line-height: 44.8px;
+    font-size: 24px;
+    font-family: Quicksand;
+    font-weight: 600;
+    line-height: 28.80px;
     word-wrap: break-word;
   }
 
@@ -477,16 +526,18 @@
     width: 100%;
     padding-left: 10px;
     padding-right: 10px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     background: white;
     overflow: hidden;
     border-radius: 12px;
-    border: 1px solid #bbb;
+    outline: 1px #DCDCDC solid;
+    outline-offset: -1px;
     justify-content: center;
     align-items: center;
     gap: 10px;
     display: flex;
+    border: none;
   }
 
   .frame-1410103856 {
@@ -514,17 +565,78 @@
       min-height: 100vh;
     }
 
+    .header {
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      gap: 0;
+      align-items: center;
+      margin-bottom: 0;
+      margin-top: 50px;
+    }
+    
+    .language-button {
+      justify-content: center;
+      align-items: center;
+    }
+
     .form {
       width: 100%;
       height: auto;
       min-height: 100vh;
+      padding: 16px;
+      justify-content: flex-start;
+    }
+
+    .container {
+      gap: 32px;
+    }
+
+    .welcometodrawtopia_span {
+      font-size: 32px;
+      line-height: 38.40px;
+    }
+
+    .logintocontinuewithyourdrawtopiajourney_span,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_01,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_02,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_03,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_04,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_05,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_06 {
+      font-size: 14px;
+      line-height: 19.60px;
     }
 
     .background-image {
       display: none;
     }
+
+    .logo-text-full {
+      display: none;
+    }
+
+    .mobile-logo {
+      display: inline;
+      width: 200px;
+      height: auto;
+    }
+
     .frame-1410103856 {
       gap: 12px;
+    }
+
+    .input-placeholder {
+      height: 60px;
+      padding-left: 8px;
+      padding-right: 8px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .f_span {
+      font-size: 24px;
+      line-height: 28.80px;
     }
   }
 
@@ -580,6 +692,42 @@
 
     .back_span {
       font-size: 16px;
+    }
+
+    .welcometodrawtopia_span {
+      font-size: 28px;
+      line-height: 33.60px;
+    }
+
+    .logintocontinuewithyourdrawtopiajourney_span,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_01,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_02,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_03,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_04,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_05,
+    .wevesenta6-digitcodetoyouremailaddresslogoipsumgmailcomifyouhaventreceiveditwithin15minutespleaseclickresendcode_span_06 {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .input-placeholder {
+      height: 55px;
+      gap: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .container {
+      gap: 24px;
+    }
+
+    .f_span {
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    .mobile-logo {
+      width: 200px;
     }
   }
 </style>

@@ -22,10 +22,16 @@
 
   // Handle "Edit" button click for a specific child
   function handleEdit(child: any) {
-    console.log("Edit child:", child);
-    // TODO: Implement edit functionality
-    // You might want to dispatch an event or navigate to edit page
-    // goto(`/edit-child-profile/${child.id}`);
+    const childId = child.id?.toString();
+    const childName = getChildName(child);
+
+    if (!childId) {
+      console.error("Child ID is missing");
+      return;
+    }
+
+    // Navigate to edit page with child profile info as query parameters
+    goto(`/create-child-profile/edit?id=${childId}&name=${encodeURIComponent(childName)}`);
   }
 
   // Handle "View Story" button click for a specific child

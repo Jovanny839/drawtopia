@@ -6,6 +6,7 @@
     import arrowLeft from "../../../assets/ArrowLeft.svg";
     import caretdown from "../../../assets/CaretDown.svg";
     import camera from "../../../assets/Camera.svg";
+    import selectLayerIcon from "../../../assets/List.svg";
     import { goto } from "$app/navigation";
     import { auth } from "../../../lib/stores/auth";
     import { getUserProfile } from "../../../lib/auth";
@@ -277,11 +278,16 @@
         <div class="logo-text-full">
             <img src={drawtopialogo} alt="drawtopialogo" class="drawtopialogo">
         </div>
-        <AccountDropdown 
-            avatarUrl={userAvatarUrl}
-            userName={userName}
-            userPlan={subscriptionPlan}
-        />
+        <div class="frame-2147227655">
+            <AccountDropdown 
+                avatarUrl={userAvatarUrl}
+                userName={userName}
+                userPlan={subscriptionPlan}
+            />
+            <div class="icon-list" role="button" tabindex="0">
+                <img src={selectLayerIcon} alt="menu" />
+            </div>
+        </div>
     </div>
     <div class="frame-1410103919">
         <div class="frame-1410103869">
@@ -450,8 +456,8 @@
 
 <style>
 .arrowleft-icon {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 15px;
 }
 
 .accountsettings_01_span {
@@ -696,13 +702,15 @@
 }
 
 .logo-text-full {
-    width: 203.32px;
-    height: 38px;
+    width: 170.15px;
+    height: 31.80px;
     position: relative;
 }
 
 .drawtopialogo {
     width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .arrowleft {
@@ -754,16 +762,42 @@
     display: inline-flex;
 }
 
+.frame-2147227655 {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    display: flex;
+}
+
+.icon-list {
+    width: 32px;
+    height: 32px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.icon-list:hover {
+    opacity: 0.7;
+}
+
+.icon-list:active {
+    opacity: 0.5;
+}
+
+.icon-list img {
+    width: 24px;
+    height: 18px;
+}
+
 .navbar {
-    width: 100%;
+    align-self: stretch;
     padding-top: 12px;
     padding-bottom: 12px;
-    padding-left: 24px;
-    padding-right: 12px;
-    background: white;
     border-radius: 20px;
-    outline: 1px #EDEDED solid;
-    outline-offset: -1px;
     justify-content: space-between;
     align-items: center;
     display: inline-flex;
@@ -771,7 +805,7 @@
 
 .frame-1410103888 {
     align-self: stretch;
-    padding: 24px;
+    padding: 16px;
     background: white;
     overflow: hidden;
     border-radius: 20px;
@@ -785,7 +819,7 @@
 }
 
 .frame-1410103919 {
-    width: 100%;
+    align-self: stretch;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -797,16 +831,16 @@
     width: 100%;
     height: 100%;
     padding-top: 24px;
-    padding-bottom: 48px;
-    padding-left: 100px;
-    padding-right: 100px;
+    padding-bottom: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
+    background: white;
     overflow: hidden;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 53px;
+    gap: 32px;
     display: inline-flex;
-    min-height: 100vh;
 }
 
 .profile-picture-wrapper {
@@ -903,6 +937,402 @@
 .cancel-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.edit-profile-picture-link {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.edit-link {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.edit-link:hover {
+    opacity: 0.7;
+}
+
+.editprofilepicture_span {
+    color: #727272;
+    font-size: 18px;
+    font-family: DM Sans;
+    font-weight: 400;
+    line-height: 25.20px;
+    word-wrap: break-word;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .account-settings {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 16px;
+        padding-bottom: 24px;
+        gap: 24px;
+    }
+
+    .navbar {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .logo-text-full {
+        width: 140px;
+        height: 26px;
+    }
+
+    .frame-1410103888 {
+        padding: 12px;
+        gap: 24px;
+    }
+
+    .frame-1410103919 {
+        gap: 24px;
+    }
+
+    .frame-1410103869 {
+        gap: 16px;
+    }
+
+    .frame-1410103916 {
+        gap: 20px;
+    }
+
+    .frame-1410103917 {
+        gap: 12px;
+    }
+
+    .frame-1410103916_01 {
+        gap: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .frame-1410103915_01 {
+        width: 100%;
+    }
+
+    .profile-picture-wrapper {
+        align-self: flex-start;
+    }
+
+    .profile_span {
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .profilepicture_span {
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .editprofilepicture_span {
+        font-size: 16px;
+        line-height: 22.40px;
+    }
+
+    .ellipse-10 {
+        width: 100px;
+        height: 100px;
+    }
+
+    .camera-button {
+        width: 32px;
+        height: 32px;
+        bottom: 4px;
+        right: 4px;
+    }
+
+    .camera-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .name_span,
+    .email_span,
+    .language_span {
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .formsubtitle_span {
+        font-size: 16px;
+        line-height: 22.40px;
+    }
+
+    .form-subtitle {
+        margin-bottom: 12px;
+    }
+
+    .form-inputs {
+        gap: 12px;
+    }
+
+    .input-label {
+        font-size: 16px;
+        line-height: 22.40px;
+    }
+
+    .input-field {
+        padding: 10px 14px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+
+    .select-field {
+        padding: 10px 36px 10px 14px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+
+    .select-icon {
+        right: 12px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 4px;
+    }
+
+    .save-button,
+    .cancel-button {
+        width: 100%;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+        font-size: 16px;
+        border-radius: 16px;
+    }
+
+    .button {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .accountsettings_01_span {
+        font-size: 16px;
+        line-height: 22px;
+    }
+
+    .arrowleft-icon {
+        width: 16px;
+        height: 14px;
+    }
+
+    .rectangle-39,
+    .rectangle-38,
+    .rectangle-37 {
+        margin: 16px 0;
+    }
+
+    .form-label-wrapper {
+        gap: 6px;
+    }
+
+    .input-group {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-settings {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 12px;
+        gap: 20px;
+    }
+
+    .navbar {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .logo-text-full {
+        width: 140px;
+        height: 26px;
+    }
+
+    .frame-1410103888 {
+        padding: 10px;
+        gap: 20px;
+        border-radius: 16px;
+    }
+
+    .frame-1410103919 {
+        gap: 20px;
+    }
+
+    .frame-1410103869 {
+        gap: 12px;
+    }
+
+    .frame-1410103916 {
+        gap: 16px;
+    }
+
+    .frame-1410103917 {
+        gap: 10px;
+    }
+
+    .frame-1410103916_01 {
+        gap: 10px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .frame-1410103915_01 {
+        width: 100%;
+    }
+
+    .edit-profile-picture-link {
+        width: 100%;
+    }
+
+    .profile-picture-wrapper {
+        align-self: flex-start;
+    }
+
+    .profile_span {
+        font-size: 16px;
+        line-height: 22px;
+    }
+
+    .profilepicture_span {
+        font-size: 16px;
+        line-height: 22px;
+    }
+
+    .editprofilepicture_span {
+        font-size: 14px;
+        line-height: 19.60px;
+    }
+
+    .ellipse-10 {
+        width: 80px;
+        height: 80px;
+    }
+
+    .camera-button {
+        width: 28px;
+        height: 28px;
+        bottom: 2px;
+        right: 2px;
+    }
+
+    .camera-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .rectangle-39,
+    .rectangle-38,
+    .rectangle-37 {
+        margin: 12px 0;
+        height: 1px;
+    }
+
+    .name_span,
+    .email_span,
+    .language_span {
+        font-size: 16px;
+        line-height: 22px;
+    }
+
+    .formsubtitle_span {
+        font-size: 14px;
+        line-height: 19.60px;
+    }
+
+    .form-subtitle {
+        margin-top: 2px;
+        margin-bottom: 10px;
+    }
+
+    .form-inputs {
+        gap: 10px;
+    }
+
+    .input-group {
+        gap: 4px;
+    }
+
+    .input-label {
+        font-size: 14px;
+        line-height: 19.60px;
+    }
+
+    .input-field {
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+
+    .input-field:focus {
+        outline-offset: 1px;
+    }
+
+    .select-field {
+        padding: 8px 32px 8px 12px;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+
+    .select-field:focus {
+        outline-offset: 1px;
+    }
+
+    .select-icon {
+        right: 10px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .action-buttons {
+        gap: 10px;
+        margin-top: 0;
+    }
+
+    .save-button,
+    .cancel-button {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        font-size: 15px;
+        border-radius: 12px;
+    }
+
+    .form-label-wrapper {
+        gap: 4px;
+    }
+
+    .frame-1410103918,
+    .frame-1410103918_01,
+    .frame-1410103918_02 {
+        gap: 2px;
+    }
+
+    .form,
+    .form_01,
+    .form_02 {
+        gap: 2px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .upload-progress {
+        font-size: 11px;
+        padding: 4px 8px;
+        bottom: -28px;
+    }
 }
 </style>
 
