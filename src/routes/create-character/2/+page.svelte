@@ -35,16 +35,12 @@
       selectedStyle = sessionStorage.getItem('selectedStyle') || "cartoon";
       lastSelectedStyle = selectedStyle;
       
-      // Check if the selected image from step 3 has changed
-      const step3SelectedImage = getSelectedImageUrl('3');
-      if (step3SelectedImage && hasSelectedImageChanged('3', step3SelectedImage)) {
-        // Clear enhancement cache if the source image changed
-        ['minimal', 'normal', 'high'].forEach(enhancement => {
-          ['3d', 'cartoon', 'anime'].forEach(style => {
-            sessionStorage.removeItem(`enhancementImage_${style}_${enhancement}`);
-          });
+      // Clear enhancement cache
+      ['minimal', 'normal', 'high'].forEach(enhancement => {
+        ['3d', 'cartoon', 'anime'].forEach(style => {
+          sessionStorage.removeItem(`enhancementImage_${style}_${enhancement}`);
         });
-      }
+      });
       
       // Load generated images from step 1
       generatedImages = loadGeneratedImages(['3d', 'cartoon', 'anime']);

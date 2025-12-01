@@ -167,7 +167,7 @@
       const promises = prompts.map(async (prompt, index) => {
         // Generate image using the prompt directly via API
         const response = await fetch(
-          "https://image-edit-five.vercel.app/edit-image",
+          "c",
           {
             method: "POST",
             headers: {
@@ -623,7 +623,7 @@
       if (!resizedCharacterUrl || !resizedCroppedUrl) {
         console.error('Failed to resize images for comparison');
         // Fallback to original URLs if resize fails
-        const response = await fetch('http://localhost:8000/compare-similarity', {
+        const response = await fetch('https://image-edit-five.vercel.app/compare-similarity', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -704,7 +704,7 @@
 
       console.log('Comparing resized images:', charUrlData.publicUrl, croppedUrlData.publicUrl);
       
-      const response = await fetch('http://localhost:8000/compare-similarity', {
+      const response = await fetch('https://image-edit-five.vercel.app/compare-similarity', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -48,12 +48,9 @@ export async function generateStyledImage(options: ImageGenerationOptions): Prom
     const response = await fetch('https://image-edit-five.vercel.app/edit-image', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        image_url: imageUrl,
-        prompt: prompt
-      })
+      body: JSON.stringify({ image_url: imageUrl, prompt: prompt })
     });
 
     if (!response.ok) {
