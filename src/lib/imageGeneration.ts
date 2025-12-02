@@ -193,6 +193,117 @@ export function hasSelectedImageChanged(step: string, currentImageUrl: string): 
 }
 
 /**
+ * Generate character image with special ability
+ * This generates the base character image before enhancement
+ */
+export interface CharacterGenerationOptions {
+  imageUrl: string;
+  characterType?: string;
+  specialAbility?: string;
+  description?: string;
+  style: '3d' | 'cartoon' | 'anime';
+  saveToStorage?: boolean;
+}
+
+export async function generateCharacterWithSpecialAbility(
+  options: CharacterGenerationOptions
+): Promise<ImageGenerationResult> {
+  const { 
+    imageUrl, 
+    characterType, 
+    specialAbility, 
+    description, 
+    style,
+    saveToStorage = true 
+  } = options;
+
+  if (!imageUrl) {
+    return { success: false, error: 'No image URL provided' };
+  }
+
+  try {
+    // Map special ability values to prompt.json keys
+    const specialAbilityMapping: { [key: string]: string } = {
+      'healing-powers': 'healingPower',
+      'flying': 'flying',
+      'super-strength': 'superStrength',
+      'invisibility': 'invisibility',
+      'animal-communication': 'animalCommunication',
+      'time-control': 'timeControl',
+      'shape-shifting': 'shapeShifting'
+    };
+
+    let specialAbilityPrompt = '';
+    
+    // Get special ability prompt if it's a predefined one
+    if (specialAbility) {
+      const mappedKey = specialAbilityMapping[specialAbility.toLowerCase()];
+      if (mappedKey && prompts.specialAbility && mappedKey in prompts.specialAbility) {
+        specialAbilityPrompt = (prompts.specialAbility as any)[mappedKey];
+      } else {
+        // Use custom special ability text
+        specialAbilityPrompt = specialAbility;
+      }
+    }
+
+    // Combine prompts: special ability + description (if exists, otherwise empty)
+    let combinedPrompt = '';
+    
+    if (specialAbilityPrompt) {
+      combinedPrompt = specialAbilityPrompt;
+    }
+    
+    // Add description if it exists, otherwise use empty (as requested)
+    if (description && description.trim()) {
+      if (combinedPrompt) {
+        combinedPrompt += ' ' + description.trim();
+      } else {
+        combinedPrompt = description.trim();
+      }
+    }
+    
+    // If no special ability or description, use empty prompt (as requested)
+    if (!combinedPrompt) {
+      combinedPrompt = '';
+    }
+
+    const response = await fetch('https://image-edit-five.vercel.app/edit-image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        image_url: imageUrl, 
+        prompt: combinedPrompt || '' 
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to generate character image: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.storage_info.uploaded) {
+      const cleanUrl = data.storage_info.url.split('?')[0];
+      
+      // Save to sessionStorage if requested
+      if (saveToStorage && browser) {
+        sessionStorage.setItem(`characterWithAbility_${style}`, data.storage_info.url);
+      }
+      
+      return { success: true, url: cleanUrl };
+    } else {
+      throw new Error('No image URL received from the API');
+    }
+  } catch (err) {
+    console.error('Error generating character with special ability:', err);
+    const errorMessage = err instanceof Error ? err.message : 'Failed to generate character image. Please try again.';
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
  * Clear all cached images for regeneration
  */
 export function clearAllCachedImages(): void {
@@ -201,6 +312,11 @@ export function clearAllCachedImages(): void {
   // Clear style images
   ['3d', 'cartoon', 'anime'].forEach(style => {
     sessionStorage.removeItem(`generatedImage_${style}`);
+  });
+  
+  // Clear character with ability images
+  ['3d', 'cartoon', 'anime'].forEach(style => {
+    sessionStorage.removeItem(`characterWithAbility_${style}`);
   });
   
   // Clear enhancement images

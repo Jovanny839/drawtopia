@@ -10,9 +10,10 @@
   import mailIcon from "../../../assets/mailicon.svg";
   import lockKeyIcon from "../../../assets/LockKey.svg";
   import timeIcon from "../../../assets/redtimeicon.svg";
-  import hintIcon from "../../../assets/hintpurpleicon.svg";
+  import hintIcon from "../../../assets/hintIcon.svg";
   import shareIcon from '../../../assets/Share.svg';
   import dotsThreeOutline from '../../../assets/DotsThreeOutline.svg';
+  import zoomIcon from '../../../assets/zoomIcon.svg';
   import originalPrompts from '../../../lib/prompt.json';
   import { enhance } from "$app/forms";
 
@@ -43,6 +44,7 @@
   // Stats for modal
   let sceneTime = "10:13";
   let hintsUsed = 0;
+  let hintsLeft = 3;
   let stars = 0;
 
   // Scene titles based on world
@@ -90,9 +92,9 @@
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied rainbow meadow environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
       ],
       "outer-space": [
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied cosmic space station environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied alien planet environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied asteroid field environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `An extremely crowded, chaotic Zero-Gravity Playground hidden-object scene filled with drifting kids, aliens, robots, and space pets flying, flipping, tumbling, and bouncing around. The environment includes colorful anti-gravity equipment, floating platforms, neon rings, wormhole slides, asteroid climbing rocks, hover-swings, floating toys, anti-gravity balls, glowing particles, hologram signs, and drifting backpacks. Nearly every inch of the scene is packed—overlapping characters, lively interactions, comedic moments, and visual chaos everywhere, similar to an ultra-dense Where’s Waldo parade. All characters—children, aliens, robots, and space pets—must be fully formed, with clean outlines, distinct faces, complete limbs, and no blurry or distorted shapes. Foreground and background characters must remain clearly readable despite the density of the scene.`,
+        `An extremely crowded, chaotic Zero-Gravity Playground hidden-object scene filled with drifting kids, aliens, robots, and space pets flying, flipping, tumbling, and bouncing around. The environment includes colorful anti-gravity equipment, floating platforms, neon rings, wormhole slides, asteroid climbing rocks, hover-swings, floating toys, anti-gravity balls, glowing particles, hologram signs, and drifting backpacks. Nearly every inch of the scene is packed—overlapping characters, lively interactions, comedic moments, and visual chaos everywhere, similar to an ultra-dense Where’s Waldo parade.`,
+        `An extremely crowded, chaotic Robot Repair Shop hidden-object scene filled with hundreds of fully drawn robots, mechanics, alien engineers, and automated tools moving everywhere. The space is overflowing with activity: malfunctioning robots running wild, floating robot parts, conveyor belts carrying heads and limbs, sparks flying from welding machines, robotic arms grabbing tools, giant circuit boards, repair tables covered in wires, glowing battery chargers, floating hologram manuals, aliens tightening bolts, tiny robot pets wandering, workers arguing, and comedic mechanical failures in every corner. The scene should have no empty spaces, with overlapping interactions, micro-stories, and dense visual depth in a Where’s Waldo–style layout.`,
         `An extremely crowded, chaotic Intergalactic School hidden-object scene filled with hundreds of alien students, human students, robot classmates, floating teachers, hologram projectors, cosmic chalkboards, science experiments exploding, anti-gravity classroom desks drifting, space pets running between hallways, floating books, glowing orbs, tiny spaceships used as school buses, lockers shaped like planets, kids riding hover-desks, cafeteria trays levitating, and comedic micro-stories everywhere. The environment must be filled to every edge with overlapping crowds, busy classroom chaos, and high-density playground energy similar to a Where’s Waldo parade scene, with no empty spaces anywhere. Every character and background element must be fully drawn with complete faces, limbs, and clothing, with clean outlines and readable expressions.`,
       ],
       "underwater-kingdom": [
@@ -100,9 +102,11 @@
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied sunken palace environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied pearl cave environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied kelp forest environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-      ],
+      ]
     };
 
+    const characterDesc = "\n\nInclude the character from the provided reference image without changing any features. The character must have the exact same face, limbs, proportions, hair, skin tone, clothing details, and overall design as the reference. No changes to anatomy, style, or structure. The model must reproduce the character with full fidelity to the reference.";
+    
     const prompts = basePrompts[world] || basePrompts["enchanted-forest"];
 
     // Difficulty modifiers appended to each prompt
@@ -124,14 +128,14 @@
     const styleExtra = style ? styleExtras[style] || "" : "";
   
     // Safely resolve enhancement text from prompt data (avoid complex keyof indexing in template)
-    // const enhancementExtra = (() => {
-    //   if (!enhancement) return "";
-    //   // Cast to any to bypass strict indexed access typing and possible TS parse issues inside template literal
-    //   const enhancementValue = (originalPrompts as any)[style as any]?.[enhancement as any] ?? "";
-    //   return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene).`;
-    // })();
+    const enhancementExtra = (() => {
+      if (!enhancement) return "";
+      // Cast to any to bypass strict indexed access typing and possible TS parse issues inside template literal
+      const enhancementValue = (originalPrompts as any)[style as any]?.[enhancement as any] ?? "";
+      return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene).`;
+    })();
   
-    const combinedExtra = `${extra}${styleExtra}`;
+    const combinedExtra = `${extra}${styleExtra}${characterDesc}${enhancementExtra}`;
 
     // Return prompts augmented with difficulty extras when provided
     if (combinedExtra) {
@@ -856,7 +860,7 @@
 
           <div class="scene-image-container">
             <div 
-              class="scene-image-wrapper"
+              class="book-container"
               bind:this={imageWrapperRef}
               on:mousedown={handleMouseDown}
               on:mousemove={handleMouseMove}
@@ -875,6 +879,24 @@
                 draggable="false"
                 bind:this={imageRef}
               />
+              <div class="book-pages">
+                <div class="book-page book-page-left"></div>
+                <div class="book-page book-page-right"></div>
+              </div>
+              <div class="scene-control-buttons">
+                <button class="control-btn fullscreen-btn" aria-label="Full Screen Preview">
+                  <img src={fullscreen} alt="Fullscreen" class="btn-icon" />
+                  <span>Full Screen Preview</span>
+                </button>
+                <button class="control-btn hint-btn" aria-label="Hint">
+                  <img src={hintIcon} alt="Hint" class="btn-icon" />
+                  <span>Hint ({hintsLeft} Left)</span>
+                </button>
+                <button class="control-btn zoom-btn" aria-label="Zoom">
+                  <img src={zoomIcon} alt="Zoom" class="btn-icon" />
+                  <span>Zoom</span>
+                </button>
+              </div>
               {#if showSelection}
                 <div
                   class="selection-overlay"
@@ -1358,26 +1380,112 @@
     justify-content: center;
     background: #f8fafb;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
+    padding: 20px;
   }
 
-  .scene-image-wrapper {
+  .book-container {
     position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-block;
     cursor: crosshair;
     user-select: none;
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.15),
+      0 8px 24px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    border: 3px solid #d4d4d8;
+    background: #ffffff;
+    padding: 12px;
   }
 
   .scene-main-image {
+    display: block;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 750px;
+    width: auto;
+    height: auto;
     object-fit: contain;
-    border-radius: 12px;
+    border-radius: 8px;
     pointer-events: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  .book-pages {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .book-page {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    pointer-events: none;
+  }
+
+  .book-page-left {
+    left: 0;
+    border-right: 2px solid rgba(0, 0, 0, 0.08);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    box-shadow: 
+      inset -8px 0 16px -8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      -2px 0 8px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.02) 0%,
+      rgba(0, 0, 0, 0.01) 2%,
+      transparent 5%
+    );
+    border-left: 1px solid rgba(255, 255, 255, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .book-page-right {
+    right: 0;
+    border-left: 2px solid rgba(0, 0, 0, 0.08);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 
+      inset 8px 0 16px -8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      2px 0 8px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.02) 0%,
+      rgba(0, 0, 0, 0.01) 2%,
+      transparent 5%
+    );
+    border-right: 1px solid rgba(255, 255, 255, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .book-container::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    height: 20px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.05) 40%,
+      transparent 70%
+    );
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    z-index: 0;
   }
 
   .selection-overlay {
@@ -1385,7 +1493,65 @@
     background: rgba(173, 216, 230, 0.3);
     border: 2px dashed #438bff;
     pointer-events: none;
+    z-index: 5;
+  }
+
+  .scene-control-buttons {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    align-items: center;
     z-index: 10;
+    pointer-events: auto;
+  }
+
+  .control-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    background: white;
+    font-family: Nunito, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #141414;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+  }
+
+  .control-btn:hover {
+    background: #f5f7fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .control-btn .btn-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+
+  .hint-btn {
+    background: linear-gradient(180deg, #ff9500 0%, #ff7a00 100%);
+    border: none;
+    color: white;
+    box-shadow: 0 2px 4px rgba(255, 149, 0, 0.3);
+  }
+
+  .hint-btn:hover {
+    background: linear-gradient(180deg, #ff8500 0%, #ff6a00 100%);
+    box-shadow: 0 4px 8px rgba(255, 149, 0, 0.4);
+  }
+
+  .hint-btn .btn-icon {
+    filter: brightness(0) invert(1);
   }
 
   /* Found Luna Modal */

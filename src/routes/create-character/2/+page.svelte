@@ -13,7 +13,8 @@
     loadGeneratedImages,
     saveSelectedImageUrl,
     hasSelectedImageChanged,
-    getSelectedImageUrl
+    getSelectedImageUrl,
+    generateCharacterWithSpecialAbility
   } from "../../../lib/imageGeneration";
   import { storyCreation } from "../../../lib/stores/storyCreation";
 
@@ -23,17 +24,24 @@
   let selectedStyle = "";
   let generatedImages: { [key: string]: string } = {};
   let lastSelectedStyle = "";
+  let baseCharacterImageUrl = ""; // The generated character image with special ability
+  let isGeneratingBaseCharacter = false;
 
   $: if (browser) {
     isMobile = window.innerWidth < 800;
   }
 
-  onMount(() => {
+  onMount(async () => {
     if (browser) {
       // Get the uploaded image URL and selected style from previous steps
       uploadedImageUrl = sessionStorage.getItem('characterImageUrl') || "";
       selectedStyle = sessionStorage.getItem('selectedStyle') || "cartoon";
       lastSelectedStyle = selectedStyle;
+      
+      // Get character details from sessionStorage
+      const characterType = sessionStorage.getItem('selectedCharacterType') || "";
+      const specialAbility = sessionStorage.getItem('specialAbility') || "";
+      const description = ""; // Description field doesn't exist yet, but keeping for future use
       
       // Clear enhancement cache
       ['minimal', 'normal', 'high'].forEach(enhancement => {
@@ -42,15 +50,80 @@
         });
       });
       
-      // Load generated images from step 1
-      generatedImages = loadGeneratedImages(['3d', 'cartoon', 'anime']);
+      // Check if we already have a generated character image with special ability
+      const cachedBaseImage = sessionStorage.getItem(`characterWithAbility_${selectedStyle}`);
+      if (cachedBaseImage) {
+        baseCharacterImageUrl = cachedBaseImage.split('?')[0];
+        generatedImages[selectedStyle] = baseCharacterImageUrl;
+      } else if (uploadedImageUrl && selectedStyle) {
+        // Generate base character image with special ability
+        await generateBaseCharacterImage(uploadedImageUrl, characterType, specialAbility, description, selectedStyle);
+      }
+      
+      // Load generated images from step 1 (fallback)
+      const loadedImages = loadGeneratedImages(['3d', 'cartoon', 'anime']);
+      if (!generatedImages[selectedStyle]) {
+        generatedImages = { ...generatedImages, ...loadedImages };
+      }
     }
   });
 
+  // Generate base character image with special ability
+  const generateBaseCharacterImage = async (
+    imageUrl: string,
+    characterType: string,
+    specialAbility: string,
+    description: string,
+    style: string
+  ) => {
+    if (!imageUrl || isGeneratingBaseCharacter) return;
+    
+    isGeneratingBaseCharacter = true;
+    
+    try {
+      const result = await generateCharacterWithSpecialAbility({
+        imageUrl,
+        characterType,
+        specialAbility,
+        description,
+        style: style as '3d' | 'cartoon' | 'anime',
+        saveToStorage: true
+      });
+
+      if (result.success && result.url) {
+        baseCharacterImageUrl = result.url;
+        generatedImages[style] = result.url;
+        generatedImages = { ...generatedImages };
+      } else {
+        console.error('Failed to generate base character image:', result.error);
+        // Fallback to uploaded image if generation fails
+        baseCharacterImageUrl = uploadedImageUrl;
+        generatedImages[style] = uploadedImageUrl;
+      }
+    } catch (error) {
+      console.error('Error generating base character image:', error);
+      // Fallback to uploaded image if generation fails
+      baseCharacterImageUrl = uploadedImageUrl;
+      generatedImages[style] = uploadedImageUrl;
+    } finally {
+      isGeneratingBaseCharacter = false;
+    }
+  };
+
   // Watch for style changes and reload images if needed
   $: if (browser && selectedStyle && lastSelectedStyle && selectedStyle !== lastSelectedStyle) {
-    // Style has changed, reload generated images
-    generatedImages = loadGeneratedImages(['3d', 'cartoon', 'anime']);
+    // Style has changed, check for cached base character image or generate new one
+    const cachedBaseImage = sessionStorage.getItem(`characterWithAbility_${selectedStyle}`);
+    if (cachedBaseImage) {
+      baseCharacterImageUrl = cachedBaseImage.split('?')[0];
+      generatedImages[selectedStyle] = baseCharacterImageUrl;
+      generatedImages = { ...generatedImages };
+    } else if (uploadedImageUrl && selectedStyle) {
+      const characterType = sessionStorage.getItem('selectedCharacterType') || "";
+      const specialAbility = sessionStorage.getItem('specialAbility') || "";
+      const description = "";
+      generateBaseCharacterImage(uploadedImageUrl, characterType, specialAbility, description, selectedStyle);
+    }
     lastSelectedStyle = selectedStyle;
   }
 
@@ -144,6 +217,12 @@
         </div>
       </div>
     </div>
+    {#if isGeneratingBaseCharacter}
+      <div class="generating-base-character">
+        <div class="spinner"></div>
+        <div class="generating-text">Generating your character with special ability...</div>
+      </div>
+    {/if}
     <div class="frame-1410104073">
       <EnhancementCard
         enhancementId="minimal"
@@ -157,8 +236,8 @@
         isSelected={selectedEnhancement === "minimal"}
         onSelect={selectEnhancement}
         afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage={uploadedImageUrl}
-        originalImageUrl={uploadedImageUrl}
+        beforeImage={baseCharacterImageUrl || uploadedImageUrl}
+        originalImageUrl={baseCharacterImageUrl || uploadedImageUrl}
         selectedStyle={selectedStyle}
       />
       <EnhancementCard
@@ -174,8 +253,8 @@
         onSelect={selectEnhancement}
         showMostPopular={true}
         afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage={uploadedImageUrl}
-        originalImageUrl={uploadedImageUrl}
+        beforeImage={baseCharacterImageUrl || uploadedImageUrl}
+        originalImageUrl={baseCharacterImageUrl || uploadedImageUrl}
         selectedStyle={selectedStyle}
       />
       <EnhancementCard
@@ -190,8 +269,8 @@
         isSelected={selectedEnhancement === "high"}
         onSelect={selectEnhancement}
         afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage={uploadedImageUrl}
-        originalImageUrl={uploadedImageUrl}
+        beforeImage={baseCharacterImageUrl || uploadedImageUrl}
+        originalImageUrl={baseCharacterImageUrl || uploadedImageUrl}
         selectedStyle={selectedStyle}
       />
     </div>
@@ -651,6 +730,41 @@
 
   .mobile-full-width {
     width: 100% !important;
+  }
+
+  .generating-base-character {
+    width: 100%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #f8fafb;
+    border-radius: 20px;
+    border: 2px dashed #438bff;
+  }
+
+  .generating-base-character .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #438bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .generating-base-character .generating-text {
+    color: #438bff;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   @media (max-width: 800px) {
