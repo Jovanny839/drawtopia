@@ -93,7 +93,7 @@
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied cosmic space station environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied alien planet environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied asteroid field environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied nebula garden environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
+        `An extremely crowded, chaotic Intergalactic School hidden-object scene filled with hundreds of alien students, human students, robot classmates, floating teachers, hologram projectors, cosmic chalkboards, science experiments exploding, anti-gravity classroom desks drifting, space pets running between hallways, floating books, glowing orbs, tiny spaceships used as school buses, lockers shaped like planets, kids riding hover-desks, cafeteria trays levitating, and comedic micro-stories everywhere. The environment must be filled to every edge with overlapping crowds, busy classroom chaos, and high-density playground energy similar to a Where’s Waldo parade scene, with no empty spaces anywhere. Every character and background element must be fully drawn with complete faces, limbs, and clothing, with clean outlines and readable expressions.`,
       ],
       "underwater-kingdom": [
         `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied coral reef environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
@@ -107,29 +107,31 @@
 
     // Difficulty modifiers appended to each prompt
     const difficultyExtras: { [key: string]: string } = {
-      easy: `\n\nDifficulty modifiers:\n* Character 15-20% Visible\n* 5-8 other elements\n* Age 3-6 (Recommended)`,
-      medium: `\n\nDifficulty modifiers:\n* Character 10-15% Visible\n* 10-15 other elements\n* Age 7-10 (Recommended)`,
-      hard: `\n\nDifficulty modifiers:\n* Character 8-12% Visible\n* 15-25 other elements\n* Age 11-12 (Recommended)`,
+      easy: `\n\nDifficulty modifiers:\n* Character 15-20% Visible\n* 5-8 other characters or other elements\n* Age 3-6 (Recommended)`,
+      medium: `\n\nDifficulty modifiers:\n* Character 10-15% Visible\n* 10-15 other characters or other elements\n* Age 7-10 (Recommended)`,
+      hard: `\n\nDifficulty modifiers:\n* Character 8-12% Visible\n* 15-25 other characters or other elements\n* Age 11-12 (Recommended)`,
     };
 
     const extra = difficulty ? difficultyExtras[difficulty] || "" : "";
 
-    // Style and enhancement extras
-    const styleExtra = style
-      ? `\n\nStyle guidelines:\n* Render character and scene in the selected style: ${style}.\n* Keep the character's likeness and visual language consistent with the supplied character image.`
-      : "";
+    // Style extras - different prompts for each style
+    const styleExtras: { [key: string]: string } = {
+      "3d": `\n\nStyle guidelines:\n* Render character and scene in a 3D Pixar/Disney animated movie style.\n* Use smooth 3D modeling, cinematic lighting, and polished textures.\n* Keep the character's likeness and visual language consistent with the supplied character image.\n* The scene should feel like a frame from a high-quality animated film.\n *Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image ratio is 16:9.`,
+      "cartoon": `\n\nStyle guidelines:\n* Render character and scene in a classic storybook cartoon style.\n* Use clean lines, bright colors, and friendly, approachable designs.\n* Keep the character's likeness and visual language consistent with the supplied character image.\n* The scene should feel warm, timeless, and perfect for a children's storybook.\n *Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image ratio is 16:9.`,
+      "anime": `\n\nStyle guidelines:\n* Render character and scene in a Japanese anime style.\n* Use expressive features, cel-shading, and dynamic anime-style coloring.\n* Keep the character's likeness and visual language consistent with the supplied character image.\n* The scene should have the distinctive look and feel of professional anime artwork.\n *Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image ratio is 16:9.`,
+    };
+
+    const styleExtra = style ? styleExtras[style] || "" : "";
   
     // Safely resolve enhancement text from prompt data (avoid complex keyof indexing in template)
-    const enhancementExtra = (() => {
-      if (!enhancement) return "";
-      // Cast to any to bypass strict indexed access typing and possible TS parse issues inside template literal
-      const enhancementValue = (originalPrompts as any)[style as any]?.[enhancement as any] ?? "";
-      return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene).`;
-    })();
-
-    console.log(enhancementExtra);
+    // const enhancementExtra = (() => {
+    //   if (!enhancement) return "";
+    //   // Cast to any to bypass strict indexed access typing and possible TS parse issues inside template literal
+    //   const enhancementValue = (originalPrompts as any)[style as any]?.[enhancement as any] ?? "";
+    //   return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene).`;
+    // })();
   
-    const combinedExtra = `${extra}${styleExtra}${enhancementExtra}`;
+    const combinedExtra = `${extra}${styleExtra}`;
 
     // Return prompts augmented with difficulty extras when provided
     if (combinedExtra) {
