@@ -175,7 +175,7 @@
       <div class="logo-img"></div>
     </div>
   </div>
-  <MobileBackBtn backRoute="/create-character/3" />
+  <MobileBackBtn backRoute="/create-character/1" />
   <div class="frame-1410103818">
     <div class="heading">
       <div class="create-your-character">
@@ -217,12 +217,6 @@
         </div>
       </div>
     </div>
-    {#if isGeneratingBaseCharacter}
-      <div class="generating-base-character">
-        <div class="spinner"></div>
-        <div class="generating-text">Generating your character with special ability...</div>
-      </div>
-    {/if}
     <div class="frame-1410104073">
       <EnhancementCard
         enhancementId="minimal"

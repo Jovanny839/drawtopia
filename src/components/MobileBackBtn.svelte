@@ -11,10 +11,10 @@
     <div class="arrowleft">
       <img src={arrowLeft} alt="arrowLeft" />
     </div>
+    <div class="back-to-step">
+      <span class="backtostep_span">{backText}</span>
+    </div>
   </button>
-  <div class="back-to-step">
-    <span class="backtostep_span">{backText}</span>
-  </div>
 </div>
 
 <style>
@@ -23,9 +23,9 @@
   }
   .button_mobile {
     margin-right: 15px;
-    padding: 6px;
+    padding: 12px 24px;
     box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
-    border-radius: 10px;
+    border-radius: 999px;
     outline: 1px #dcdcdc solid;
     background-color: white;
     outline-offset: -1px;

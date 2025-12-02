@@ -1505,6 +1505,12 @@
     .message-content {
       width: 90%;
     }
+    .style-card {
+      width: 100%;
+    }
+    .uploaded-image {
+      max-height: 600px;
+    }
   }
 
   /* .continuetostyleselection_span {
@@ -1650,11 +1656,12 @@
 
   .uploaded-image {
     /* max-width: 200px;
-    max-height: 150px;
-    object-fit: contain; */
+    max-height: 150px;*/
+    /* object-fit: contain; */
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
   }
 
   .success-text {
@@ -1669,13 +1676,6 @@
     font-size: 16px;
     font-family: Quicksand;
     font-weight: 600;
-  }
-
-  .redirect-message {
-    color: #666d80;
-    font-size: 14px;
-    font-family: Nunito;
-    font-weight: 400;
   }
 
   /* Upload error styles */
