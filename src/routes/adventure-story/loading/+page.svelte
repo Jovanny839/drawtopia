@@ -1,6 +1,12 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
+    import { get } from 'svelte/store';
     import { goto } from '$app/navigation';
+    import { browser } from '$app/environment';
+    import { storyCreation } from '../../../lib/stores/storyCreation';
+    import { env } from '../../../lib/env';
+    import { supabase } from '../../../lib/supabase';
+    import type { ChildProfile } from '../../../lib/database/childProfiles';
     import drawtopia from "../../../assets/logo.png";
     import shieldstar from "../../../assets/ShieldStar.svg";
     import arrowleft from "../../../assets/ArrowLeft.svg";
@@ -16,6 +22,7 @@
     let completionPercent = 0;
     let intervalId: number | null = null;
     let hasNavigated = false;
+    let storyGenerated = false;
 
     // Determine which magical wand GIF to show based on completion percentage
     $: currentMagicalWand = completionPercent < 25 
@@ -33,7 +40,200 @@
         }, 500);
     }
 
+    // Helper function to map character type enum to descriptive string
+    function mapCharacterType(type: string | undefined): string {
+        if (!type) return 'person';
+        const typeMap: { [key: string]: string } = {
+            'person': 'a person',
+            'animal': 'an animal',
+            'magical_creature': 'a magical creature'
+        };
+        return typeMap[type.toLowerCase()] || 'a person';
+    }
+
+    // Helper function to map story world enum to descriptive string
+    function mapStoryWorld(world: string | undefined): string {
+        if (!world) return 'the Enchanted Forest';
+        const worldMap: { [key: string]: string } = {
+            'forest': 'the Enchanted Forest',
+            'space': 'Outer Space',
+            'underwater': 'the Underwater Kingdom'
+        };
+        return worldMap[world.toLowerCase()] || 'the Enchanted Forest';
+    }
+
+    // Helper function to map adventure type enum to descriptive string
+    function mapAdventureType(adventure: string | undefined): string {
+        if (!adventure) return 'treasure hunt';
+        const adventureMap: { [key: string]: string } = {
+            'treasure_hunt': 'treasure hunt',
+            'helping_friend': 'helping a friend'
+        };
+        return adventureMap[adventure.toLowerCase()] || 'treasure hunt';
+    }
+
+    // Helper function to normalize age group to backend format
+    function normalizeAgeGroup(ageGroup: string | undefined): string {
+        if (!ageGroup) return '7-10'; // Default age group
+        // Backend expects "3-6", "7-10", or "11-12"
+        // Map common variations
+        const normalized = ageGroup.trim();
+        if (normalized === '3-5' || normalized === '3-6') return '3-6';
+        if (normalized === '6-7' || normalized === '7-10' || normalized === '8-10') return '7-10';
+        if (normalized === '11-12') return '11-12';
+        // If already in correct format, return as is
+        if (['3-6', '7-10', '11-12'].includes(normalized)) return normalized;
+        // Default fallback
+        return '7-10';
+    }
+
+    async function generateStory() {
+        if (storyGenerated) return;
+        
+        try {
+            // Initialize story creation store to get latest data
+            storyCreation.init();
+            const storyState = get(storyCreation);
+            
+            // Fetch child profile to get age_group
+            let ageGroup = '7-10'; // Default age group
+            if (storyState.selectedChildProfileId && storyState.selectedChildProfileId !== 'undefined') {
+                try {
+                    const { data: childProfile, error: profileError } = await supabase
+                        .from('child_profiles')
+                        .select('age_group')
+                        .eq('id', parseInt(storyState.selectedChildProfileId))
+                        .single();
+                    
+                    if (!profileError && childProfile?.age_group) {
+                        ageGroup = normalizeAgeGroup(childProfile.age_group);
+                    }
+                } catch (error) {
+                    console.warn('Could not fetch child profile age group, using default:', error);
+                }
+            }
+            
+            // Prepare request body matching backend StoryRequest model
+            const requestBody = {
+                character_name: storyState.characterName || '',
+                character_type: mapCharacterType(storyState.characterType),
+                special_ability: storyState.specialAbility || '',
+                age_group: ageGroup,
+                story_world: mapStoryWorld(storyState.storyWorld),
+                adventure_type: mapAdventureType(storyState.adventureType),
+                occasion_theme: null // Optional field, set to null for now
+            };
+            
+            // Validate required fields
+            if (!requestBody.character_name || !requestBody.character_type || !requestBody.special_ability) {
+                throw new Error('Missing required character data');
+            }
+            
+            // Send request to generate-story endpoint
+            const apiBaseUrl = env.API_BASE_URL || 'https://image-edit-five.vercel.app';
+            const endpointUrl = apiBaseUrl.endsWith('/') 
+                ? `${apiBaseUrl}generate-story` 
+                : `${apiBaseUrl}/generate-story`;
+            const response = await fetch(endpointUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to generate story: ${response.status} ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            
+            // Extract story text for 5 pages
+            // Handle various response formats from the backend
+            let storyPages: Array<{ pageNumber: number; text: string }> = [];
+            
+            if (result.pages && Array.isArray(result.pages)) {
+                // Format: { pages: [{ pageNumber: 1, text: "..." }, ...] } or { pages: ["text1", "text2", ...] }
+                storyPages = result.pages.slice(0, 5).map((page: any, index: number) => {
+                    if (typeof page === 'string') {
+                        return { pageNumber: index + 1, text: page };
+                    } else if (page.text) {
+                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                    } else {
+                        return { pageNumber: index + 1, text: String(page) };
+                    }
+                });
+            } else if (result.storyPages && Array.isArray(result.storyPages)) {
+                storyPages = result.storyPages.slice(0, 5).map((page: any, index: number) => {
+                    if (typeof page === 'string') {
+                        return { pageNumber: index + 1, text: page };
+                    } else if (page.text) {
+                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                    } else {
+                        return { pageNumber: index + 1, text: String(page) };
+                    }
+                });
+            } else if (result.story && Array.isArray(result.story)) {
+                storyPages = result.story.slice(0, 5).map((page: any, index: number) => {
+                    if (typeof page === 'string') {
+                        return { pageNumber: index + 1, text: page };
+                    } else if (page.text) {
+                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                    } else {
+                        return { pageNumber: index + 1, text: String(page) };
+                    }
+                });
+            } else if (Array.isArray(result)) {
+                storyPages = result.slice(0, 5).map((page: any, index: number) => {
+                    if (typeof page === 'string') {
+                        return { pageNumber: index + 1, text: page };
+                    } else if (page.text) {
+                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                    } else {
+                        return { pageNumber: index + 1, text: String(page) };
+                    }
+                });
+            } else {
+                // If the response structure is different, try to extract pages from the result
+                console.warn('Unexpected response structure:', result);
+                // Try to find pages in the response
+                for (let i = 1; i <= 5; i++) {
+                    const pageText = result[`page${i}`] || result[`page_${i}`] || result[i];
+                    if (pageText) {
+                        storyPages.push({ pageNumber: i, text: String(pageText) });
+                    }
+                }
+            }
+            
+            // Save story pages to session storage
+            if (browser && storyPages.length > 0) {
+                sessionStorage.setItem('storyPages', JSON.stringify(storyPages));
+                
+                // Also save individual pages for easier access
+                storyPages.forEach((page, index) => {
+                    sessionStorage.setItem(`storyPage${index + 1}`, page.text);
+                });
+                
+                console.log('Story pages saved to session storage:', storyPages.length);
+            }
+            
+            storyGenerated = true;
+        } catch (error) {
+            console.error('Error generating story:', error);
+            // Don't block navigation if story generation fails
+            // The user can still proceed, but story pages won't be available
+        }
+    }
+
     onMount(() => {
+        // Initialize story creation store
+        if (browser) {
+            storyCreation.init();
+        }
+        
+        // Generate story immediately when page loads
+        generateStory();
+        
         intervalId = window.setInterval(() => {
             if (timeRemaining > 0) {
                 timeRemaining--;
