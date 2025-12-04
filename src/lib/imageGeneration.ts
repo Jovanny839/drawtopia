@@ -222,6 +222,13 @@ export async function generateCharacterWithSpecialAbility(
   }
 
   try {
+    // Map character type to readable format
+    const characterTypeMapping: { [key: string]: string } = {
+      'person': 'a person',
+      'animal': 'an animal',
+      'magical_creature': 'a magical creature'
+    };
+
     // Map special ability values to prompt.json keys
     const specialAbilityMapping: { [key: string]: string } = {
       'healing-powers': 'healingPower',
@@ -232,6 +239,12 @@ export async function generateCharacterWithSpecialAbility(
       'time-control': 'timeControl',
       'shape-shifting': 'shapeShifting'
     };
+
+    let characterTypeText = '';
+    if (characterType) {
+      const mappedType = characterTypeMapping[characterType.toLowerCase()];
+      characterTypeText = mappedType || characterType;
+    }
 
     let specialAbilityPrompt = '';
     
@@ -246,14 +259,20 @@ export async function generateCharacterWithSpecialAbility(
       }
     }
 
-    // Combine prompts: special ability + description (if exists, otherwise empty)
+    // Combine prompts: character type + special ability + description
     let combinedPrompt = '';
     
-    if (specialAbilityPrompt) {
-      combinedPrompt = specialAbilityPrompt;
+    // Add character type context if available
+    if (characterTypeText) {
+      combinedPrompt = `The character is ${characterTypeText}. `;
     }
     
-    // Add description if it exists, otherwise use empty (as requested)
+    // Add special ability prompt
+    if (specialAbilityPrompt) {
+      combinedPrompt += specialAbilityPrompt;
+    }
+    
+    // Add description if it exists
     if (description && description.trim()) {
       if (combinedPrompt) {
         combinedPrompt += ' ' + description.trim();
@@ -262,9 +281,20 @@ export async function generateCharacterWithSpecialAbility(
       }
     }
     
-    // If no special ability or description, use empty prompt (as requested)
-    if (!combinedPrompt) {
-      combinedPrompt = '';
+    // Trim any extra whitespace
+    combinedPrompt = combinedPrompt.trim();
+
+    // Add negative prompts/instructions to preserve character features
+    const negativePrompts = [
+      'Don\'t add any other character except the input character.',
+      'Keep the appearance features of the input character.'
+    ];
+    
+    // Append negative prompts to the main prompt
+    if (combinedPrompt) {
+      combinedPrompt += ' ' + negativePrompts.join(' ');
+    } else {
+      combinedPrompt = negativePrompts.join(' ');
     }
 
     const response = await fetch('https://image-edit-five.vercel.app/edit-image', {
@@ -274,7 +304,8 @@ export async function generateCharacterWithSpecialAbility(
       },
       body: JSON.stringify({ 
         image_url: imageUrl, 
-        prompt: combinedPrompt || '' 
+        prompt: combinedPrompt.trim(),
+        negative_prompt: negativePrompts.join(' ')
       })
     });
 

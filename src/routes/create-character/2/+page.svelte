@@ -51,11 +51,12 @@
       });
       
       // Check if we already have a generated character image with special ability
-      const cachedBaseImage = sessionStorage.getItem(`characterWithAbility_${selectedStyle}`);
-      if (cachedBaseImage) {
-        baseCharacterImageUrl = cachedBaseImage.split('?')[0];
-        generatedImages[selectedStyle] = baseCharacterImageUrl;
-      } else if (uploadedImageUrl && selectedStyle) {
+      // const cachedBaseImage = sessionStorage.getItem(`characterWithAbility_${selectedStyle}`);
+      // if (cachedBaseImage) {
+      //   baseCharacterImageUrl = cachedBaseImage.split('?')[0];
+      //   generatedImages[selectedStyle] = baseCharacterImageUrl;
+      // } else 
+      if (uploadedImageUrl && selectedStyle) {
         // Generate base character image with special ability
         await generateBaseCharacterImage(uploadedImageUrl, characterType, specialAbility, description, selectedStyle);
       }
@@ -229,10 +230,10 @@
         ]}
         isSelected={selectedEnhancement === "minimal"}
         onSelect={selectEnhancement}
-        afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage={baseCharacterImageUrl || uploadedImageUrl}
-        originalImageUrl={baseCharacterImageUrl || uploadedImageUrl}
+        beforeImage={baseCharacterImageUrl}
+        originalImageUrl={baseCharacterImageUrl}
         selectedStyle={selectedStyle}
+        isGeneratingBase={isGeneratingBaseCharacter}
       />
       <EnhancementCard
         enhancementId="normal"
@@ -246,10 +247,10 @@
         isSelected={selectedEnhancement === "normal"}
         onSelect={selectEnhancement}
         showMostPopular={true}
-        afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage={baseCharacterImageUrl || uploadedImageUrl}
-        originalImageUrl={baseCharacterImageUrl || uploadedImageUrl}
+        beforeImage={baseCharacterImageUrl}
+        originalImageUrl={baseCharacterImageUrl}
         selectedStyle={selectedStyle}
+        isGeneratingBase={isGeneratingBaseCharacter}
       />
       <EnhancementCard
         enhancementId="high"
@@ -262,10 +263,10 @@
         ]}
         isSelected={selectedEnhancement === "high"}
         onSelect={selectEnhancement}
-        afterImage={generatedImages[selectedStyle] || ""}
-        beforeImage={baseCharacterImageUrl || uploadedImageUrl}
-        originalImageUrl={baseCharacterImageUrl || uploadedImageUrl}
+        beforeImage={baseCharacterImageUrl}
+        originalImageUrl={baseCharacterImageUrl}
         selectedStyle={selectedStyle}
+        isGeneratingBase={isGeneratingBaseCharacter}
       />
     </div>
 
@@ -724,36 +725,6 @@
 
   .mobile-full-width {
     width: 100% !important;
-  }
-
-  .generating-base-character {
-    width: 100%;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    background: #f8fafb;
-    border-radius: 20px;
-    border: 2px dashed #438bff;
-  }
-
-  .generating-base-character .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #438bff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  .generating-base-character .generating-text {
-    color: #438bff;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    text-align: center;
   }
 
   @keyframes spin {

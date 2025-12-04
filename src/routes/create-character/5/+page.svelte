@@ -16,13 +16,6 @@
   import treasure from "../../../assets/treasurehunt.png";
   import helping from "../../../assets/helpfriend.png";
   import globehemispherewest from "../../../assets/BlackGlobeHemisphereWest.svg";
-  import { 
-    generateStyledImage, 
-    loadGeneratedImages,
-    saveSelectedImageUrl,
-    hasSelectedImageChanged,
-    getSelectedImageUrl
-  } from "../../../lib/imageGeneration";
   import { storyCreation } from "../../../lib/stores/storyCreation";
 
   let isMobile = false;
@@ -32,13 +25,6 @@
   let specialAbility = "";
   let selectedStyle = "";
   let selectedEnhancement = "";
-  let enhancedCharacterImage = "";
-  let originalImageUrl = "";
-  let environmentImage = "";
-  let environmentImages: { [key: string]: string } = {};
-  let adventureImages: { [key: string]: string } = {};
-  let generatingStates: { [key: string]: boolean } = {};
-  let adventureGeneratingStates: { [key: string]: boolean } = {};
 
   // Style name mapping
   const styleNames = {
@@ -73,47 +59,10 @@
       if (storedSpecialAbility) specialAbility = storedSpecialAbility;
       if (storedSelectedStyle) selectedStyle = storedSelectedStyle;
       if (storedSelectedEnhancement) selectedEnhancement = storedSelectedEnhancement;
-      if (storedOriginalImageUrl) originalImageUrl = storedOriginalImageUrl;
       if (storedSelectedWorld) selectedWorld = storedSelectedWorld;
       if (storedSelectedAdventure) selectedAdventure = storedSelectedAdventure;
       
-      // Get the enhanced character image from step 4
-      const enhancementKey = `enhancementImage_${selectedStyle}_${selectedEnhancement}`;
-      const storedEnhancedImage = sessionStorage.getItem(enhancementKey);
-      if (storedEnhancedImage) {
-        enhancedCharacterImage = storedEnhancedImage.split('?')[0];
-      }
-      
-      // Check if the selected image from step 4 has changed
-      const step4SelectedImage = getSelectedImageUrl('4');
-      if (step4SelectedImage && hasSelectedImageChanged('4', step4SelectedImage)) {
-        // Clear environment cache if the source image changed
-        ['forest', 'underwater', 'outerspace'].forEach(env => {
-          ['3d', 'cartoon', 'anime'].forEach(style => {
-            ['minimal', 'normal', 'high'].forEach(enhancement => {
-              sessionStorage.removeItem(`environmentImage_${style}_${enhancement}_${env}`);
-            });
-          });
-        });
-      }
-      
-      // Load any previously generated environment images
-      loadEnvironmentImages();
-      
-      // Set environmentImage if the selected world already has an image
-      if (environmentImages[selectedWorld]) {
-        environmentImage = environmentImages[selectedWorld];
-      }
-      
-      // Generate environment images for all worlds
-      generateAllEnvironmentImages().then(() => {
-        // After environment images are generated, generate adventure images
-        if (environmentImage || environmentImages[selectedWorld]) {
-          environmentImage = environmentImage || environmentImages[selectedWorld];
-          loadAdventureImages();
-          generateAllAdventureImages();
-        }
-      });
+      // Don't generate images on page load - they will be generated on page 7
     }
   });
 
@@ -123,21 +72,6 @@
     // Save the selected world to sessionStorage
     if (browser) {
       sessionStorage.setItem('selectedWorld', world);
-      
-      // Save the selected world image URL
-      if (environmentImages[world]) {
-        environmentImage = environmentImages[world];
-        saveSelectedImageUrl('5', environmentImages[world]);
-        
-        // Clear adventure cache when world changes and regenerate
-        ['treasure', 'helping'].forEach(adventure => {
-          sessionStorage.removeItem(`adventureImage_${world}_${adventure}`);
-        });
-        
-        // Regenerate adventure images for the new world
-        loadAdventureImages();
-        generateAllAdventureImages();
-      }
     }
     
     // Update story creation store
@@ -150,168 +84,9 @@
     // Save the selected adventure to sessionStorage
     if (browser) {
       sessionStorage.setItem('selectedAdventure', adventure);
-      
-      // Save the selected adventure image URL
-      if (adventureImages[adventure]) {
-        saveSelectedImageUrl('6', adventureImages[adventure]);
-        // Set the adventure image as the original_image_url in the story creation store
-        storyCreation.setOriginalImageUrl(adventureImages[adventure]);
-      }
     }
   }
 
-  // Load previously generated environment images
-  const loadEnvironmentImages = () => {
-    const environments = ['forest', 'underwater', 'outerspace'];
-    environments.forEach(env => {
-      const cachedImage = sessionStorage.getItem(`environmentImage_${selectedStyle}_${selectedEnhancement}_${env}`);
-      if (cachedImage) {
-        environmentImages[env] = cachedImage.split('?')[0];
-        // Set environmentImage if this is the selected world
-        if (env === selectedWorld) {
-          environmentImage = cachedImage.split('?')[0];
-        }
-      }
-    });
-    environmentImages = { ...environmentImages };
-  };
-
-  // Generate environment images for all worlds
-  const generateAllEnvironmentImages = async () => {
-    if (!enhancedCharacterImage && !originalImageUrl) return;
-    
-    const environments = ['forest', 'underwater', 'outerspace'];
-    const baseImage = enhancedCharacterImage || originalImageUrl;
-    
-    // Generate all environment images in parallel
-    const promises = environments.map(env => generateEnvironmentImage(env, baseImage));
-    await Promise.allSettled(promises);
-  };
-
-  // Generate environment image for a specific world
-  const generateEnvironmentImage = async (environment: string, baseImage: string) => {
-    if (!baseImage || generatingStates[environment]) return;
-    
-    // Check if already cached
-    const cacheKey = `environmentImage_${selectedStyle}_${selectedEnhancement}_${environment}`;
-    const cachedImage = sessionStorage.getItem(cacheKey);
-    if (cachedImage) {
-      environmentImages[environment] = cachedImage.split('?')[0];
-      environmentImages = { ...environmentImages };
-      return;
-    }
-    
-    generatingStates[environment] = true;
-    generatingStates = { ...generatingStates };
-    
-    try {
-      const result = await generateStyledImage({
-        imageUrl: baseImage,
-        style: 'environment',
-        quality: environment as 'forest' | 'underwater' | 'outerspace',
-        saveToStorage: true,
-        storageKey: cacheKey
-      });
-
-      if (result.success && result.url) {
-        environmentImages[environment] = result.url;
-        environmentImages = { ...environmentImages };
-        
-        // If this is the currently selected world, save it and update environmentImage
-        if (environment === selectedWorld) {
-          environmentImage = result.url;
-          saveSelectedImageUrl('5', result.url);
-          
-          // Generate adventure images for this world
-          loadAdventureImages();
-          generateAllAdventureImages();
-        }
-      }
-    } catch (error) {
-      console.error(`Error generating ${environment} image:`, error);
-    } finally {
-      generatingStates[environment] = false;
-      generatingStates = { ...generatingStates };
-    }
-  };
-
-  // Load previously generated adventure images
-  const loadAdventureImages = () => {
-    const adventures = ['treasure', 'helping'];
-    adventures.forEach(adventure => {
-      const cachedImage = sessionStorage.getItem(`adventureImage_${selectedWorld}_${adventure}`);
-      if (cachedImage) {
-        adventureImages[adventure] = cachedImage.split('?')[0];
-        // If this is the currently selected adventure, update the story store
-        if (adventure === selectedAdventure) {
-          storyCreation.setOriginalImageUrl(adventureImages[adventure]);
-        }
-      }
-    });
-    adventureImages = { ...adventureImages };
-  };
-
-  // Generate adventure images for all adventure types
-  const generateAllAdventureImages = async () => {
-    if (!environmentImage || !selectedWorld) return;
-    
-    const adventures = ['treasure', 'helping'];
-    
-    // Generate all adventure images in parallel
-    const promises = adventures.map(adventure => generateAdventureImage(adventure, environmentImage));
-    await Promise.allSettled(promises);
-  };
-
-  // Generate adventure image for a specific adventure type
-  const generateAdventureImage = async (adventure: string, baseImage: string) => {
-    if (!baseImage || adventureGeneratingStates[adventure]) return;
-    
-    // Check if already cached
-    const cacheKey = `adventureImage_${selectedWorld}_${adventure}`;
-    const cachedImage = sessionStorage.getItem(cacheKey);
-    if (cachedImage) {
-      adventureImages[adventure] = cachedImage.split('?')[0];
-      adventureImages = { ...adventureImages };
-      return;
-    }
-    
-    adventureGeneratingStates[adventure] = true;
-    adventureGeneratingStates = { ...adventureGeneratingStates };
-    
-    try {
-      // Map adventure names to match prompt.json structure
-      const adventureMapping: { [key: string]: string } = {
-        'treasure': 'treasurehunt',
-        'helping': 'helpfriend'
-      };
-      
-      const adventureKey = adventureMapping[adventure] || adventure;
-      
-      const result = await generateStyledImage({
-        imageUrl: baseImage,
-        style: 'adventure',
-        quality: `${selectedWorld}_${adventureKey}` as any,
-        saveToStorage: true,
-        storageKey: cacheKey
-      });
-
-      if (result.success && result.url) {
-        adventureImages[adventure] = result.url;
-        adventureImages = { ...adventureImages };
-        
-        // If this is the currently selected adventure, save it and update story store
-        if (adventure === selectedAdventure) {
-          saveSelectedImageUrl('6', result.url);
-          storyCreation.setOriginalImageUrl(result.url);
-        }
-      }
-    } catch (error) {
-      console.error(`Error generating ${adventure} image:`, error);
-    } finally {
-      adventureGeneratingStates[adventure] = false;
-      adventureGeneratingStates = { ...adventureGeneratingStates };
-    }
-  };
 
   // Check if both selections are made
   $: canContinue = selectedWorld !== "" && selectedAdventure !== "";
@@ -378,13 +153,7 @@
       <div class="frame-1410103852">
         <div class="card" class:card-selected={selectedWorld === "forest"}>
           <div class="image-container">
-            <img class="image" src={environmentImages["forest"] || forest} alt="Enchanted Forest" />
-            {#if generatingStates["forest"]}
-              <div class="generating-overlay">
-                <div class="spinner"></div>
-                <div class="generating-text">Generating...</div>
-              </div>
-            {/if}
+            <img class="image" src={forest} alt="Enchanted Forest" />
           </div>
           <div class="frame-10">
             <div class="heading_01">
@@ -411,13 +180,7 @@
         </div>
         <div class="card" class:card-selected={selectedWorld === "outerspace"}>
           <div class="image-container">
-            <img class="image" src={environmentImages["outerspace"] || outspace} alt="Outer Space" />
-            {#if generatingStates["outerspace"]}
-              <div class="generating-overlay">
-                <div class="spinner"></div>
-                <div class="generating-text">Generating...</div>
-              </div>
-            {/if}
+            <img class="image" src={outspace} alt="Outer Space" />
           </div>
           <div class="frame-10">
             <div class="heading_01">
@@ -444,13 +207,7 @@
         </div>
         <div class="card" class:card-selected={selectedWorld === "underwater"}>
           <div class="image-container">
-            <img class="image" src={environmentImages["underwater"] || underwater} alt="Underwater Kingdom" />
-            {#if generatingStates["underwater"]}
-              <div class="generating-overlay">
-                <div class="spinner"></div>
-                <div class="generating-text">Generating...</div>
-              </div>
-            {/if}
+            <img class="image" src={underwater} alt="Underwater Kingdom" />
           </div>
           <div class="frame-10">
             <div class="heading_01">
@@ -485,13 +242,7 @@
       <div class="frame-1410103852_01">
         <div class="card_03" class:card-selected={selectedAdventure === "treasure"}>
           <div class="image-container">
-            <img class="image_03" src={adventureImages["treasure"] || treasure} alt="Treasure Hunt" />
-            {#if adventureGeneratingStates["treasure"]}
-              <div class="generating-overlay">
-                <div class="spinner"></div>
-                <div class="generating-text">Generating...</div>
-              </div>
-            {/if}
+            <img class="image_03" src={treasure} alt="Treasure Hunt" />
           </div>
           <div class="frame-10_03">
             <div class="frame-2147227609">
@@ -515,13 +266,7 @@
         </div>
         <div class="card_04" class:card-selected={selectedAdventure === "helping"}>
           <div class="image_04">
-            <img class="image-6" src={adventureImages["helping"] || helping} alt="Helping a Friend" />
-            {#if adventureGeneratingStates["helping"]}
-              <div class="generating-overlay">
-                <div class="spinner"></div>
-                <div class="generating-text">Generating...</div>
-              </div>
-            {/if}
+            <img class="image-6" src={helping} alt="Helping a Friend" />
           </div>
           <div class="frame-10_04">
             <div class="frame-2147227610">
@@ -663,42 +408,6 @@
     object-fit: cover;
   }
 
-  .generating-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    gap: 8px;
-  }
-
-  .spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #438bff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  .generating-text {
-    color: #438bff;
-    font-size: 14px;
-    font-family: Quicksand;
-    font-weight: 600;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
 
   .enchantedforest_span {
     color: #141414;

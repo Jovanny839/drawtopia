@@ -14,6 +14,14 @@
     import genderneuter from "../../../assets/GenderNeuter.svg";
     import check from "../../../assets/Check_blue.svg";
     import { goto } from "$app/navigation";
+    import ProgressBar from "../../../components/ProgressBar.svelte";
+    import MobileStepProgressBar from "../../../components/MobileStepProgressBar.svelte";
+
+    let isMobile = false;
+
+    $: if (browser) {
+        isMobile = window.innerWidth < 800;
+    }
 
     // Helper functions for display names
     function getCharacterTypeDisplayName(type: string): string {
@@ -93,6 +101,20 @@
             <img src={drawtopia} alt="drawtopia logo" class="img-logo" />
         </div>
     </div>
+    <div class="arrow">
+        <div class="button" on:click={() => {goto('/create-character/dedication/create-send')}}>
+            <div class="arrowleft">
+                <img
+                    src={arrowleft}
+                    alt="arrowleft"
+                    class="img-arrowleft"
+                />
+            </div>
+            <div class="back">
+                <span class="back_span">Back</span>
+            </div>
+        </div>
+    </div>
     <div class="frame-1410103818">
         <div class="heading">
             <div class="heading_01">
@@ -128,72 +150,8 @@
                 </div>
             </div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-bar_01">
-                <div class="progress-bar_02">
-                    <div class="step-1">
-                        <span class="step1_span">Step 1</span>
-                    </div>
-                    <div class="bar"></div>
-                    <div class="frame-1410103829">
-                        <div class="character-upload">
-                            <span class="characterupload_span"
-                                >Character Upload</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-bar_03">
-                    <div class="frame-1410103829_01">
-                        <div class="step-2">
-                            <span class="step2_span">Step 2</span>
-                        </div>
-                    </div>
-                    <div class="bar_01"></div>
-                    <div class="character-enhancement">
-                        <span class="characterenhancement_span"
-                            >Character Enhancement</span
-                        >
-                    </div>
-                </div>
-                <div class="progress-bar_04">
-                    <div class="step-3">
-                        <span class="step3_span">Step 3</span>
-                    </div>
-                    <div class="bar_02"></div>
-                    <div class="frame-1410103829_02">
-                        <div class="format-selection">
-                            <span class="formatselection_span"
-                                >Format Selection</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-bar_05">
-                    <div class="step-4">
-                        <span class="step4_span">Step 4</span>
-                    </div>
-                    <div class="bar_03"></div>
-                    <div class="frame-1410103829_03">
-                        <div class="configuration">
-                            <span class="configuration_span">Configuration</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-bar_06">
-                    <div class="step-5">
-                        <span class="step5_span">Step 5</span>
-                    </div>
-                    <div class="bar_04"></div>
-                    <div class="frame-1410103829_04">
-                        <div class="generation">
-                            <span class="generation_span">Generation</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <MobileStepProgressBar currentStep={6} />
+        <ProgressBar currentStep={6} />
         <div class="frame-1410104031">
             <div class="frame-9">
                 <div class="story-summary">
@@ -247,7 +205,7 @@
                             <div class="frame-1410104093">
                                 <div class="frame-1410104099_01">
                                     <div class="palette">
-                                        <img src={palette} alt="palette" />
+                                        <img src={palette} alt="palette" class="img-palette" />
                                     </div>
                                 </div>
                                 <div class="frame-1410104100">
@@ -269,6 +227,7 @@
                                         <img
                                             src={globehemispherewest}
                                             alt="globehemispherewest"
+                                            class="img-globehemispherewest"
                                         />
                                     </div>
                                 </div>
@@ -291,6 +250,7 @@
                                         <img
                                             src={globestand}
                                             alt="globestand"
+                                            class="img-globestand"
                                         />
                                     </div>
                                 </div>
@@ -313,7 +273,7 @@
                             <div class="frame-1410104092_02">
                                 <div class="frame-1410104099_04">
                                     <div class="notepad">
-                                        <img src={notepad} alt="notepad" />
+                                        <img src={notepad} alt="notepad" class="img-notepad" />
                                     </div>
                                 </div>
                                 <div class="frame-1410104102_01">
@@ -333,6 +293,7 @@
                                         <img
                                             src={genderneuter}
                                             alt="genderneuter"
+                                            class="img-genderneuter"
                                         />
                                     </div>
                                 </div>
@@ -534,175 +495,6 @@
         word-wrap: break-word;
     }
 
-    .step1_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-1 {
-        width: 63px;
-    }
-
-    .bar {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .characterupload_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .character-upload {
-        align-self: stretch;
-    }
-
-    .step2_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-2 {
-        width: 63px;
-    }
-
-    .bar_01 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .characterenhancement_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .character-enhancement {
-        align-self: stretch;
-    }
-
-    .step3_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-3 {
-        width: 63px;
-    }
-
-    .bar_02 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .formatselection_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .format-selection {
-        align-self: stretch;
-    }
-
-    .step4_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-4 {
-        width: 63px;
-    }
-
-    .bar_03 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .configuration_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .configuration {
-        align-self: stretch;
-    }
-
-    .step5_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-5 {
-        width: 63px;
-    }
-
-    .bar_04 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .generation_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .generation {
-        align-self: stretch;
-    }
 
     .storysummary_span {
         color: #141414;
@@ -1395,50 +1187,6 @@
         display: flex;
     }
 
-    .progress-bar_02 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_03 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_04 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_05 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_06 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
 
     .frame-1410104091 {
         align-self: stretch;
@@ -1650,13 +1398,6 @@
         cursor: pointer;
     }
 
-    .progress-bar_01 {
-        align-self: stretch;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 8px;
-        display: inline-flex;
-    }
 
     .frame-1410104094_01 {
         align-self: stretch;
@@ -1777,19 +1518,6 @@
         display: flex;
     }
 
-    .progress-bar {
-        width: 1240px;
-        padding: 8px;
-        background: white;
-        border-radius: 12px;
-        outline: 1px #ededed solid;
-        outline-offset: -1px;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: flex;
-    }
 
     .frame-1410104096_02 {
         align-self: stretch;
@@ -1941,5 +1669,361 @@
         align-items: center;
         gap: 48px;
         display: inline-flex;
+    }
+
+    .arrow {
+        display: none;
+    }
+
+    .back_span {
+        color: black;
+        font-size: 16px;
+        font-family: DM Sans;
+        font-weight: 600;
+        line-height: 22.40px;
+        word-wrap: break-word;
+    }
+
+    .back {
+        text-align: center;
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .story-preview-summary-default {
+            padding-top: 24px;
+            padding-bottom: 32px;
+            padding-left: 16px;
+            padding-right: 16px;
+            gap: 32px;
+        }
+
+        .arrow {
+            width: 100%;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            display: inline-flex;
+        }
+
+        .arrow .button {
+            padding-left: 24px;
+            padding-right: 24px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            box-shadow: 0px 0px 0px 2px #EEF6FF;
+            border-radius: 20px;
+            outline: 1px #DCDCDC solid;
+            outline-offset: -1px;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            display: flex;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .arrow .arrowleft {
+            width: 20px;
+            height: 20px;
+        }
+
+        .navbar {
+            padding-left: 24px;
+            padding-right: 12px;
+        }
+
+        .logo-text-full {
+            width: 170.15px;
+            height: 31.80px;
+        }
+
+        .frame-1410103818 {
+            width: 100%;
+            align-self: stretch;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .hereyourpreviewstory_span {
+            font-size: 32px;
+            line-height: 38.40px;
+        }
+
+        .here-your-preview-story {
+            width: 100%;
+            text-align: left;
+        }
+
+        .reviewyourpersonalizedstorydetailsbeforecompletingyourorder_span {
+            font-size: 16px;
+            line-height: 22.40px;
+        }
+
+        .review-your-personalized-story-details-before-completing-your-order {
+            width: 100%;
+            text-align: left;
+        }
+
+        .ffreepagepreview_span {
+            font-size: 16px;
+        }
+
+        .frame-1410103862 {
+            align-items: flex-start;
+        }
+
+        .heading_01 {
+            align-items: flex-start;
+        }
+
+        .heading {
+            align-items: flex-start;
+        }
+
+
+        .frame-1410104031 {
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .frame-9 {
+            width: 100%;
+            align-self: stretch;
+        }
+
+        .form {
+            width: 100%;
+            align-self: stretch;
+        }
+
+        .frame-1410104031 {
+            width: 100%;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .frame-9 {
+            order: 2;
+        }
+
+        .form {
+            order: 1;
+        }
+
+        .image {
+            width: 239px;
+            height: 338px;
+        }
+
+        .frame-1410104103 {
+            padding: 12px;
+        }
+
+        .digitalbook_span,
+        .audioversion_span,
+        .print-readypdf_span {
+            font-size: 16px;
+            line-height: 22.40px;
+        }
+
+        .storysummary_span {
+            font-size: 20px;
+            line-height: 24px;
+        }
+
+        .storybooktitle_span {
+            font-size: 16px;
+            line-height: 22.40px;
+        }
+
+        .storybook-title {
+            width: 100%;
+        }
+
+        .characternametypewithspecialability_span {
+            font-size: 14px;
+            line-height: 19.60px;
+        }
+
+        .style_span,
+        .anime_span,
+        .enhancement_span,
+        .normal_span,
+        .storyworld_span,
+        .outerspace_span,
+        .difficultyadventuretype_span,
+        .helpafriend_span,
+        .format_span,
+        .storyadventure_span,
+        .agegroup_span,
+        .ages11-12_span {
+            font-size: 14px;
+            line-height: 19.60px;
+        }
+
+        .storydetails_span {
+            font-size: 18px;
+            line-height: 21.60px;
+        }
+
+        .story-details {
+            width: 100%;
+        }
+
+        .pages_span,
+        .minread_span,
+        .minaudio_span {
+            font-size: 14px;
+            line-height: 19.60px;
+        }
+
+        .f_span,
+        .f-7min_span,
+        .f2min_span {
+            font-size: 20px;
+            line-height: 24px;
+        }
+
+        .frame-1410104094_01 {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .frame-1410104092_03,
+        .frame-1410104094_02,
+        .frame-1410104093_03 {
+            align-self: stretch;
+        }
+
+        .frame-1410103860 {
+            flex-direction: column;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .frame-1410103870 {
+            display: none;
+        }
+
+        .frame-2147227646 {
+            width: 100%;
+            flex-direction: column;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .button_01 {
+            align-self: stretch;
+            padding-left: 24px;
+            padding-right: 24px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .frame-1410104246 {
+            align-self: stretch;
+            height: 54px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 16px;
+            padding-bottom: 16px;
+        }
+
+        .saveasdraft_span,
+        .generateandpreviewstory_span {
+            font-size: 16px;
+            line-height: 22.40px;
+        }
+
+        .ellipse-1415 {
+            width: 248px;
+            height: 114px;
+            left: 52px;
+            top: 25px;
+        }
+
+        .frame-1410104094,
+        .frame-1410104095,
+        .frame-1410104096_01 {
+            flex-direction: column;
+        }
+
+        .frame-1410104092,
+        .frame-1410104093,
+        .frame-1410104092_01,
+        .frame-1410104093_01,
+        .frame-1410104092_02,
+        .frame-1410104093_02 {
+            padding: 8px;
+            width: 100%;
+        }
+
+        .frame-1410104099,
+        .frame-1410104099_01,
+        .frame-1410104099_02,
+        .frame-1410104099_03,
+        .frame-1410104099_04,
+        .frame-1410104099_05 {
+            padding: 8px;
+        }
+
+
+        .check,
+        .check_02,
+        .check_04 {
+            width: 16px;
+            height: 16px;
+        }
+
+        .check_01,
+        .check_03,
+        .check_05 {
+            width: 12.50px;
+        }
+
+        .frame-1410104075 {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .informationbookcover_span {
+            font-size: 20px;
+            line-height: 24px;
+        }
+
+        .img-bookopentext {
+            width: 100%;
+        }
+    }
+
+    .img-palette {
+        width: 100%;
+    }
+
+    .img-globehemispherewest {
+        width: 100%;
+    }
+
+    .img-globestand {
+        width: 100%;
+    }
+
+    .img-notepad {
+        width: 100%;
+    }
+
+    .img-genderneuter {
+        width: 100%;
     }
 </style>

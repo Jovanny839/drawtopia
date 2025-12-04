@@ -3,10 +3,13 @@
     import { goto } from '$app/navigation';
     import drawtopia from "../../../assets/logo.png";
     import shieldstar from "../../../assets/ShieldStar.svg";
+    import arrowleft from "../../../assets/ArrowLeft.svg";
     import magicalwand from "../../../assets/magic-wand.gif"; 
     import magicalwand1 from "../../../assets/magic-wand1.gif"; 
     import magicalwand2 from "../../../assets/magic-wand2.gif"; 
     import shootingstar from "../../../assets/ShootingStar.svg"
+    import ProgressBar from "../../../components/ProgressBar.svelte";
+    import MobileStepProgressBar from "../../../components/MobileStepProgressBar.svelte";
 
     const TOTAL_TIME = 60; // 60 seconds
     let timeRemaining = TOTAL_TIME;
@@ -59,6 +62,20 @@
             <img src={drawtopia} alt="Drawtopia Logo" class="logo-img" />
         </div>
     </div>
+    <div class="arrow">
+        <div class="button" on:click={() => {goto('/adventure-story/story-preview')}}>
+            <div class="arrowleft">
+                <img
+                    src={arrowleft}
+                    alt="arrowleft"
+                    class="img-arrowleft"
+                />
+            </div>
+            <div class="back">
+                <span class="back_span">Back</span>
+            </div>
+        </div>
+    </div>
     <div class="frame-1410103818">
         <div class="heading">
             <div class="creating-your-story">
@@ -85,72 +102,8 @@
                 </div>
             </div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-bar_01">
-                <div class="progress-bar_02">
-                    <div class="step-1">
-                        <span class="step1_span">Step 1</span>
-                    </div>
-                    <div class="bar"></div>
-                    <div class="frame-1410103829">
-                        <div class="character-upload">
-                            <span class="characterupload_span"
-                                >Character Upload</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-bar_03">
-                    <div class="frame-1410103829_01">
-                        <div class="step-2">
-                            <span class="step2_span">Step 2</span>
-                        </div>
-                    </div>
-                    <div class="bar_01"></div>
-                    <div class="character-enhancement">
-                        <span class="characterenhancement_span"
-                            >Character Enhancement</span
-                        >
-                    </div>
-                </div>
-                <div class="progress-bar_04">
-                    <div class="step-3">
-                        <span class="step3_span">Step 3</span>
-                    </div>
-                    <div class="bar_02"></div>
-                    <div class="frame-1410103829_02">
-                        <div class="format-selection">
-                            <span class="formatselection_span"
-                                >Format Selection</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-bar_05">
-                    <div class="step-4">
-                        <span class="step4_span">Step 4</span>
-                    </div>
-                    <div class="bar_03"></div>
-                    <div class="frame-1410103829_03">
-                        <div class="configuration">
-                            <span class="configuration_span">Configuration</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-bar_06">
-                    <div class="step-5">
-                        <span class="step5_span">Step 5</span>
-                    </div>
-                    <div class="bar_04"></div>
-                    <div class="frame-1410103829_04">
-                        <div class="generation">
-                            <span class="generation_span">Generation</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <MobileStepProgressBar currentStep={6} />
+        <ProgressBar currentStep={5} />
         <div class="frame-13">
             <div class="frame-1410103853">
                 <div class="frame">
@@ -182,7 +135,9 @@
                     </div>
                     <div class="frame-2147227509">
                         <div class="frame-1410104037">
-                            <img src={shootingstar} alt="Shooting Star" class="img-shootingstar">
+                            <div class="shootingstar">
+                                <img src={shootingstar} alt="Shooting Star" class="img-shootingstar">
+                            </div>
                             <div class="frame-2147227506">
                                 <div class="fun-fact">
                                     <span class="funfact_span">Fun Fact</span>
@@ -271,6 +226,15 @@
 
     .img-shieldstar {
         margin: auto;
+        width: 20px;
+        height: 20px;
+    }
+
+    .shootingstar {
+        width: 32px;
+        height: 32px;
+        position: relative;
+        overflow: hidden;
     }
 
     .ffreepagepreview_span {
@@ -281,175 +245,6 @@
         word-wrap: break-word;
     }
 
-    .step1_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-1 {
-        width: 63px;
-    }
-
-    .bar {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .characterupload_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .character-upload {
-        align-self: stretch;
-    }
-
-    .step2_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-2 {
-        width: 63px;
-    }
-
-    .bar_01 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .characterenhancement_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .character-enhancement {
-        align-self: stretch;
-    }
-
-    .step3_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-3 {
-        width: 63px;
-    }
-
-    .bar_02 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .formatselection_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .format-selection {
-        align-self: stretch;
-    }
-
-    .step4_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-4 {
-        width: 63px;
-    }
-
-    .bar_03 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .configuration_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .configuration {
-        align-self: stretch;
-    }
-
-    .step5_span {
-        color: #727272;
-        font-size: 14px;
-        font-family: Nunito;
-        font-weight: 400;
-        line-height: 19.6px;
-        word-wrap: break-word;
-    }
-
-    .step-5 {
-        width: 63px;
-    }
-
-    .bar_04 {
-        align-self: stretch;
-        height: 8px;
-        position: relative;
-        background: #438bff;
-        border-radius: 12px;
-    }
-
-    .generation_span {
-        color: #121212;
-        font-size: 16px;
-        font-family: DM Sans;
-        font-weight: 500;
-        line-height: 22.4px;
-        word-wrap: break-word;
-    }
-
-    .generation {
-        align-self: stretch;
-    }
 
     .magic-wand_12404075-1 {
         width: 60px;
@@ -567,50 +362,6 @@
         text-align: center;
     }
 
-    .frame-1410103829 {
-        align-self: stretch;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 4px;
-        display: flex;
-    }
-
-    .frame-1410103829_01 {
-        align-self: stretch;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 4px;
-        display: flex;
-    }
-
-    .frame-1410103829_02 {
-        align-self: stretch;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 4px;
-        display: flex;
-    }
-
-    .frame-1410103829_03 {
-        align-self: stretch;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 4px;
-        display: flex;
-    }
-
-    .frame-1410103829_04 {
-        align-self: stretch;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 4px;
-        display: flex;
-    }
 
     .content {
         align-self: stretch;
@@ -685,50 +436,6 @@
         display: flex;
     }
 
-    .progress-bar_02 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_03 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_04 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_05 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
-
-    .progress-bar_06 {
-        flex: 1 1 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: inline-flex;
-    }
 
     .frame-2147227507 {
         align-self: stretch;
@@ -813,14 +520,6 @@
         background-image: url(https://placehold.co/171x218);
     }
 
-    .progress-bar_01 {
-        align-self: stretch;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 8px;
-        display: inline-flex;
-    }
-
     .heading {
         align-self: stretch;
         flex-direction: column;
@@ -845,20 +544,6 @@
         align-items: flex-start;
         gap: 12px;
         display: inline-flex;
-    }
-
-    .progress-bar {
-        width: 1240px;
-        padding: 8px;
-        background: white;
-        border-radius: 12px;
-        outline: 1px #ededed solid;
-        outline-offset: -1px;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
-        display: flex;
     }
 
     .frame-2147227509 {
@@ -925,5 +610,240 @@
         align-items: center;
         gap: 48px;
         display: inline-flex;
+    }
+
+    .arrow {
+        display: none;
+    }
+
+    .back_span {
+        color: black;
+        font-size: 16px;
+        font-family: DM Sans;
+        font-weight: 600;
+        line-height: 22.40px;
+        word-wrap: break-word;
+    }
+
+    .back {
+        text-align: center;
+    }
+
+    .arrowleft {
+        width: 20px;
+        height: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .img-arrowleft {
+        width: 100%;
+        height: 100%;
+    }
+
+    .img-shootingstar {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .loading-option-3-1 {
+            padding-top: 24px;
+            padding-bottom: 32px;
+            padding-left: 16px;
+            padding-right: 16px;
+            gap: 32px;
+        }
+
+        .arrow {
+            width: 100%;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            display: inline-flex;
+        }
+
+        .arrow .button {
+            padding-left: 24px;
+            padding-right: 24px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            box-shadow: 0px 0px 0px 2px #EEF6FF;
+            border-radius: 20px;
+            outline: 1px #DCDCDC solid;
+            outline-offset: -1px;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            display: flex;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .arrow .arrowleft {
+            width: 20px;
+            height: 20px;
+        }
+
+        .navbar {
+            padding-left: 24px;
+            padding-right: 12px;
+        }
+
+        .logo-text-full {
+            width: 170.15px;
+            height: 31.80px;
+        }
+
+        .frame-1410103818 {
+            width: 100%;
+            align-self: stretch;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .creatingyourstory_span {
+            font-size: 32px;
+            line-height: 38.40px;
+        }
+
+        .creating-your-story {
+            text-align: left;
+        }
+
+        .yourpreviewwillbereadyinabout47seconds_span_01,
+        .yourpreviewwillbereadyinabout47seconds_span_02 {
+            font-size: 16px;
+            line-height: 22.40px;
+        }
+
+        .your-preview-will-be-ready-in-about-47-seconds {
+            text-align: left;
+        }
+
+        .ffreepagepreview_span {
+            font-size: 16px;
+        }
+
+        .heading {
+            align-items: flex-start;
+        }
+
+
+        .frame-13 {
+            width: 100%;
+            align-self: stretch;
+        }
+
+        .frame-1410103853 {
+            width: 100%;
+            align-self: stretch;
+        }
+
+        .frame {
+            width: 100%;
+            align-self: stretch;
+            padding: 10px;
+            gap: 24px;
+        }
+
+        .frame-2147227347 {
+            gap: 24px;
+        }
+
+        .magic-wand_12404075-1 {
+            width: 48px;
+            height: 48px;
+        }
+
+        .enhancingyourcharacter_span {
+            font-size: 20px;
+            line-height: 24px;
+        }
+
+        .bar_05 {
+            height: 10px;
+        }
+
+        .bar_06 {
+            height: 10px;
+        }
+
+        .f5complete_span {
+            font-size: 16px;
+            line-height: 22.40px;
+        }
+
+        .frame-2147227509 {
+            gap: 16px;
+        }
+
+        .frame-1410104037 {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .img-shootingstar {
+            width: 28px;
+            height: 28px;
+        }
+
+        .funfact_span {
+            font-size: 18px;
+            line-height: 21.60px;
+        }
+
+        .yourcharactersspecialabilitywillhelpsolveabigproblem_span {
+            font-size: 14px;
+            line-height: 19.60px;
+        }
+
+        .frame-2147227510 {
+            /* flex-direction: column; */
+            gap: 12px;
+        }
+
+        .frame-2147227508 {
+            width: 100%;
+            height: 146px;
+        }
+
+        .tag_01 {
+            left: 21px;
+            top: 114.70px;
+        }
+
+        .frame-2147227509_01,
+        .frame-2147227510_01 {
+            width: 100%;
+            height: 146px;
+        }
+
+        .frame-13_01 {
+            width: 100%;
+            align-self: stretch;
+        }
+
+        .button {
+            width: 100%;
+            align-self: stretch;
+            padding-left: 24px;
+            padding-right: 24px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .cancel_span {
+            font-size: 16px;
+            line-height: 22.40px;
+        }
     }
 </style>

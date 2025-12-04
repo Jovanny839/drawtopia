@@ -11,11 +11,17 @@
   import small from "../../../assets/small.png";
   import classic from "../../../assets/classic.png";
   import { storyCreation } from "../../../lib/stores/storyCreation";
-  import { getSelectedImageUrl } from "../../../lib/imageGeneration";
+  import { getSelectedImageUrl, generateStyledImage, saveSelectedImageUrl } from "../../../lib/imageGeneration";
 
   let isMobile = false;
   let characterName = "";
   let selectedImageFromStep6 = "";
+  let selectedStyle = "";
+  let selectedEnhancement = "";
+  let selectedWorld = "";
+  let selectedAdventure = "";
+  let enhancedCharacterImage = "";
+  let isGeneratingImage = false;
   
   // Selection state variables - these will be updated with the character name
   let selectedTitle = "The Great Addventure [Your Name]";
@@ -29,7 +35,7 @@
   }
 
   // Retrieve character data from sessionStorage on component mount
-  onMount(() => {
+  onMount(async () => {
     if (browser) {
       const storedCharacterName = sessionStorage.getItem('characterName');
       if (storedCharacterName) {
@@ -51,13 +57,107 @@
         ];
       }
       
-      // Get the selected image from step 6
-      const step6Image = getSelectedImageUrl('6');
-      if (step6Image) {
-        selectedImageFromStep6 = step6Image;
+      // Get selections from sessionStorage
+      selectedStyle = sessionStorage.getItem('selectedStyle') || "";
+      selectedEnhancement = sessionStorage.getItem('selectedEnhancement') || "";
+      selectedWorld = sessionStorage.getItem('selectedWorld') || "";
+      selectedAdventure = sessionStorage.getItem('selectedAdventure') || "";
+      
+      // Get the enhanced character image from step 4
+      const enhancementKey = `enhancementImage_${selectedStyle}_${selectedEnhancement}`;
+      const storedEnhancedImage = sessionStorage.getItem(enhancementKey);
+      if (storedEnhancedImage) {
+        enhancedCharacterImage = storedEnhancedImage.split('?')[0];
+      }
+      
+      // Generate images: first environment, then adventure
+      if (enhancedCharacterImage && selectedWorld && selectedAdventure) {
+        await generateImages();
       }
     }
   });
+
+  // Generate environment image first, then adventure image
+  const generateImages = async () => {
+    if (!enhancedCharacterImage || !selectedWorld || !selectedAdventure || isGeneratingImage) return;
+    
+    isGeneratingImage = true;
+    
+    try {
+      // Step 1: Generate environment image
+      const environmentMapping: { [key: string]: string } = {
+        'forest': 'forest',
+        'outerspace': 'outerspace',
+        'underwater': 'underwater'
+      };
+      
+      const environmentKey = environmentMapping[selectedWorld] || selectedWorld;
+      const environmentCacheKey = `environmentImage_${selectedStyle}_${selectedEnhancement}_${environmentKey}`;
+      
+      // Check cache first
+      let environmentImageUrl = sessionStorage.getItem(environmentCacheKey);
+      
+      if (!environmentImageUrl) {
+        const environmentResult = await generateStyledImage({
+          imageUrl: enhancedCharacterImage,
+          style: 'environment',
+          quality: environmentKey as 'forest' | 'underwater' | 'outerspace',
+          saveToStorage: true,
+          storageKey: environmentCacheKey
+        });
+        
+        if (environmentResult.success && environmentResult.url) {
+          environmentImageUrl = environmentResult.url;
+          saveSelectedImageUrl('5', environmentImageUrl);
+        } else {
+          console.error('Failed to generate environment image:', environmentResult.error);
+          isGeneratingImage = false;
+          return;
+        }
+      } else {
+        environmentImageUrl = environmentImageUrl.split('?')[0];
+      }
+      
+      // Step 2: Generate adventure image
+      const adventureMapping: { [key: string]: string } = {
+        'treasure': 'treasurehunt',
+        'helping': 'helpfriend'
+      };
+      
+      const adventureKey = adventureMapping[selectedAdventure] || selectedAdventure;
+      const adventureCacheKey = `adventureImage_${selectedWorld}_${selectedAdventure}`;
+      
+      // Check cache first
+      let adventureImageUrl = sessionStorage.getItem(adventureCacheKey);
+      
+      if (!adventureImageUrl) {
+        const adventureResult = await generateStyledImage({
+          imageUrl: environmentImageUrl,
+          style: 'adventure',
+          quality: `${selectedWorld}_${adventureKey}` as any,
+          saveToStorage: true,
+          storageKey: adventureCacheKey
+        });
+        
+        if (adventureResult.success && adventureResult.url) {
+          adventureImageUrl = adventureResult.url;
+          selectedImageFromStep6 = adventureResult.url;
+          saveSelectedImageUrl('6', adventureImageUrl);
+          storyCreation.setOriginalImageUrl(adventureImageUrl);
+        } else {
+          console.error('Failed to generate adventure image:', adventureResult.error);
+        }
+      } else {
+        adventureImageUrl = adventureImageUrl.split('?')[0];
+        selectedImageFromStep6 = adventureImageUrl;
+        storyCreation.setOriginalImageUrl(adventureImageUrl);
+      }
+    } catch (error) {
+      console.error('Error generating images:', error);
+    } finally {
+      isGeneratingImage = false;
+    }
+  };
 
   // Title selection handler
   function selectTitle(title: string) {
@@ -153,11 +253,18 @@
             <span class="coverbookpreview_span">Cover Book Preview</span>
           </div>
         </div>
-        <img
-          class="image"
-          src={selectedImageFromStep6 || small}
-          alt="image_card_1"
-        />
+        {#if isGeneratingImage}
+          <div class="generating-overlay">
+            <div class="spinner"></div>
+            <div class="generating-text">Generating adventure image...</div>
+          </div>
+        {:else}
+          <img
+            class="image"
+            src={selectedImageFromStep6 || small}
+            alt="image_card_1"
+          />
+        {/if}
       </div>
       <div class="frame-9">
         <div class="information-cover">
@@ -413,7 +520,7 @@
         : 'space-between'}; width: 100%;"
     >
       {#if !isMobile}
-        <button class="button_01" on:click={() => goto("/create-character/6")}>
+        <button class="button_01" on:click={() => goto("/create-character/5")}>
           <div class="arrowleft">
             <img src={arrowLeft} alt="arrowLeft" />
           </div>
@@ -1123,6 +1230,7 @@
     align-items: flex-start;
     gap: 12px;
     display: inline-flex;
+    position: relative;
   }
 
   .frame-1410103940 {
@@ -1544,5 +1652,42 @@
     .message-content {
       width: 90%;
     }
+  }
+
+  .generating-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    gap: 16px;
+  }
+
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #438bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .generating-text {
+    color: #438bff;
+    font-size: 18px;
+    font-family: Quicksand;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 </style>

@@ -5,9 +5,17 @@
     import ArrowLeft from "../../../../assets/ArrowLeft.svg"
     import std_book_cover from "../../../../assets/std_book_cover.png"
     import { goto } from "$app/navigation";
+    import { browser } from "$app/environment";
+    import MobileStepProgressBar from "../../../../components/MobileStepProgressBar.svelte";
+    import ProgressBar from "../../../../components/ProgressBar.svelte";
     
     let dedicationMessage: string = "";
     const maxChars: number = 200;
+    let isMobile = false;
+    
+    $: if (browser) {
+        isMobile = window.innerWidth < 800;
+    }
     
     function handleDedicationInput(event: Event) {
         const target = event.target as HTMLTextAreaElement | null;
@@ -59,72 +67,76 @@
                 </div>
             </div>
         </div>
-        <div class="progress-bar">
-            <div class="progress-bar_01">
-                <div class="progress-bar_02">
-                    <div class="step-1">
-                        <span class="step1_span">Step 1</span>
+        {#if isMobile}
+            <MobileStepProgressBar currentStep={6} />
+        {:else}
+            <div class="progress-bar">
+                <div class="progress-bar_01">
+                    <div class="progress-bar_02">
+                        <div class="step-1">
+                            <span class="step1_span">Step 1</span>
+                        </div>
+                        <div class="bar"></div>
+                        <div class="frame-1410103829">
+                            <div class="character-upload">
+                                <span class="characterupload_span"
+                                    >Character Upload</span
+                                >
+                            </div>
+                        </div>
                     </div>
-                    <div class="bar"></div>
-                    <div class="frame-1410103829">
-                        <div class="character-upload">
-                            <span class="characterupload_span"
-                                >Character Upload</span
+                    <div class="progress-bar_03">
+                        <div class="frame-1410103829_01">
+                            <div class="step-2">
+                                <span class="step2_span">Step 2</span>
+                            </div>
+                        </div>
+                        <div class="bar_01"></div>
+                        <div class="character-enhancement">
+                            <span class="characterenhancement_span"
+                                >Character Enhancement</span
                             >
                         </div>
                     </div>
-                </div>
-                <div class="progress-bar_03">
-                    <div class="frame-1410103829_01">
-                        <div class="step-2">
-                            <span class="step2_span">Step 2</span>
+                    <div class="progress-bar_04">
+                        <div class="step-3">
+                            <span class="step3_span">Step 3</span>
+                        </div>
+                        <div class="bar_02"></div>
+                        <div class="frame-1410103829_02">
+                            <div class="format-selection">
+                                <span class="formatselection_span"
+                                    >Format Selection</span
+                                >
+                            </div>
                         </div>
                     </div>
-                    <div class="bar_01"></div>
-                    <div class="character-enhancement">
-                        <span class="characterenhancement_span"
-                            >Character Enhancement</span
-                        >
-                    </div>
-                </div>
-                <div class="progress-bar_04">
-                    <div class="step-3">
-                        <span class="step3_span">Step 3</span>
-                    </div>
-                    <div class="bar_02"></div>
-                    <div class="frame-1410103829_02">
-                        <div class="format-selection">
-                            <span class="formatselection_span"
-                                >Format Selection</span
-                            >
+                    <div class="progress-bar_05">
+                        <div class="step-4">
+                            <span class="step4_span">Step 4</span>
+                        </div>
+                        <div class="bar_03"></div>
+                        <div class="frame-1410103829_03">
+                            <div class="configuration">
+                                <span class="configuration_span">Configuration</span
+                                >
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="progress-bar_05">
-                    <div class="step-4">
-                        <span class="step4_span">Step 4</span>
-                    </div>
-                    <div class="bar_03"></div>
-                    <div class="frame-1410103829_03">
-                        <div class="configuration">
-                            <span class="configuration_span">Configuration</span
-                            >
+                    <div class="progress-bar_06">
+                        <div class="step-5">
+                            <span class="step5_span">Step 5</span>
                         </div>
-                    </div>
-                </div>
-                <div class="progress-bar_06">
-                    <div class="step-5">
-                        <span class="step5_span">Step 5</span>
-                    </div>
-                    <div class="bar_04"></div>
-                    <div class="frame-1410103829_04">
-                        <div class="generation">
-                            <span class="generation_span">Generation</span>
+                        <div class="bar_04"></div>
+                        <div class="frame-1410103829_04">
+                            <div class="generation">
+                                <span class="generation_span">Generation</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {/if}
         <div class="frame-1410104027">
             <img src={star} alt="Star" class="img-star" />
             <div class="frame-1410104029">
@@ -1174,5 +1186,169 @@
         align-items: center;
         gap: 48px;
         display: inline-flex;
+    }
+
+    @media (max-width: 800px) {
+        .dedication-pages-when-selected-create-send {
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-top: 24px;
+            padding-bottom: 32px;
+            gap: 32px;
+        }
+
+        .frame-1410103818 {
+            width: 100%;
+            gap: 24px;
+        }
+
+        .heading {
+            align-items: flex-start;
+        }
+
+        .here-your-magical-story {
+            width: 100%;
+            text-align: left;
+        }
+
+        .hereyourmagicalstory_span {
+            font-size: 32px;
+            line-height: 38.4px;
+        }
+
+        .your-character-is-now-part-of-their-very-own-adventure {
+            width: 100%;
+            text-align: left;
+        }
+
+        .yourcharacterisnowpartoftheirveryownadventure_span {
+            font-size: 16px;
+            line-height: 22.4px;
+        }
+
+        .progress-bar {
+            width: 100%;
+        }
+
+        .frame-1410104027 {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .img-star {
+            width: 64px;
+            height: 64px;
+        }
+
+        .frame-1410104029 {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .frame-1410104026 {
+            width: calc(100% - 40px);
+            max-width: 269px;
+            left: 20px;
+            padding-left: 10.70px;
+            padding-right: 10.70px;
+            padding-top: 14.26px;
+            padding-bottom: 14.26px;
+        }
+
+        .letsdesignthededicationpagesforyourgift_span {
+            font-size: 16px;
+            line-height: 22.4px;
+        }
+
+        .frame-1410104031 {
+            flex-direction: column;
+            width: 100%;
+            gap: 24px;
+        }
+
+        .frame-8 {
+            width: 100%;
+            height: auto;
+            flex: none;
+        }
+
+        .book {
+            height: 459px;
+        }
+
+        .dedicationpagespreview_span {
+            font-size: 20px;
+            line-height: 24px;
+        }
+
+        .frame-9 {
+            width: 100%;
+            flex: none;
+        }
+
+        .informationdedicationpages_span {
+            font-size: 20px;
+            line-height: 24px;
+        }
+
+        .dedicationmessages_span {
+            font-size: 14px;
+            line-height: 19.6px;
+        }
+
+        .dedication-textarea {
+            font-size: 14px;
+            line-height: 19.6px;
+        }
+
+        .f2200characters_span {
+            font-size: 16px;
+            line-height: 22.4px;
+        }
+
+        .frame-1410103860 {
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .frame-1410103870 {
+            width: 100%;
+        }
+
+        .button {
+            width: 100%;
+        }
+
+        .backtostep_span {
+            font-size: 16px;
+            line-height: 22.4px;
+        }
+
+        .frame-1410104246 {
+            width: 100%;
+        }
+
+        .continuetopreviewstory_span {
+            font-size: 16px;
+            line-height: 22.4px;
+        }
+
+        .ellipse-1415 {
+            width: 248px;
+            height: 114px;
+            left: 52px;
+            top: 17px;
+        }
+
+        .navbar {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .img-logo {
+            width: 170.15px;
+            height: 31.80px;
+        }
     }
 </style>

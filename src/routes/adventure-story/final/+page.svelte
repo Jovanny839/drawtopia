@@ -652,67 +652,168 @@
   }
 
   .button_01 { cursor: pointer; }
-  @media (max-width: 800px) {
+
+  /* Mobile Responsive Styles */
+  @media (max-width: 768px) {
+    .record-pages-default-selected {
+      padding-top: 24px;
+      padding-bottom: 32px;
+      padding-left: 16px;
+      padding-right: 16px;
+      gap: 32px;
+    }
+
+    .navbar {
+      padding-left: 24px;
+      padding-right: 12px;
+    }
+
+    .logo-text-full {
+      width: 170.15px;
+      height: 31.80px;
+    }
+
+    .frame-1410103818 {
+      width: 100%;
+      align-self: stretch;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .howwouldyouliketoexperienceyourstory_span {
+      font-size: 32px;
+      line-height: 38.40px;
+    }
+
+    .how-would-you-like-to-experience-your-story {
+      width: 100%;
+      text-align: left;
+    }
+
+    .pickafunwaytoenjoyyouradventure_span {
+      font-size: 16px;
+      line-height: 22.40px;
+    }
+
+    .pick-a-fun-way-to-enjoy-your-adventure {
+      width: 100%;
+      text-align: left;
+    }
+
+    .frame-1410103862 {
+      align-items: flex-start;
+    }
+
+    .heading_01 {
+      align-items: flex-start;
+    }
+
+    .heading {
+      align-items: flex-start;
+    }
+
+    .frame-1410104111 {
+      width: 100%;
+      align-self: stretch;
+    }
+
+    .frame-1410104110 {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .card,
+    .card_01 {
+      width: 100%;
+      align-self: stretch;
+    }
+
+    .image {
+      height: 289px;
+    }
+
+    .image_01_wrapper {
+      height: 289px;
+    }
+
+    .image_01 {
+      height: 289px;
+    }
+
+    .recordareactionvideo_span {
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    .watchyourchildsfacelightupastheymeettalkinganimalsandtraveltodistantworldsandrecordthemomentforever_span {
+      font-size: 14px;
+      line-height: 19.60px;
+    }
+
+    .previewastory_span {
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    .stepintoamagicalworldfilledwithfriendlycreatureshiddentreasuresandunforgettableadventures_span {
+      font-size: 14px;
+      line-height: 19.60px;
+    }
+
+    .frame-1410103860 {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .frame-1410103870 {
+      display: none;
+    }
+
+    .button_01 {
+      width: 100%;
+      align-self: stretch;
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .chooserecordvideo_span {
+      font-size: 16px;
+      line-height: 22.40px;
+    }
+
+    .frame-1410103821 {
+      padding-top: 24px;
+    }
+
+    .contactushellodrawtopiacom_span,
+    .privacypolicy_span,
+    .termsofservice_span {
+      font-size: 14px;
+      line-height: 19.60px;
+    }
+
+    .frame-1410103820 {
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
     .modal-overlay {
       align-items: flex-end;
     }
     .modal-content {
       width: 100%;
       height: 72vh;
-      /* max-height: 100dvh; */
       border-radius: 0;
       box-sizing: border-box;
       padding-bottom: env(safe-area-inset-bottom);
-    }
-    .frame-1410103818 {
-      width: 100%;
-    }
-    .frame-1410104110 {
-      width: 100%;
-      flex-direction: column;
-      align-items: stretch;
-    }
-    .card,
-    .card_01 {
-      width: 100%;
-    }
-    .image,
-    .image_01_wrapper {
-      width: 100%;
-      height: auto;
-      min-height: 200px;
-    }
-    .image_01 {
-      width: 100%;
-      height: auto;
-      min-height: 200px;
-    }
-    .howwouldyouliketoexperienceyourstory_span {
-      font-size: 28px;
-      line-height: 1.3;
-    }
-    .pickafunwaytoenjoyyouradventure_span {
-      font-size: 16px;
-    }
-    .frame-1410103860 {
-      flex-direction: column;
-      justify-content: center;
-      gap: 12px;
-    }
-    .frame-1410103870 {
-      width: 100%;
-      justify-content: center;
-    }
-    /* Hide bottom Back button on mobile */
-    .frame-1410103870 .button {
-      display: none;
-    }
-    .button_01 {
-      width: 100%;
-    }
-    /* Make title full-width on mobile */
-    .how-would-you-like-to-experience-your-story {
-      width: 100%;
     }
   }
 </style>
