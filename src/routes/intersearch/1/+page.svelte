@@ -5,6 +5,7 @@
   import { supabase } from "../../../lib/supabase";
   import logo from "../../../assets/logo.png";
   import bookCover from "../../../assets/Luna1.png";
+  import tempScene from "../../../assets/temp.jpg";
   import fullscreen from "../../../assets/fullscreen.svg";
   import coverIcon from "../../../assets/covericon.svg";
   import mailIcon from "../../../assets/mailicon.svg";
@@ -14,6 +15,7 @@
   import shareIcon from '../../../assets/Share.svg';
   import dotsThreeOutline from '../../../assets/DotsThreeOutline.svg';
   import zoomIcon from '../../../assets/zoomIcon.svg';
+  import arrowleft from '../../../assets/ArrowLeft.svg';
   import originalPrompts from '../../../lib/prompt.json';
   import { enhance } from "$app/forms";
 
@@ -823,16 +825,36 @@
     const empty = Array(3 - count).fill("☆").join("");
     return filled + empty;
   }
+
+  function handleBack() {
+    goto("/intersearch");
+  }
 </script>
 
 <div class="preview-outer">
   <div class="preview-logo-container">
     <img class="preview-logo" src={logo} alt="Drawtopia Logo" />
   </div>
+  <div class="arrow">
+    <div class="button" on:click={handleBack} role="button" tabindex="0" on:keydown={(e) => (e.key === "Enter" || e.key === " ") && handleBack()}>
+      <img src={arrowleft} alt="Arrow Left" />
+      <div class="back"><span class="back_span">Back</span></div>
+    </div>
+    <div class="frame-2147227650">
+      <button class="button_01" aria-label="More options">
+        <img src={dotsThreeOutline} alt="More options">
+      </button>
+      <button class="button_02" aria-label="Share">
+        <img src={shareIcon} alt="Share">
+      </button>
+    </div>
+  </div>
   <div class="preview-content-container">
     <div class="preview-header-row">
       <div class="preview-header-title">
-        Your Search Adventure : Where is Luna?
+        <div class="preview-header-topic">
+          Your Search Adventure : Where is Luna?
+        </div>
         <div class="preview-header-note">
           FREE PREVIEW &#8226; Other pages available after purchased
         </div>
@@ -846,87 +868,117 @@
         </button>
       </div>
     </div>
-    <div class="preview-book-area">
-      {#if generating}
-        <div class="generating-container">
-          <div class="generating-spinner"></div>
-          <div class="generating-text">
-            Generating your 8 adventure scenes...
-          </div>
-          <div class="generating-progress">This may take a few moments</div>
+    <div class="rectangle"></div>
+    {#if generating}
+      <div class="generating-container">
+        <div class="generating-spinner"></div>
+        <div class="generating-text">
+          Generating your 4 adventure scenes...
         </div>
-      {:else if generatedImages.length > 0}
-        <div class="scene-view-container">
-
-          <div class="scene-image-container">
-            <div 
-              class="book-container"
-              bind:this={imageWrapperRef}
-              on:mousedown={handleMouseDown}
-              on:mousemove={handleMouseMove}
-              on:mouseup={handleMouseUp}
-              on:mouseleave={handleMouseUp}
-              role="application"
-              tabindex="0"
-              aria-label="Image selection area"
-            >
+        <div class="generating-progress">This may take a few moments</div>
+      </div>
+    {:else if generatedImages.length > 0}
+      <div class="scene-view-container">
+        <div class="scene-image-container">
+          <div 
+            class="book-container"
+            bind:this={imageWrapperRef}
+            on:mousedown={handleMouseDown}
+            on:mousemove={handleMouseMove}
+            on:mouseup={handleMouseUp}
+            on:mouseleave={handleMouseUp}
+            role="application"
+            tabindex="0"
+            aria-label="Image selection area"
+          >
+            <!-- Mobile: Split into left and right halves -->
+            <div class="mobile-image-split">
+              <div class="mobile-image-half mobile-image-left">
+                <img
+                  src={generatedImages[currentSceneIndex]}
+                  alt={sceneTitles[selectedWorld || "enchanted-forest"]?.[
+                    currentSceneIndex
+                  ] || `Scene ${currentSceneIndex + 1} - Left`}
+                  class="scene-main-image"
+                  draggable="false"
+                />
+              </div>
+              <div class="mobile-image-half mobile-image-right">
+                <img
+                  src={generatedImages[currentSceneIndex]}
+                  alt={sceneTitles[selectedWorld || "enchanted-forest"]?.[
+                    currentSceneIndex
+                  ] || `Scene ${currentSceneIndex + 1} - Right`}
+                  class="scene-main-image"
+                  draggable="false"
+                />
+              </div>
+            </div>
+            <div class="scene-control-buttons">
+              <button class="notification" aria-label="Full Screen Preview">
+                <img src={fullscreen} alt="fullscreen" />
+                <div><span class="fullscreenpreview_span">Full Screen Preview</span></div>
+              </button>
+              <button class="control-btn hint-btn" aria-label="Hint">
+                <img src={hintIcon} alt="Hint" class="btn-icon" />
+                <span>Hint ({hintsLeft} Left)</span>
+              </button>
+              <button class="control-btn zoom-btn" aria-label="Zoom">
+                <img src={zoomIcon} alt="Zoom" class="btn-icon" />
+                <span>Zoom</span>
+              </button>
+            </div>
+            {#if showSelection}
+              <div
+                class="selection-overlay"
+                style="left: {Math.min(selectionStart.x, selectionEnd.x)}px; 
+                       top: {Math.min(selectionStart.y, selectionEnd.y)}px; 
+                       width: {Math.abs(selectionEnd.x - selectionStart.x)}px; 
+                       height: {Math.abs(selectionEnd.y - selectionStart.y)}px;"
+              ></div>
+            {/if}
+          </div>
+        </div>
+      </div>
+    {:else}
+      <div class="scene-view-container">
+        <div class="scene-image-container">
+          <!-- Mobile: Split into left and right halves -->
+          <div class="mobile-image-split">
+            <div class="mobile-image-half mobile-image-left">
               <img
-                src={generatedImages[currentSceneIndex]}
-                alt={sceneTitles[selectedWorld || "enchanted-forest"]?.[
-                  currentSceneIndex
-                ] || `Scene ${currentSceneIndex + 1}`}
+                src={tempScene}
+                alt="Preview - Where Is Luna? - Left"
                 class="scene-main-image"
                 draggable="false"
-                bind:this={imageRef}
               />
-              <div class="book-pages">
-                <div class="book-page book-page-left"></div>
-                <div class="book-page book-page-right"></div>
-              </div>
-              <div class="scene-control-buttons">
-                <button class="control-btn fullscreen-btn" aria-label="Full Screen Preview">
-                  <img src={fullscreen} alt="Fullscreen" class="btn-icon" />
-                  <span>Full Screen Preview</span>
-                </button>
-                <button class="control-btn hint-btn" aria-label="Hint">
-                  <img src={hintIcon} alt="Hint" class="btn-icon" />
-                  <span>Hint ({hintsLeft} Left)</span>
-                </button>
-                <button class="control-btn zoom-btn" aria-label="Zoom">
-                  <img src={zoomIcon} alt="Zoom" class="btn-icon" />
-                  <span>Zoom</span>
-                </button>
-              </div>
-              {#if showSelection}
-                <div
-                  class="selection-overlay"
-                  style="left: {Math.min(selectionStart.x, selectionEnd.x)}px; 
-                         top: {Math.min(selectionStart.y, selectionEnd.y)}px; 
-                         width: {Math.abs(selectionEnd.x - selectionStart.x)}px; 
-                         height: {Math.abs(selectionEnd.y - selectionStart.y)}px;"
-                ></div>
-              {/if}
             </div>
-          </div>
-        </div>
-      {:else}
-        <div class="preview-book-container">
-          <div class="preview-book-border">
-            <div class="preview-book-mockup">
+            <div class="mobile-image-half mobile-image-right">
               <img
-                class="preview-book-img"
-                src={bookCover}
-                alt="Preview - Where Is Luna?"
+                src={tempScene}
+                alt="Preview - Where Is Luna? - Right"
+                class="scene-main-image"
+                draggable="false"
               />
             </div>
-            <div class="preview-book-base"></div>
           </div>
-          <button class="preview-fullscreen"
-            ><img src={fullscreen} alt="Fullscreen" /> Full Screen Preview</button
-          >
+          <div class="scene-control-buttons">
+            <button class="notification" aria-label="Full Screen Preview">
+              <img src={fullscreen} alt="fullscreen" />
+              <div><span class="fullscreenpreview_span">Full Screen Preview</span></div>
+            </button>
+            <button class="control-btn hint-btn" aria-label="Hint">
+              <img src={hintIcon} alt="Hint" class="btn-icon" />
+              <span>Hint ({hintsLeft} Left)</span>
+            </button>
+            <button class="control-btn zoom-btn" aria-label="Zoom">
+              <img src={zoomIcon} alt="Zoom" class="btn-icon" />
+              <span>Zoom</span>
+            </button>
+          </div>
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
     <div class="preview-footer-area">
       <button
         class="preview-nav-btn"
@@ -947,6 +999,8 @@
             </button>
           {/each}
         {:else}
+        <div class="preview-dots-container">
+
           {#each Array(totalPages) as _, idx}
             {#if idx === 0}
               <span class="preview-dot active">
@@ -969,6 +1023,7 @@
               </span>
             {/if}
           {/each}
+        </div>
         {/if}
       </div>
       <button
@@ -983,6 +1038,21 @@
             : currentSceneIndex === 0 
               ? "Start Scene 1" 
               : "Next Scene"}
+      </button>
+    </div>
+    <div class="frame-1410104203">
+      <button class="button-nav" on:click={previousScene}>
+        <div class="arrowleft-nav">
+          <div class="vector-nav"></div>
+        </div>
+        <div class="previous"><span class="previous_span">Previous</span></div>
+      </button>
+      <button class="button_01-nav" on:click={handleStartScene1}>
+        <div class="next"><span class="next_span">Next</span></div>
+        <div class="arrowleft_01">
+          <div class="vector_01"></div>
+        </div>
+        <div class="ellipse-1415"></div>
       </button>
     </div>
   </div>
@@ -1076,12 +1146,126 @@
     height: 43px;
   }
 
+  .back_span {
+    color: black;
+    font-size: 16px;
+    font-family: DM Sans, sans-serif;
+    font-weight: 600;
+    line-height: 22.40px;
+    word-wrap: break-word;
+  }
+
+  .back {
+    text-align: center;
+  }
+
+  .vector_01 {
+    width: 21px;
+    height: 6px;
+    left: 1.50px;
+    top: 9px;
+    position: absolute;
+    background: black;
+    border-radius: 50%;
+    box-shadow: 6px 0 0 black, 12px 0 0 black;
+  }
+
+  
+  .rectangle {
+    display: flex;
+    height: 2px;
+    background: #d9d9d9;
+  }
+
+  .button {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    box-shadow: 0px 0px 0px 2px #EEF6FF;
+    border-radius: 20px;
+    outline: 1px #DCDCDC solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .button:hover {
+    background: #f5f7fa;
+  }
+
+  .button_01 {
+    width: 48px;
+    height: 48px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 8px;
+    outline: 1px #EDEDED solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .button_01:hover {
+    background: #f5f7fa;
+  }
+
+  .button_02 {
+    width: 48px;
+    height: 48px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 8px;
+    outline: 1px #EDEDED solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .button_02:hover {
+    background: #f5f7fa;
+  }
+
+  .frame-2147227650 {
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    display: flex;
+  }
+
+  .arrow {
+    display: none;
+  }
+
   .preview-content-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 24px;
     width: 1240px;
+    max-width: 100%;
     border-radius: 20px;
     outline: 1px #dcdcdc solid;
     padding: 12px;
@@ -1146,78 +1330,44 @@
     font-size: 12px;
     color: #b8b8bb;
   }
-  .preview-book-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    width: 1216px;
-    background-color: #f8fafb;
+  
+  .notification {
+    height: 100%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    padding-right: 20px;
+    background: #F8FAFB;
+    box-shadow: 0px 1px 4px rgba(141.80, 141.80, 141.80) inset;
     border-radius: 12px;
-    padding: 12px;
-  }
-  .preview-book-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    width: 745px;
-    height: 1054px;
-  }
-  .preview-book-mockup {
-    background: #000;
-    border-radius: 19px 19px 22px 22px;
-    box-shadow:
-      0 4px 32px rgba(47, 70, 110, 0.16),
-      0 0 0 2px #e7eaf8;
-    padding: 0;
-    margin-bottom: 0;
-    border: 2.7px solid #e1e7f8;
-    position: relative;
-    z-index: 2;
-  }
-  .preview-book-img {
-    width: 745px;
-    height: 950px;
-    border-radius: 18px 18px 22px 22px;
-    background: white;
-    object-fit: cover;
-    box-shadow: none;
-  }
-  .preview-book-base {
-    width: 77%;
-    height: 24px;
-    margin-top: -7px;
-    background: radial-gradient(ellipse at center, #0001 33%, #fff0 74%);
-    border-radius: 0 0 17px 17px / 0 0 48% 48%;
-    box-shadow: 0 16px 32px 0 #abb4cf26;
-    z-index: 1;
-  }
-  .preview-fullscreen {
-    display: flex;
-    align-items: center;
+    outline: 1px #EDEDED solid;
+    outline-offset: -1px;
     justify-content: center;
-    gap: 12px;
-    width: 270px;
-    height: 56px;
-    padding: 9px 23px;
-    background: #f8fafc;
-    border: 1.3px solid #e6ebf3;
-    font-family: Nunito, sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: #141414;
-    border-radius: 8px;
+    align-items: center;
+    gap: 18px;
+    display: inline-flex;
+    border: none;
     cursor: pointer;
-    font-weight: 500;
-    transition: background 0.18s;
+    transition: all 0.2s;
   }
-  .preview-fullscreen:hover {
-    background: #edf4fd;
+
+  .notification:hover {
+    background: #F0F4F7;
   }
+
+  .fullscreenpreview_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: DM Sans, sans-serif;
+    font-weight: 600;
+    line-height: 22.40px;
+    word-wrap: break-word;
+  }
+
   .preview-footer-area {
     height: 57px;
     width: 1216px;
+    max-width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1268,9 +1418,7 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
-  .preview-dot.lock svg {
-    margin: 0 auto;
-  }
+  
   .preview-start-btn {
     font-family: Quicksand, sans-serif;
     color: #fff;
@@ -1344,58 +1492,30 @@
     align-items: center;
     gap: 24px;
     width: 1216px;
+    max-width: 100%;
     background-color: #f8fafb;
     border-radius: 12px;
     padding: 12px;
   }
 
-  .scene-info-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 0 24px;
-  }
-
-  .scene-counter {
-    font-family: Nunito, sans-serif;
-    font-size: 14px;
-    color: #727272;
-  }
-
-  .scene-title {
-    font-family: Quicksand, sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    color: #23243c;
-  }
-
   .scene-image-container {
     position: relative;
     width: 100%;
-    height: 800px; /* Adjust as needed for image display */
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: #f8fafb;
     border-radius: 12px;
     overflow: visible;
     padding: 20px;
+    gap: 20px;
   }
 
   .book-container {
-    position: relative;
-    display: inline-block;
-    cursor: crosshair;
-    user-select: none;
-    box-shadow: 
-      0 20px 60px rgba(0, 0, 0, 0.15),
-      0 8px 24px rgba(0, 0, 0, 0.1);
-    border-radius: 16px;
-    border: 3px solid #d4d4d8;
-    background: #ffffff;
-    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
 
   .scene-main-image {
@@ -1411,63 +1531,42 @@
     z-index: 1;
   }
 
-  .book-pages {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
+  /* Mobile image split container - hidden on desktop */
+  .mobile-image-split {
+    /* display: none; */
     display: flex;
-    pointer-events: none;
-    z-index: 2;
+    flex-direction: row;
+    gap: 2px;
+    width: 100%;
   }
 
-  .book-page {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 50%;
-    pointer-events: none;
+  .mobile-image-half {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    height: 100%;
+    position: relative;
+    background: white;
+    box-shadow: -2px 10px 0px black;
+    border-radius: 24px;
   }
 
-  .book-page-left {
-    left: 0;
-    border-right: 2px solid rgba(0, 0, 0, 0.08);
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-    box-shadow: 
-      inset -8px 0 16px -8px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      -2px 0 8px rgba(0, 0, 0, 0.05);
-    background: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.02) 0%,
-      rgba(0, 0, 0, 0.01) 2%,
-      transparent 5%
-    );
-    border-left: 1px solid rgba(255, 255, 255, 0.8);
-    border-top: 1px solid rgba(255, 255, 255, 0.8);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  .mobile-image-half .scene-main-image {
+    width: 200%;
+    max-width: 200%;
+    height: auto;
+    object-fit: cover;
   }
 
-  .book-page-right {
-    right: 0;
-    border-left: 2px solid rgba(0, 0, 0, 0.08);
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    box-shadow: 
-      inset 8px 0 16px -8px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      2px 0 8px rgba(0, 0, 0, 0.05);
-    background: linear-gradient(
-      to left,
-      rgba(0, 0, 0, 0.02) 0%,
-      rgba(0, 0, 0, 0.01) 2%,
-      transparent 5%
-    );
-    border-right: 1px solid rgba(255, 255, 255, 0.8);
-    border-top: 1px solid rgba(255, 255, 255, 0.8);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  .mobile-image-left .scene-main-image {
+    object-position: left center;
+    margin-left: 0;
+  }
+
+  .mobile-image-right .scene-main-image {
+    object-position: right center;
+    margin-left: -100%;
   }
 
   .book-container::after {
@@ -1497,15 +1596,12 @@
   }
 
   .scene-control-buttons {
-    position: absolute;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     gap: 12px;
     align-items: center;
     z-index: 10;
     pointer-events: auto;
+    justify-content: center;
   }
 
   .control-btn {
@@ -1743,14 +1839,303 @@
     transform: translateY(-2px);
   }
 
-  @media (max-width: 600px) {
-    .scene-view-container {
-      width: 96vw;
-      height: auto;
-      padding: 0;
+  /* Navigation Button Set Styles */
+  .frame-1410104203 {
+    display: none;
+  }
+
+  .vector-nav {
+    width: 15px;
+    height: 12.50px;
+    left: 2.50px;
+    top: 3.75px;
+    position: absolute;
+    background: black;
+    clip-path: polygon(0 50%, 35% 0, 35% 25%, 100% 25%, 100% 75%, 35% 75%, 35% 100%);
+  }
+
+  .previous_span {
+    color: black;
+    font-size: 16px;
+    font-family: DM Sans, sans-serif;
+    font-weight: 600;
+    line-height: 22.40px;
+    word-wrap: break-word;
+  }
+
+  .previous {
+    text-align: center;
+  }
+
+  .next_span {
+    color: white;
+    font-size: 16px;
+    font-family: DM Sans, sans-serif;
+    font-weight: 600;
+    line-height: 22.40px;
+    word-wrap: break-word;
+  }
+
+  .next {
+    text-align: center;
+  }
+
+  .vector_01 {
+    width: 15px;
+    height: 12.50px;
+    left: 2.50px;
+    top: 3.75px;
+    position: absolute;
+    background: white;
+    clip-path: polygon(0 50%, 35% 0, 35% 25%, 100% 25%, 100% 75%, 35% 75%, 35% 100%);
+  }
+
+  .ellipse-1415 {
+    width: 248px;
+    height: 114px;
+    left: -42.50px;
+    top: 13.20px;
+    position: absolute;
+    background: radial-gradient(ellipse 42.11% 42.11% at 50.00% 52.94%, white 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 9999px;
+  }
+
+  .arrowleft-nav {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .arrowleft_01 {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    transform: rotate(-180deg);
+    overflow: hidden;
+  }
+
+  .button-nav {
+    flex: 1 1 0;
+    height: 48px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
+    border-radius: 20px;
+    outline: 1px #EDEDED solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .button-nav:hover:not(:disabled) {
+    background: #f5f7fa;
+  }
+
+  .button-nav:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .button_01-nav {
+    flex: 1 1 0;
+    height: 48px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    position: relative;
+    background: #438BFF;
+    overflow: hidden;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: flex;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .button_01-nav:hover:not(:disabled) {
+    background: #2566c9;
+  }
+
+  .button_01-nav:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .preview-dots-container {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  /* ---------- Responsive styles ---------- */
+
+  @media (max-width: 1024px) {
+    .preview-outer {
+      padding-left: 40px;
+      padding-right: 40px;
     }
+
+    .preview-content-container {
+      width: 100%;
+    }
+
+    .preview-footer-area,
+    .scene-view-container {
+      width: 100%;
+    }
+
+    .arrow {
+      width: 100%;
+      height: 100%;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      justify-content: space-between;
+      align-items: center;
+      display: inline-flex;
+      max-width: 1240px;
+      width: 100%;
+    }
+
+    .preview-header-actions {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .preview-outer {
+      padding: 16px;
+      gap: 16px;
+    }
+
+    .preview-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .preview-header-title {
+      font-size: 24px;
+    }
+
     .scene-image-container {
-      height: 60vh; /* Adjust for smaller screens */
+      min-height: 60vh;
+      padding: 8px;
+    }
+
+    .book-container {
+      max-width: 100%;
+    }
+
+    .mobile-image-split {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .mobile-image-half {
+      width: 100%;
+    }
+
+    .mobile-image-half .scene-main-image {
+      width: 200%;
+      max-width: 200%;
+      height: auto;
+      max-height: none;
+    }
+
+    .mobile-image-left .scene-main-image {
+      object-position: left center;
+      margin-left: 0;
+    }
+
+    .mobile-image-right .scene-main-image {
+      object-position: right center;
+      margin-left: -100%;
+    }
+
+    .scene-control-buttons {
+      flex-direction: column;
+      bottom: 16px;
+      width: 100%;
+    }
+
+    .preview-footer-area {
+      flex-direction: column;
+      align-items: stretch;
+      height: auto;
+      gap: 12px;
+    }
+
+    .preview-nav-btn,
+    .preview-start-btn {
+      width: 100%;
+      display: none;
+    }
+
+    .preview-logo {
+      height: 32px;
+    }
+
+    .preview-header-topic {
+      width: 70%;
+      text-align: center;
+      margin: auto;
+    }
+
+    .preview-header-note {
+      width: 70%;
+      text-align: center;
+      margin: auto;
+    }
+
+    .frame-1410104203 {
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      display: inline-flex;
+    }
+
+    .preview-dots-container {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      margin: auto;
+    }
+
+    .notification {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .preview-header-title {
+      font-size: 20px;
+    }
+
+    .preview-start-btn {
+      font-size: 14px;
+    }
+
+    .control-btn {
+      padding: 8px 12px;
+      font-size: 13px;
+      width: 100%;
+      height: 50px;
     }
 
     .found-modal-container {
@@ -1764,28 +2149,6 @@
 
     .stat-item {
       font-size: 16px;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .preview-book-img {
-      width: 96vw;
-      max-width: 320px;
-      height: auto;
-    }
-    .preview-footer-area {
-      gap: 7px;
-      flex-direction: column;
-    }
-    .preview-book-mockup {
-      padding: 0;
-    }
-    .preview-book-base {
-      height: 16px;
-    }
-    .preview-logo {
-      margin-top: 8vw;
-      height: 28px;
     }
   }
 </style>

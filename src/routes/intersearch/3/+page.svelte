@@ -1,20 +1,21 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
   import logo from "../../../assets/logo.png";
   import timeIcon from "../../../assets/redtimeicon.svg";
   import favorblueicon from "../../../assets/favorblueicon.svg";
   import hintpurpleicon from "../../../assets/hintpurpleicon.svg";
   import cupgreenicon from "../../../assets/cupgreenicon.svg";
   import arrowclockwise from "../../../assets/WhiteArrowClockwise.svg";
+  import downloadSimple from "../../../assets/DownloadSimple.svg"
+  import shareIcon from "../../../assets/Share.svg";
   
+  // Fallback images
   import magicalforest from "../../../assets/magicalforest.png";
   import enchantedcastle from "../../../assets/enchantedcastle.png";
   import crystalcave from "../../../assets/crystalcave.png";
   import rainbowmeadow from "../../../assets/rainbowmeadow.png";
-  import starlightlibrary from "../../../assets/starlight.png";
-  import underwaterpalace from "../../../assets/underwater.png";
-  import cloudkingdom from "../../../assets/cloudkingdom.png";
-  import victorycelebration from "../../../assets/victorycele.png";
 
   type Scene = {
     id: number;
@@ -31,13 +32,35 @@
   const avgStars = 3.0;
   const bestScene = "Scene 1";
 
-  const scenes: Scene[] = [
+  // Scene titles based on world (matching intersearch/1)
+  const sceneTitles: { [key: string]: string[] } = {
+    "enchanted-forest": [
+      "The Magical Forest",
+      "The Enchanted Castle",
+      "The Crystal Cave",
+      "The Rainbow Meadow",
+    ],
+    "outer-space": [
+      "The Cosmic Station",
+      "The Alien Planet",
+      "The Asteroid Field",
+      "The Nebula Garden",
+    ],
+    "underwater-kingdom": [
+      "The Coral Reef",
+      "The Sunken Palace",
+      "The Pearl Cave",
+      "The Kelp Forest",
+    ],
+  };
+
+  let scenes: Scene[] = [
     {
       id: 1,
       title: "Scene 1",
       subtitle: "The Magical Forest",
       time: "10:13",
-      hints: 4,
+      hints: 0,
       stars: 3,
       image: magicalforest
     },
@@ -68,43 +91,36 @@
       stars: 3,
       image: rainbowmeadow
     },
-    {
-      id: 5,
-      title: "Scene 5",
-      subtitle: "The Starlight Library",
-      time: "10:13",
-      hints: 0,
-      stars: 2,
-      image: starlightlibrary
-    },
-    {
-      id: 6,
-      title: "Scene 6",
-      subtitle: "The Underwater Palace",
-      time: "10:13",
-      hints: 0,
-      stars: 3,
-      image: underwaterpalace
-    },
-    {
-      id: 7,
-      title: "Scene 7",
-      subtitle: "The Cloud Kingdom",
-      time: "10:13",
-      hints: 0,
-      stars: 2,
-      image: cloudkingdom
-    },
-    {
-      id: 8,
-      title: "Scene 8",
-      subtitle: "The Victory Celebration",
-      time: "10:13",
-      hints: 0,
-      stars: 3,
-      image: victorycelebration
-    },
   ];
+
+  onMount(() => {
+    if (browser) {
+      // Get selected world from sessionStorage
+      const selectedWorld = sessionStorage.getItem("intersearch_world") || "enchanted-forest";
+      const titles = sceneTitles[selectedWorld] || sceneTitles["enchanted-forest"];
+      
+      // Load images from sessionStorage for first 4 scenes
+      const loadedScenes: Scene[] = [];
+      for (let i = 1; i <= 4; i++) {
+        const storedImageUrl = sessionStorage.getItem(`intersearch_scene_${i}`);
+        // Clean URL by removing query parameters (matching intersearch/1 behavior)
+        const imageUrl = storedImageUrl ? storedImageUrl.split("?")[0] : null;
+        const sceneTitle = titles[i - 1] || `Scene ${i}`;
+        
+        loadedScenes.push({
+          id: i,
+          title: `Scene ${i}`,
+          subtitle: sceneTitle,
+          time: "10:13", // You can store this in sessionStorage if needed
+          hints: 0, // You can store this in sessionStorage if needed
+          stars: 3, // You can store this in sessionStorage if needed
+          image: imageUrl || scenes[i - 1].image // Fallback to default image if not found
+        });
+      }
+      
+      scenes = loadedScenes;
+    }
+  });
 
   function starRow(count: number) {
     const on = Array(count).fill("★").join("");
@@ -135,7 +151,7 @@
   <div class="card">
     <div class="header-container">
       <h2 class="title">Adventure Complete!</h2>
-      <div class="subtitle">You found Luna in all 8 scenes!</div>
+      <div class="subtitle">You found Luna in all 4 scenes!</div>
     </div>
 
     <hr class="divider" />
@@ -191,7 +207,7 @@
       <div class="section-title">Scene-by-Scene Breakdown</div>
   
       <div class="grid">
-        {#each scenes as s}
+        {#each scenes.slice(0, 4) as s}
           <div class="scene-card">
             <div class="thumb-wrap">
               <img src={s.image} alt={s.title} class="thumb" draggable={false} />
@@ -219,19 +235,22 @@
     <div class="actions">
       <div class="button" on:click={handlePlayAgain} style="cursor:pointer;">
         <div class="arrowclockwise">
-          <div class="vector"></div>
+          <img src={arrowclockwise} alt="Arrow Clockwise" />
         </div>
         <div class="play-again"><span class="playagain_span">Play Again</span></div>
         <div class="ellipse-1415"></div>
       </div>
       <div class="button download-pdf-btn" style="cursor:pointer;">
-        <div class="downloadsimple">
-          <div class="vector downloadpdf-vector"></div>
-        </div>
+        <img src={downloadSimple} alt="Download Simple" class="downloadsimple">
         <div class="download-pdf"><span class="downloadpdf_span">Download PDF</span></div>
       </div>
-      <button class="btn">🔗 Share Result</button>
-      <button class="btn go-home" on:click={handleGoHome}>🏠 Go Home</button>
+      <div class="notification" style="cursor:pointer;">
+        <div class="sharenetwork">
+          <img src={shareIcon} alt="Share" class="vector">
+        </div>
+        <div><span class="shareresult_span">Share Result</span></div>
+      </div>
+      <button class="btn go-home" on:click={handleGoHome}>Go Home</button>
     </div>
   </div>
 </div>
@@ -243,7 +262,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 100px 80px 100px;
+  padding: 24px 100px 80px 100px;
     gap: 48px;
   }
   .brand-container {
@@ -340,11 +359,10 @@
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
   .scene-card {
-    width: 298px;
     height: 479px;
     background: #ffffff;
     border: 1px solid #e7ecf5;
@@ -427,21 +445,7 @@
     font-size: 16px;
     cursor: pointer;
   }
-  .btn.secondary {
-    background: #236cf3;
-    color: #fff;
-    border-color: #e2e8f5;
-    font-size: 16px;
-    width: 173px;
-    height: 57px;
-  }
-  .btn.ghost {
-    background: #E7FEFF;
-    color: #236cf3;
-    width: 231px;
-    height: 57px;
-    font-size: 16px;
-  }
+  
   .btn.go-home {
     background: #10b981;
     color: #fff;
@@ -453,6 +457,7 @@
     background: #059669;
   }
 
+  /* ---------- Responsive styles ---------- */
   @media (max-width: 1220px) {
     .card {
       width: 96vw;
@@ -460,14 +465,96 @@
     .grid {
       grid-template-columns: repeat(2, 1fr);
     }
-    .metrics {
+  }
+
+  @media (max-width: 900px) {
+    .complete-outer {
+      padding: 24px 40px 40px 40px;
+    }
+
+    .title {
+      font-size: 36px;
+    }
+
+    .section-title {
+      font-size: 26px;
+    }
+
+    .grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .complete-outer {
+      padding: 16px;
+      gap: 32px;
+    }
+
+    .brand {
+      height: 32px;
+    }
+
+    .card {
+      width: 100%;
+      padding: 18px 16px 24px 16px;
+    }
+
+    .metric-row {
+      flex-direction: column;
+    }
+
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .scene-card {
+      width: 100%;
+      height: auto;
+    }
+
+    .thumb-wrap,
+    .thumb {
+      height: 200px;
+    }
+
+    .actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .button,
+    .download-pdf-btn,
+    .btn,
+    .btn.go-home {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .title {
+      font-size: 28px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+    }
+
+    .section-title {
+      font-size: 22px;
+    }
+
+    .scene-title {
+      font-size: 20px;
+    }
+
+    .scene-sub {
+      font-size: 14px;
     }
   }
  
 /* Play Again Button Custom Styles */
 .button {
-  width: 194px;
   height: 57px;
   padding-left: 24px;
   padding-right: 24px;
@@ -488,14 +575,7 @@
   position: relative;
   overflow: hidden;
 }
-.vector {
-  width: 19.50px;
-  height: 18px;
-  left: 3px;
-  top: 3px;
-  position: absolute;
-  background: white;
-}
+
 .playagain_span {
   color: white;
   font-size: 18px;
@@ -520,7 +600,6 @@
 
   /* Download PDF Button Custom Styles */
   .download-pdf-btn {
-    width: 231px;
     height: 52px;
     padding-left: 24px;
     padding-right: 24px;
@@ -541,15 +620,9 @@
     height: 24px;
     position: relative;
     overflow: hidden;
+    filter: brightness(0) saturate(100%) invert(45%) sepia(100%) saturate(2000%) hue-rotate(210deg) brightness(1.1) contrast(1.2);
   }
-  .downloadpdf-vector {
-    width: 18px;
-    height: 18px;
-    left: 3px;
-    top: 2.25px;
-    position: absolute;
-    background: #438BFF;
-  }
+  
   .downloadpdf_span {
     color: #438BFF;
     font-size: 18px;
@@ -560,6 +633,48 @@
   }
   .download-pdf {
     text-align: center;
+  }
+
+  .notification {
+    /* width: 100%;
+    height: 100%; */
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 18px;
+    padding-right: 24px;
+    background: #F8FAFB;
+    box-shadow: 0px 1px 4px rgba(141.80, 141.80, 141.80, 0.25) inset;
+    border-radius: 12px;
+    outline: 1px #EDEDED solid;
+    outline-offset: -1px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    display: inline-flex;
+  }
+
+  .sharenetwork {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sharenetwork .vector {
+    width: 15px;
+    height: 17.50px;
+    left: 1.87px;
+    top: 1.25px;
+    position: absolute;
+  }
+
+  .shareresult_span {
+    color: #141414;
+    font-size: 16px;
+    font-family: DM Sans, sans-serif;
+    font-weight: 600;
+    line-height: 22.40px;
+    word-wrap: break-word;
   }
 </style>
 

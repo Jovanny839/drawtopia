@@ -11,6 +11,9 @@
     import crosshair from "../../assets/Crosshair.svg";
     import fire from "../../assets/Fire.svg";
     import shieldstar from "../../assets/ShieldStar.svg";
+    import MobileBackBtn from "../../components/MobileBackBtn.svelte";
+    import MobileStepProgressBar from "../../components/MobileStepProgressBar.svelte";
+    import StarEmoticon from "../../components/StarEmoticon.svelte";
 
     let selectedScene: string | null = null;
     let selectedDifficulty: string | null = null;
@@ -55,17 +58,43 @@
             <img class="logo-img" src={logo} alt="Drawtopia Logo" />
         </div>
     </div>
+
+    <MobileBackBtn backRoute="/create-character/3" backText="Back" />
+
     <div class="frame-1410103818">
         <div class="heading">
-            <div class="configure-your-search-adventure"><span class="configureyoursearchadventure_span">  Configure Your Search Adventure</span></div>
-            <div class="tag">
-                <div class="shieldstar">
-                    <img src={shieldstar} alt="shieldstar">
+            <div class="configure-your-search-adventure">
+                <span class="configureyoursearchadventure_span">Configure Your Search Adventure</span>
+            </div>
+            <div class="tag-container">
+                <div class="tag">
+                    <div class="shieldstar">
+                        <img src={shieldstar} alt="shieldstar">
+                    </div>
+                    <div><span class="ffreepagepreview_span">2 Free Page Preview</span></div>
                 </div>
-                <div><span class="ffreepagepreview_span">2 Free Page Preview</span></div>
             </div>
         </div>
-        <ProgressBar currentStep={4} />
+
+        <MobileStepProgressBar currentStep={4} />
+
+        <div class="frame-1410104027">
+            <div class="star-container">
+                <StarEmoticon />
+            </div>
+            <div class="message-container">
+                <div class="polygon-1"></div>
+                <div class="message-content">
+                    <div class="lets-craft-world">
+                        <span class="lets-craft-world_span">Let’s craft the perfect world for your story!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="desktop-progress">
+            <ProgressBar currentStep={4} />
+        </div>
         <div class="rectangle-261"></div>
         <div class="frame-1410103884">
             <div class="step-1-choose-story-world"><span class="step1choosestoryworld_span">Step 1: Choose Story World</span></div>
@@ -949,13 +978,19 @@
 }
 
 .logo-text-full {
-    height: 43px;
-    position: relative;
+    width: 203.32px;
+    height: 38px;
+    min-height: 38px;
     margin: auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .logo-img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
 }
 
 .arrowleft-img {
@@ -1137,6 +1172,13 @@
     align-items: flex-end;
     gap: 4px;
     display: inline-flex;
+}
+
+.tag-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .icons {
@@ -1799,27 +1841,246 @@
 }
 
 .frame-1410103818 {
-    width: 100%;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 24px;
-    display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 24px;
+  display: flex;
 }
 
 .interactive-search-configuration-default {
+  width: 100%;
+  height: 100%;
+  padding-top: 24px;
+  padding-bottom: 80px;
+  padding-left: 100px;
+  padding-right: 100px;
+  background: white;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  display: inline-flex;
+}
+
+/* Callout styles (star + speech bubble) */
+.polygon-1 {
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 12px solid transparent;
+  border-right: 18px solid #d9eaff;
+}
+
+.star-container {
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+}
+
+.message-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.message-content {
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  background: #d9eaff;
+  border-radius: 24px;
+  margin-left: 22px;
+  max-width: 446px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lets-craft-world_span {
+  color: black;
+  font-size: 18px;
+  font-family: Quicksand;
+  font-weight: 600;
+  line-height: 25.2px;
+  word-wrap: break-word;
+}
+
+.frame-1410104027 {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+
+.desktop-progress {
+  width: 100%;
+}
+
+/* Hide desktop progress bar on small screens so only the mobile one shows */
+@media (max-width: 800px) {
+  .desktop-progress {
+    display: none;
+  }
+
+  .tag {
+    text-align: left;
+  }
+
+  .tag-container {
+    justify-content: flex-start;
+  }
+}
+
+/* ---------- Responsive styles ---------- */
+
+@media (max-width: 1024px) {
+  .interactive-search-configuration-default {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  
+  .frame-1410103818 {
+    align-items: stretch;
+  }
+
+  .frame-1410103884,
+  .frame-1410103885 {
     width: 100%;
-    height: 100%;
-    padding-top: 24px;
-    padding-bottom: 80px;
-    padding-left: 100px;
-    padding-right: 100px;
-    background: white;
-    overflow: hidden;
+  }
+
+  .frame-1410103852,
+  .frame-2147227608 {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .tag-container {
+    justify-content: flex-start;
+  }
+
+  .interactive-search-configuration-default {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 40px;
+    gap: 32px;
+    align-items: stretch;
+  }
+
+  .navbar {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .logo-text-full {
+    margin: 0 auto;
+  }
+
+  .configureyoursearchadventure_span {
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .step1choosestoryworld_span,
+  .step2choosedifficulty_span {
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .frame-1410103818 {
+    gap: 20px;
+    justify-content: flex-start;
+  }
+
+  .star-container {
+    width: 25%;
+  }
+
+  .message-container {
+    max-width: 75%;
+  }
+
+  .message-content {
+    width: 90%;
+  }
+
+  .frame-1410103884,
+  .frame-1410103885 {
+    padding: 16px;
+    outline-width: 1px;
+  }
+
+  .frame-1410103852,
+  .frame-2147227608 {
+    display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 48px;
-    display: inline-flex;
+    gap: 16px;
+  }
+
+  .card,
+  .card_01,
+  .card_02,
+  .card_03,
+  .card_04,
+  .card_05 {
+    width: 100%;
+  }
+
+  .image,
+  .image_01,
+  .image_02 {
+    height: 200px;
+  }
+
+  .frame-10,
+  .frame-10_01,
+  .frame-10_02,
+  .frame-10_03,
+  .frame-10_04,
+  .frame-10_05 {
+    gap: 16px;
+  }
+
+  .frame-1410104246 {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .tag-container {
+    justify-content: flex-start;
+  }
+
+  .configureyoursearchadventure_span {
+    font-size: 24px;
+  }
+
+  .step1choosestoryworld_span,
+  .step2choosedifficulty_span {
+    font-size: 20px;
+  }
+
+  .generatesearchadventure_span {
+    font-size: 16px;
+  }
+
+  .button,
+  .button_01,
+  .button_02,
+  .button_03,
+  .button_04,
+  .button_05 {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 </style>

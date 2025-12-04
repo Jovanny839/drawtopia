@@ -124,7 +124,7 @@
   .preview-outer {
     min-height: 100vh;
     width: 100%;
-    padding: 24px 100px 80px 100px;
+  padding: 24px 100px 80px 100px;
     background: #fff;
     display: flex;
     flex-direction: column;
@@ -155,8 +155,9 @@
     flex-direction: column;
     align-items: center;
     gap: 24px;
-    width: 1240px;
-    height: 1130px;
+  width: 1240px;
+  max-width: 100%;
+  height: 1130px;
     border-radius: 20px;
     outline: 1px #dcdcdc solid;
     padding: 12px;
@@ -232,8 +233,9 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    width: 1216px;
-    height: 1078px;
+  width: 1216px;
+  max-width: 100%;
+  height: 1078px;
     background-color: #f8fafb;
     border-radius: 12px;
     padding: 12px;
@@ -243,7 +245,7 @@
     flex-direction: column;
     align-items: center;
     gap: 24px;
-    width: 1084px;
+  width: 1084px;
   }
   .two-page {
     display: flex;
@@ -251,7 +253,7 @@
     gap: 24px;
     align-items: start;
     justify-items: center;
-    width: 1084px;
+  width: 1084px;
     height: 100%;
   }
   .preview-book-mockup {
@@ -310,8 +312,9 @@
     background: #edf4fd;
   }
   .preview-footer-area {
-    height: 57px;
-    width: 1216px;
+  height: 57px;
+  width: 1216px;
+  max-width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;

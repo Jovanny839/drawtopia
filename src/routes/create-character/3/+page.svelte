@@ -101,7 +101,7 @@
   };
 </script>
 
-<div class="character-creation-default">
+<div style={`${showPreviewModal ? 'display: none;' : ''}`} class="character-creation-default">
   <div class="navbar">
     <div class="logo-text-full">
       <div class="logo-img"></div>
@@ -180,9 +180,8 @@
     </div>
 
     <div
-      style="display: flex; justify-content: {isMobile
-        ? 'center'
-        : 'space-between'}; width: 100%; align-items: center;"
+      class="button-container"
+      class:mobile-center={isMobile}
     >
       {#if !isMobile}
         <button class="button_01" on:click={handleBack}>
@@ -198,13 +197,11 @@
       {/if}
       
       <div class="right-buttons">
-        {#if !isMobile}
-          <button class="button" on:click={handlePreviewBoth}>
-            <div class="preview-both-formats">
-              <span class="previewbothformats_span">Preview Both Formats</span>
-            </div>
-          </button>
-        {/if}
+        <button class="button" on:click={handlePreviewBoth}>
+          <div class="preview-both-formats">
+            <span class="previewbothformats_span">Preview Both Formats</span>
+          </div>
+        </button>
         
         <button
           class="button-fill"
@@ -256,15 +253,18 @@
         <div class="preview-modal-logo">
           <div class="preview-logo-img"></div>
         </div>
-        <button
-          class="preview-modal-close"
-          on:click={handleCloseModal}
-          aria-label="Close preview"
-        >
-          <img src={xIcon} alt="close" />
-        </button>
       </div>
       
+      <div style="width: 100%; display: flex;">
+        <button class="button_02" on:click={handleBack}>
+          <div class="arrowleft">
+            <img src={arrowLeft} alt="arrowLeft" />
+          </div>
+          <div class="back-to-step">
+            <span class="backtostep_span">Back To Step</span>
+          </div>
+        </button>
+      </div>
       <div class="preview-modal-content">
         <h2 id="preview-modal-title" class="preview-modal-title">Preview Book Formats</h2>
         
@@ -404,6 +404,13 @@
     text-align: center;
   }
 
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+  }
+
   .right-buttons {
     display: flex;
     flex-direction: row;
@@ -428,7 +435,7 @@
     font-size: 18px;
     font-family: Quicksand;
     font-weight: 600;
-    line-height: 25.2px;
+    line-height: 25.20px;
     word-wrap: break-word;
   }
 
@@ -501,6 +508,15 @@
     height: 24px;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .arrowleft img {
+    width: 18px;
+    height: 15px;
+    object-fit: contain;
   }
 
   .star-container {
@@ -569,24 +585,41 @@
   }
 
   .button_01 {
+    width: 200px;
     padding-left: 24px;
     padding-right: 24px;
     padding-top: 16px;
     padding-bottom: 16px;
     box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
     border-radius: 20px;
-    outline: 1px #dcdcdc solid;
+    outline: 1px #DCDCDC solid;
     outline-offset: -1px;
-    background-color: white;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    display: inline-flex;
-    width: 200px;
+    display: flex;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .button_02 {
+    display: none;
+  }
+
+  .button_01:hover, .button_02:hover {
+    background: #f8f8f8;
+    box-shadow: 0px 6px 8px rgba(98.89, 98.89, 98.89, 0.3);
+  }
+
+  .button_01:active, .button_02:active {
+    transform: translateY(1px);
+    box-shadow: 0px 2px 4px rgba(98.89, 98.89, 98.89, 0.25);
   }
 
   .button {
-    height: 100%;
+    height: 52px;
     padding-left: 24px;
     padding-right: 24px;
     padding-top: 16px;
@@ -599,7 +632,20 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-    display: inline-flex;
+    display: flex;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .button:hover {
+    background: #d0f5f7;
+    box-shadow: 0px 4px 0px #357ae8;
+  }
+
+  .button:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px #438BFF;
   }
 
   .heading {
@@ -661,23 +707,41 @@
   }
 
   .button-fill {
-    width: 300px;
-    height: 100%;
     padding-left: 24px;
     padding-right: 24px;
     padding-top: 16px;
     padding-bottom: 16px;
-    background: #438bff;
+    background: #438BFF;
+    color: white;
     border-radius: 20px;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    display: inline-flex;
+    display: flex;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 200px;
+  }
+
+  .button-fill:hover:not(.disabled-button) {
+    background: #3370cc;
+    box-shadow: 0px 4px 12px rgba(67, 139, 255, 0.3);
+  }
+
+  .button-fill:active:not(.disabled-button) {
+    transform: translateY(1px);
+    box-shadow: 0px 2px 8px rgba(67, 139, 255, 0.2);
   }
 
   .button-fill.disabled-button {
-    background: #d3d3d3;
+    background: #DFE1E7;
     cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .button-fill.disabled-button .continuetoconfiguration_span {
+    color: #818898;
   }
 
   .format-cards-container {
@@ -706,6 +770,7 @@
     .format-cards-container {
       flex-direction: column;
       gap: 24px;
+      width: 100%;
     }
 
     .character-creation-default {
@@ -733,11 +798,39 @@
       width: 90%;
     }
 
+    .button_01 {
+      display: none;
+    }
+
+    .button_02 {
+      display: flex;
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      box-shadow: 0px 4px 4px rgba(98.89, 98.89, 98.89, 0.25);
+      border-radius: 999px;
+      outline: 1px #DCDCDC solid;
+      outline-offset: -1px;
+      gap: 10px;
+      display: flex;
+      background: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
     .button-fill,
     .button_01,
     .button {
       width: 100%;
       margin-top: 8px;
+    }
+
+    .right-buttons {
+      flex-direction: column;
+      width: 100%;
+      gap: 12px;
     }
   }
 
@@ -946,12 +1039,18 @@
 
   @media (max-width: 800px) {
     .preview-modal-container {
-      max-width: 95vw;
-      border-radius: 20px;
+      min-width: 100vw;
+      max-height: 100vh;
+      border-radius: 0px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
     }
 
     .preview-modal-header {
       padding: 16px;
+      justify-content: center;
     }
 
     .preview-modal-logo {
@@ -960,7 +1059,12 @@
     }
 
     .preview-modal-content {
-      padding: 0 16px 24px 16px;
+      padding: 24px 16px 24px 16px;
+      gap: 20px;
+      border: 1px solid #ededed;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
     }
 
@@ -976,6 +1080,10 @@
 
     .preview-card {
       max-width: 100%;
+    }
+
+    .frame-1410103818 {
+      gap: 32px;
     }
   }
 </style>
