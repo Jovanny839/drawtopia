@@ -10,11 +10,7 @@
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
   import { 
-    loadGeneratedImages,
-    saveSelectedImageUrl,
-    hasSelectedImageChanged,
-    getSelectedImageUrl,
-    generateCharacterWithSpecialAbility
+    saveSelectedImageUrl
   } from "../../../lib/imageGeneration";
   import { storyCreation } from "../../../lib/stores/storyCreation";
 
@@ -22,10 +18,7 @@
   let selectedEnhancement = ""; // Default: no selection - "minimal", "normal", or "high"
   let uploadedImageUrl = "";
   let selectedStyle = "";
-  let generatedImages: { [key: string]: string } = {};
   let lastSelectedStyle = "";
-  let baseCharacterImageUrl = ""; // The generated character image with special ability
-  let isGeneratingBaseCharacter = false;
   let checkInterval: ReturnType<typeof setInterval> | null = null;
 
   $: if (browser) {
@@ -69,81 +62,14 @@
         });
       });
       
-      // Check if we already have a generated character image with special ability
-      // const cachedBaseImage = sessionStorage.getItem(`characterWithAbility_${selectedStyle}`);
-      // if (cachedBaseImage) {
-      //   baseCharacterImageUrl = cachedBaseImage.split('?')[0];
-      //   generatedImages[selectedStyle] = baseCharacterImageUrl;
-      // } else 
-      if (uploadedImageUrl && selectedStyle) {
-        // Generate base character image with special ability
-        await generateBaseCharacterImage(uploadedImageUrl, characterType, specialAbility, description, selectedStyle);
-      }
-      
-      // Load generated images from step 1 (fallback)
-      const loadedImages = loadGeneratedImages(['3d', 'cartoon', 'anime']);
-      if (!generatedImages[selectedStyle]) {
-        generatedImages = { ...generatedImages, ...loadedImages };
-      }
+      // No longer generating base character image with special ability
+      // Using original uploaded image directly
     }
   });
 
-  // Generate base character image with special ability
-  const generateBaseCharacterImage = async (
-    imageUrl: string,
-    characterType: string,
-    specialAbility: string,
-    description: string,
-    style: string
-  ) => {
-    if (!imageUrl || isGeneratingBaseCharacter) return;
-    
-    isGeneratingBaseCharacter = true;
-    
-    try {
-      const result = await generateCharacterWithSpecialAbility({
-        imageUrl,
-        characterType,
-        specialAbility,
-        description,
-        style: style as '3d' | 'cartoon' | 'anime',
-        saveToStorage: true
-      });
 
-      if (result.success && result.url) {
-        baseCharacterImageUrl = result.url;
-        generatedImages[style] = result.url;
-        generatedImages = { ...generatedImages };
-      } else {
-        console.error('Failed to generate base character image:', result.error);
-        // Fallback to uploaded image if generation fails
-        baseCharacterImageUrl = uploadedImageUrl;
-        generatedImages[style] = uploadedImageUrl;
-      }
-    } catch (error) {
-      console.error('Error generating base character image:', error);
-      // Fallback to uploaded image if generation fails
-      baseCharacterImageUrl = uploadedImageUrl;
-      generatedImages[style] = uploadedImageUrl;
-    } finally {
-      isGeneratingBaseCharacter = false;
-    }
-  };
-
-  // Watch for style changes and reload images if needed
+  // Watch for style changes - no longer generating base character image
   $: if (browser && selectedStyle && lastSelectedStyle && selectedStyle !== lastSelectedStyle) {
-    // Style has changed, check for cached base character image or generate new one
-    const cachedBaseImage = sessionStorage.getItem(`characterWithAbility_${selectedStyle}`);
-    if (cachedBaseImage) {
-      baseCharacterImageUrl = cachedBaseImage.split('?')[0];
-      generatedImages[selectedStyle] = baseCharacterImageUrl;
-      generatedImages = { ...generatedImages };
-    } else if (uploadedImageUrl && selectedStyle) {
-      const characterType = sessionStorage.getItem('selectedCharacterType') || "";
-      const specialAbility = sessionStorage.getItem('specialAbility') || "";
-      const description = "";
-      generateBaseCharacterImage(uploadedImageUrl, characterType, specialAbility, description, selectedStyle);
-    }
     lastSelectedStyle = selectedStyle;
   }
 
@@ -281,10 +207,9 @@
         ]}
         isSelected={selectedEnhancement === "minimal"}
         onSelect={selectEnhancement}
-        beforeImage={baseCharacterImageUrl}
-        originalImageUrl={baseCharacterImageUrl}
+        beforeImage={uploadedImageUrl}
+        originalImageUrl={uploadedImageUrl}
         selectedStyle={selectedStyle}
-        isGeneratingBase={isGeneratingBaseCharacter}
       />
       <EnhancementCard
         enhancementId="normal"
@@ -298,10 +223,9 @@
         isSelected={selectedEnhancement === "normal"}
         onSelect={selectEnhancement}
         showMostPopular={true}
-        beforeImage={baseCharacterImageUrl}
-        originalImageUrl={baseCharacterImageUrl}
+        beforeImage={uploadedImageUrl}
+        originalImageUrl={uploadedImageUrl}
         selectedStyle={selectedStyle}
-        isGeneratingBase={isGeneratingBaseCharacter}
       />
       <EnhancementCard
         enhancementId="high"
@@ -314,10 +238,9 @@
         ]}
         isSelected={selectedEnhancement === "high"}
         onSelect={selectEnhancement}
-        beforeImage={baseCharacterImageUrl}
-        originalImageUrl={baseCharacterImageUrl}
+        beforeImage={uploadedImageUrl}
+        originalImageUrl={uploadedImageUrl}
         selectedStyle={selectedStyle}
-        isGeneratingBase={isGeneratingBaseCharacter}
       />
     </div>
 

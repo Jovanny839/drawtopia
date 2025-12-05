@@ -216,7 +216,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
         return [];
       }
 
-      const childProfileIds = childProfiles.map(cp => cp.parent_id);
+      const childProfileIds = childProfiles.map(cp => cp.id);
       
       // Direct query to stories table
       const { data: storiesData, error: storiesError } = await supabase

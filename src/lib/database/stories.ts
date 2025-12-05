@@ -211,7 +211,7 @@ export async function getAllStoriesForParent(parentId: string): Promise<Database
     }
 
     // Extract child profile IDs
-    const childProfileIds = childProfiles.map(profile => profile.parent_id);
+    const childProfileIds = childProfiles.map(profile => profile.id);
 
     // Now get all stories for these child profiles
     const { data: stories, error: storiesError } = await supabase

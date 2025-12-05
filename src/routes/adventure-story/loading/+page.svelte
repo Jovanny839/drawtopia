@@ -101,6 +101,7 @@
     ) {
         try {
             const storyState = get(storyCreation);
+            console.log('storyState', storyState);
             
             // Validate required data
             if (!storyState.selectedChildProfileId || storyState.selectedChildProfileId === 'undefined') {
@@ -147,7 +148,8 @@
                 original_image_url: originalImageUrl,
                 enhanced_images: storyState.enhancedImages || [],
                 story_title: storyState.storyTitle || undefined,
-                cover_design: storyState.coverDesign || undefined,
+                cover_design: storyState.coverDesign || sessionStorage.getItem('') || undefined,
+                story_cover: storyState.storyCover || sessionStorage.getItem('selectedImage_step6') || undefined,
                 story_content: JSON.stringify(storyContent),
                 scene_images: sceneImages.length > 0 ? sceneImages.map(url => url.split('?')[0]) : [],
                 status: 'completed' as const
@@ -216,11 +218,11 @@
             // Prepare request body matching backend StoryRequest model
             const requestBody: any = {
                 character_name: storyState.characterName || '',
-                character_type: mapCharacterType(storyState.characterType),
+                character_type: mapCharacterType(storyState.characterType) || sessionStorage.getItem('selectedCharacterType'),
                 special_ability: storyState.specialAbility || '',
                 age_group: ageGroup,
-                story_world: mapStoryWorld(storyState.storyWorld),
-                adventure_type: mapAdventureType(storyState.adventureType),
+                story_world: mapStoryWorld(storyState.storyWorld) || sessionStorage.getItem('selectedWorld'),
+                adventure_type: mapAdventureType(storyState.adventureType) || sessionStorage.getItem('selectedAdventure'),
                 occasion_theme: null, // Optional field, set to null for now
                 character_image_url: selectedCharacterEnhancedImage
             };

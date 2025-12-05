@@ -16,7 +16,6 @@
   export let beforeImage: string = "";
   export let originalImageUrl: string = "";
   export let selectedStyle: string = "";
-  export let isGeneratingBase: boolean = false;
 
   let containerRef: HTMLDivElement;
   let sliderPosition = 50; // Percentage from left
@@ -26,28 +25,12 @@
   let lastProcessedStyle = "";
   let lastProcessedImageUrl = "";
 
-  // Sample images for testing
-  const sampleImages = {
-    minimal: {
-      before: "",
-      after: ""
-    },
-    normal: {
-      before: "",
-      after: ""
-    },
-    high: {
-      before: "",
-      after: ""
-    }
-  };
-
-  // Before image: Base character image with special ability (from beforeImage prop)
+  // Before image: Baseline image uploaded on step 1
   // After image: Enhanced image generated with enhancement level and prompts
-  $: currentBeforeImage = beforeImage || sampleImages[enhancementId as keyof typeof sampleImages]?.before || sampleImages.normal.before;
-  $: currentAfterImage = generatedEnhancementImage || sampleImages[enhancementId as keyof typeof sampleImages]?.after || sampleImages.normal.after;
+  $: currentBeforeImage = originalImageUrl;
+  $: currentAfterImage = generatedEnhancementImage;
 
-  // Use beforeImage as originalImageUrl if originalImageUrl is not provided
+  // Use original uploaded image as source for enhancement generation
   $: sourceImageForEnhancement = originalImageUrl || beforeImage;
 
   // Generate enhancement image when component mounts or when sourceImageForEnhancement/selectedStyle changes
@@ -202,76 +185,66 @@
   
   <div class="card-content">
     <div class="frame-16" bind:this={containerRef}>
-      {#if isGeneratingBase}
-        <!-- Loading state when base image is being generated -->
-        <div class="generating-base-overlay">
-          <div class="spinner"></div>
-          <div class="generating-text">Generating base character image...</div>
-        </div>
-      {:else}
-        <!-- Before Image (Right side) - Base character image with special ability -->
-        <div class="before-image">
-          {#if currentBeforeImage}
-            <img src={currentBeforeImage} alt="Before - Base character with special ability" />
-          {:else}
-            <div class="placeholder-overlay">
-              <div class="placeholder-text">Base character image</div>
-            </div>
-          {/if}
-        </div>
-        
-        <!-- After Image (Left side, clipped) - Enhanced image with enhancement level -->
-        <div 
-          class="after-image" 
-          style="clip-path: inset(0 {100 - sliderPosition}% 0 0);"
-        >
-          {#if isGeneratingEnhancement}
-            <div class="generating-overlay">
-              <div class="spinner"></div>
-              <div class="generating-text">Generating enhancement...</div>
-            </div>
-          {:else if currentAfterImage}
-            <img src={currentAfterImage} alt="After - Enhanced" />
-          {:else}
-            <!-- Placeholder when enhancement image is not yet available -->
-            <div class="placeholder-overlay">
-              <div class="placeholder-text">Enhancement preview will appear here</div>
-            </div>
-          {/if}
-        </div>
-      {/if}
+      <!-- Before Image (Right side) - Baseline image uploaded on step 1 -->
+      <div class="before-image">
+        {#if currentBeforeImage}
+          <img src={currentBeforeImage} alt="Before - Baseline" />
+        {:else}
+          <div class="placeholder-overlay">
+            <div class="placeholder-text">Baseline image</div>
+          </div>
+        {/if}
+      </div>
       
-      {#if !isGeneratingBase}
-        <!-- Slider Line -->
-        <div 
-          class="rectangle-33" 
-          style="left: {sliderPosition}%"
-        ></div>
-        
-        <!-- Draggable Slider Handle -->
-        <div 
-          class="frame-1410103721"
-          style="left: {sliderPosition}%"
-          on:mousedown={handleSliderMouseDown}
-          on:touchstart={handleSliderTouchStart}
-          role="slider"
-          tabindex="0"
-          aria-label="Comparison slider"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuenow={sliderPosition}
-        >
-          <img src={arrowUpDown} alt="Drag to compare" />
-        </div>
-        
-        <!-- Labels -->
-        <div class="frame-1410103722">
-          <div class="before"><span class="before_span">Before</span></div>
-        </div>
-        <div class="frame-1410103723">
-          <div class="after"><span class="after_span">After</span></div>
-        </div>
-      {/if}
+      <!-- After Image (Left side, clipped) - Enhanced image with enhancement level -->
+      <div 
+        class="after-image" 
+        style="clip-path: inset(0 {100 - sliderPosition}% 0 0);"
+      >
+        {#if isGeneratingEnhancement}
+          <div class="generating-overlay">
+            <div class="spinner"></div>
+            <div class="generating-text">Generating enhancement...</div>
+          </div>
+        {:else if currentAfterImage}
+          <img src={currentAfterImage} alt="After - Enhanced" />
+        {:else}
+          <!-- Placeholder when enhancement image is not yet available -->
+          <div class="placeholder-overlay">
+            <div class="placeholder-text">Enhancement preview will appear here</div>
+          </div>
+        {/if}
+      </div>
+      
+      <!-- Slider Line -->
+      <div 
+        class="rectangle-33" 
+        style="left: {sliderPosition}%"
+      ></div>
+      
+      <!-- Draggable Slider Handle -->
+      <div 
+        class="frame-1410103721"
+        style="left: {sliderPosition}%"
+        on:mousedown={handleSliderMouseDown}
+        on:touchstart={handleSliderTouchStart}
+        role="slider"
+        tabindex="0"
+        aria-label="Comparison slider"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow={sliderPosition}
+      >
+        <img src={arrowUpDown} alt="Drag to compare" />
+      </div>
+      
+      <!-- Labels -->
+      <div class="frame-1410103722">
+        <div class="before"><span class="before_span">Before</span></div>
+      </div>
+      <div class="frame-1410103723">
+        <div class="after"><span class="after_span">After</span></div>
+      </div>
     </div>
     <div class="card_heading">
       <div class="frame-1410104074">
@@ -361,38 +334,6 @@
     height: 100%;
     object-fit: cover;
     display: block;
-  }
-
-  .generating-base-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(248, 250, 251, 0.95);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    z-index: 10;
-  }
-
-  .generating-base-overlay .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #438bff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  .generating-base-overlay .generating-text {
-    color: #438bff;
-    font-size: 18px;
-    font-family: Quicksand;
-    font-weight: 600;
-    text-align: center;
   }
 
   .generating-overlay {
