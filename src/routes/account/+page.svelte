@@ -847,14 +847,7 @@
 }
 
 .icon-list {
-    width: 32px;
-    height: 32px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: opacity 0.2s;
+    display: none;
 }
 
 .icon-list:hover {
@@ -872,9 +865,9 @@
 
 .navbar {
     align-self: stretch;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding: 12px 24px 12px 24px;
     border-radius: 20px;
+    border: 1px solid #DCDCDC;
     justify-content: space-between;
     align-items: center;
     display: inline-flex;
@@ -928,10 +921,7 @@
 .account-settings {
     width: 100%;
     height: 100%;
-    padding-top: 24px;
-    padding-bottom: 32px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 24px 100px 48px 100px;
     background: white;
     overflow: hidden;
     flex-direction: column;
@@ -1073,7 +1063,6 @@
     }
 
     .profile_span {
-        font-size: 20px;
         line-height: 24px;
     }
 
@@ -1187,19 +1176,28 @@
         padding-top: 10px;
         padding-bottom: 10px;
     }
+
+    .icon-list {
+        width: 32px;
+        height: 32px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
 }
 
 @media (max-width: 480px) {
     .account-settings {
-        padding-left: 12px;
-        padding-right: 12px;
-        padding-top: 12px;
+        padding: 24px 16px 32px 16px;
         gap: 20px;
     }
 
     .frame-1410103888,
     .frame-1410103889 {
-        padding: 10px;
+        padding: 16px;
         gap: 20px;
         border-radius: 16px;
     }
@@ -1219,7 +1217,6 @@
     }
 
     .profile_span {
-        font-size: 18px;
         line-height: 22px;
     }
 

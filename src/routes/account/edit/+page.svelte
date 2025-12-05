@@ -798,6 +798,7 @@
     padding-top: 12px;
     padding-bottom: 12px;
     border-radius: 20px;
+    border: 1px solid #DCDCDC;
     justify-content: space-between;
     align-items: center;
     display: inline-flex;
@@ -830,10 +831,7 @@
 .account-settings {
     width: 100%;
     height: 100%;
-    padding-top: 24px;
-    padding-bottom: 32px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 24px 100px 48px 100px;
     background: white;
     overflow: hidden;
     flex-direction: column;
@@ -984,7 +982,7 @@
     }
 
     .frame-1410103888 {
-        padding: 12px;
+        padding: 16px;
         gap: 24px;
     }
 
@@ -1019,7 +1017,6 @@
     }
 
     .profile_span {
-        font-size: 18px;
         line-height: 24px;
     }
 
@@ -1144,9 +1141,7 @@
 
 @media (max-width: 480px) {
     .account-settings {
-        padding-left: 12px;
-        padding-right: 12px;
-        padding-top: 12px;
+        padding: 24px 16px 32px 16px;
         gap: 20px;
     }
 
@@ -1161,7 +1156,7 @@
     }
 
     .frame-1410103888 {
-        padding: 10px;
+        padding: 16px;
         gap: 20px;
         border-radius: 16px;
     }
@@ -1201,7 +1196,6 @@
     }
 
     .profile_span {
-        font-size: 16px;
         line-height: 22px;
     }
 

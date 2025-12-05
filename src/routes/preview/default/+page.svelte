@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
   import { goto } from "$app/navigation";
   import { browser } from "$app/environment";
+  import { onMount } from "svelte";
   import share from "../../../assets/Share.svg";
   import DotsThreeOutline from "../../../assets/DotsThreeOutline.svg";
   import CornersOut from "../../../assets/CornersOut.svg";
@@ -18,6 +19,103 @@
 
   let showStoryInfoModal = false;
   let showShareStoryModal = false;
+  
+  let storyScenes: string | any[] = [];
+  let storyPages: Array<{ pageNumber: number; text: string }> = [];
+  let currentSceneIndex = 0;
+  const totalScenes = 5;
+
+  // Load story scenes and text from session storage
+  onMount(() => {
+    if (browser) {
+      // First, try to load story pages (which may contain scenes)
+      const storedStoryPages = sessionStorage.getItem('storyPages');
+      if (storedStoryPages) {
+        try {
+          const parsedPages = JSON.parse(storedStoryPages);
+          storyPages = parsedPages;
+          
+          // Extract scenes from storyPages if they have scene property
+          const scenesFromPages = parsedPages
+            .map((page: any) => page.scene || page.imageUrl || page.image)
+            .filter((url: string | undefined): url is string => !!url);
+          
+          if (scenesFromPages.length > 0) {
+            storyScenes = scenesFromPages.map((url: string) => url.split("?")[0]);
+            currentSceneIndex = 0;
+          }
+        } catch (error) {
+          console.error('Error parsing story pages from session storage:', error);
+        }
+      }
+      
+      // If scenes weren't found in storyPages, try individual scene keys
+      if (storyScenes.length === 0) {
+        const loadedScenes: string[] = [];
+        // Try multiple possible key patterns for story scenes
+        for (let i = 1; i <= totalScenes; i++) {
+          // Try different possible key patterns
+          const sceneUrl = 
+            sessionStorage.getItem(`storyScene_${i}`) ||
+            sessionStorage.getItem(`adventureScene_${i}`) ||
+            sessionStorage.getItem(`story_scene_${i}`) ||
+            sessionStorage.getItem(`adventure_scene_${i}`);
+          
+          if (sceneUrl) {
+            // Clean URL by removing query parameters (matching intersearch/1 behavior)
+            loadedScenes.push(sceneUrl.split("?")[0]);
+          }
+        }
+        
+        if (loadedScenes.length > 0) {
+          storyScenes = loadedScenes;
+          currentSceneIndex = 0;
+        }
+      }
+      
+      // Fallback: if storyPages weren't loaded, try loading individual pages
+      if (storyPages.length === 0) {
+        const pages: Array<{ pageNumber: number; text: string }> = [];
+        for (let i = 1; i <= totalScenes; i++) {
+          const pageText = sessionStorage.getItem(`storyPage${i}`);
+          if (pageText) {
+            pages.push({ pageNumber: i, text: pageText });
+          }
+        }
+        if (pages.length > 0) {
+          storyPages = pages;
+        }
+      }
+    }
+  });
+
+  function previousScene() {
+    if (currentSceneIndex > 0) {
+      currentSceneIndex--;
+    }
+  }
+
+  function nextScene() {
+    if (currentSceneIndex < storyScenes.length - 1) {
+      currentSceneIndex++;
+    }
+  }
+
+  function goToScene(index: number) {
+    if (index >= 0 && index < storyScenes.length) {
+      currentSceneIndex = index;
+    }
+  }
+
+  // Update page counter text
+  $: pageCounterText = storyScenes.length > 0
+    ? `Page ${currentSceneIndex + 1} of ${storyScenes.length} (FREE PREVIEW)`
+    : "Page 1 of 2 (FREE PREVIEW) • Pages 3-5 available after purchase";
+  
+  // Get current page text
+  $: currentPageText = storyPages.length > 0 && currentSceneIndex < storyPages.length
+    ? storyPages[currentSceneIndex].text
+    : '';
 </script>
 
 <svelte:window on:keydown={(e) => {
@@ -50,8 +148,7 @@
               >
                 <span
                   class="page1of2freepreviewpages3-5availableafterpurchase_span"
-                  >Page 1 of 2 (FREE PREVIEW) • Pages 3-5 available after
-                  purchase</span
+                  >{pageCounterText}</span
                 >
               </div>
               <div class="share-dots-button-group">
@@ -119,31 +216,82 @@
               </div>
             </div>
             <div class="frame-1410104106">
-              <div class="frame-1410104064">
-                <div class="image">
-                  <div class="frame-1410104055">
-                    <div class="tag">
-                      <div>
-                        <span class="freepreviewpages_span"
-                          >Free preview Pages</span
-                        >
+              <div class="book-container">
+                {#if storyScenes.length > 0}
+                  <!-- Mobile: Split into left and right halves -->
+                  <div class="mobile-image-split">
+                    <div class="mobile-image-half mobile-image-left">
+                      <div class="image">
+                        <img
+                          src={storyScenes[currentSceneIndex]}
+                          alt={`Scene ${currentSceneIndex + 1} - Left`}
+                          class="scene-main-image scene-image-left"
+                          draggable="false"
+                        />
+                        <div class="frame-1410104055">
+                          <div class="tag">
+                            <div>
+                              <span class="freepreviewpages_span"
+                                >Free preview Pages</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                        <div class="inner-shadow"></div>
+                      </div>
+                    </div>
+                    <div class="mobile-image-half mobile-image-right">
+                      <div class="image_01">
+                        <img
+                          src={storyScenes[currentSceneIndex]}
+                          alt={`Scene ${currentSceneIndex + 1} - Right`}
+                          class="scene-main-image scene-image-right"
+                          draggable="false"
+                        />
+                        <div class="frame-1410104055_01">
+                          <div class="tag_01">
+                            <div>
+                              <span class="freepreviewpages_01_span"
+                                >Free preview Pages</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                        <div class="inner-shadow"></div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div class="frame-1410104064">
-                <div class="image_01">
-                  <div class="frame-1410104055_01">
-                    <div class="tag_01">
-                      <div>
-                        <span class="freepreviewpages_01_span"
-                          >Free preview Pages</span
-                        >
+                {:else}
+                  <!-- Default placeholder when no scenes are loaded -->
+                  <div class="mobile-image-split">
+                    <div class="mobile-image-half mobile-image-left">
+                      <div class="image">
+                        <div class="frame-1410104055">
+                          <div class="tag">
+                            <div>
+                              <span class="freepreviewpages_span"
+                                >Free preview Pages</span
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mobile-image-half mobile-image-right">
+                      <div class="image_01">
+                        <div class="frame-1410104055_01">
+                          <div class="tag_01">
+                            <div>
+                              <span class="freepreviewpages_01_span"
+                                >Free preview Pages</span
+                              >
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                {/if}
               </div>
             </div>
             <div class="notification">
@@ -182,7 +330,7 @@
           </div>
 
           <div class="frame-1410103860">
-            <div class="button_02">
+            <div class="button_02" on:click={previousScene} class:disabled={currentSceneIndex === 0 || storyScenes.length === 0}>
               <div class="arrowleft">
                 <img src={ArrowLeft} alt="arrow" />
               </div>
@@ -191,26 +339,49 @@
               </div>
             </div>
             <div class="frame-1410104065">
-              <div class="number">
-                <img src={Book} alt="book" />
-              </div>
-              <div class="number_01">
-                <img src={EnvelopeSimple} alt="envelope" />
-              </div>
-              <div class="number_02">
-                <div class="text-1"><span class="f_span">1</span></div>
-              </div>
-              <div class="number_03">
-                <div class="text-2"><span class="f_span_01">2</span></div>
-              </div>
-              <div class="number_04">
-                <img src={LockKey} alt="lock" />
-              </div>
-              <div class="number_05">
-                <img src={LockKey} alt="lock" />
-              </div>
+              {#if storyScenes.length > 0}
+                {#each storyScenes as _, idx}
+                  {#if idx === 0}
+                    <div class="number" class:active={currentSceneIndex === idx} on:click={() => goToScene(idx)}>
+                      <img src={Book} alt="book" />
+                    </div>
+                  {:else if idx === 1}
+                    <div class="number_01" class:active={currentSceneIndex === idx} on:click={() => goToScene(idx)}>
+                      <img src={EnvelopeSimple} alt="envelope" />
+                    </div>
+                  {:else}
+                    <div 
+                      class="number_02" 
+                      class:active={currentSceneIndex === idx}
+                      on:click={() => goToScene(idx)}
+                    >
+                      <div class="text-1"><span class="f_span">{idx + 1}</span></div>
+                    </div>
+                  {/if}
+                {/each}
+              {:else}
+                <!-- Default static display when no scenes -->
+                <div class="number">
+                  <img src={Book} alt="book" />
+                </div>
+                <div class="number_01">
+                  <img src={EnvelopeSimple} alt="envelope" />
+                </div>
+                <div class="number_02">
+                  <div class="text-1"><span class="f_span">1</span></div>
+                </div>
+                <div class="number_03">
+                  <div class="text-2"><span class="f_span_01">2</span></div>
+                </div>
+                <div class="number_04">
+                  <img src={LockKey} alt="lock" />
+                </div>
+                <div class="number_05">
+                  <img src={LockKey} alt="lock" />
+                </div>
+              {/if}
             </div>
-            <div class="button_03">
+            <div class="button_03" on:click={nextScene} class:disabled={currentSceneIndex === storyScenes.length - 1 || storyScenes.length === 0}>
               <div class="next"><span class="next_span">Next</span></div>
               <div class="arrowleft_01">
                 <img src={ArrowRight} alt="arrow" />
@@ -218,7 +389,7 @@
             </div>
           </div>
           <div class="mobile-button-container">
-            <div class="mobile-button_02">
+            <div class="mobile-button_02" on:click={previousScene} class:disabled={currentSceneIndex === 0 || storyScenes.length === 0}>
               <div class="arrowleft">
                 <img src={ArrowLeft} alt="arrow" />
               </div>
@@ -226,7 +397,7 @@
                 <span class="previous_span">Previous</span>
               </div>
             </div>
-            <div class="mobile-button_03">
+            <div class="mobile-button_03" on:click={nextScene} class:disabled={currentSceneIndex === storyScenes.length - 1 || storyScenes.length === 0}>
               <div class="next"><span class="next_span">Next</span></div>
               <div class="arrowleft_01">
                 <img src={ArrowRight} alt="arrow" />
@@ -513,19 +684,6 @@
     position: relative;
   }
 
-  .image {
-    flex: 1 1 0;
-    align-self: stretch;
-    padding: 16px;
-    background: white;
-    overflow: hidden;
-    border-radius: 16px;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 10px;
-    display: flex;
-  }
-
   .arrowleft {
     width: 24px;
     height: 24px;
@@ -669,6 +827,51 @@
     align-items: center;
     gap: 10px;
     display: inline-flex;
+  }
+
+  /* Scene image styles */
+  .scene-main-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Active state for navigation dots */
+  .number.active,
+  .number_01.active,
+  .number_02.active {
+    background: #144be1 !important;
+  }
+
+  /* Disabled state for buttons */
+  .button_02.disabled,
+  .button_03.disabled,
+  .mobile-button_02.disabled,
+  .mobile-button_03.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Make navigation dots clickable */
+  .number,
+  .number_01,
+  .number_02 {
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .number:hover:not(.active),
+  .number_01:hover:not(.active),
+  .number_02:hover:not(.active) {
+    background: #a8b5d0;
   }
 
   .button_03 {
@@ -993,6 +1196,7 @@
     align-items: flex-end;
     gap: 10px;
     display: inline-flex;
+    position: relative;
   }
 
   .frame-1410104055_01 {
@@ -1012,6 +1216,7 @@
     align-items: flex-end;
     gap: 10px;
     display: inline-flex;
+    position: relative;
   }
 
   .notification {
@@ -1063,22 +1268,9 @@
     display: flex;
   }
 
-  .image {
-    flex: 1 1 0;
-    height: 700px;
-    padding: 16px;
-    background: white;
-    overflow: hidden;
-    border-radius: 16px;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 10px;
-    display: flex;
-  }
-
+  .image,
   .image_01 {
     flex: 1 1 0;
-    height: 700px;
     padding: 16px;
     background: white;
     overflow: hidden;
@@ -1087,6 +1279,55 @@
     align-items: flex-start;
     gap: 10px;
     display: flex;
+    width: 100%;
+    position: relative;
+  }
+  
+  /* Ensure images inside the wrapper divs respect the split view */
+  .mobile-image-half .image,
+  .mobile-image-half .image_01 {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0;
+    position: relative;
+    width: 100%;
+    display: block;
+  }
+  
+  /* Make images 200% width to enable split view */
+  .mobile-image-half .image .scene-main-image,
+  .mobile-image-half .image_01 .scene-main-image {
+    width: 200%;
+    max-width: 200%;
+    height: auto; 
+    object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Left half: show left 50% of the image */
+  .mobile-image-left .image .scene-main-image {
+    object-position: left center;
+    margin-left: 0;
+  }
+  
+  /* Right half: show right 50% of the image */
+  .mobile-image-right .image_01 .scene-main-image {
+    object-position: right center;
+    margin-left: -100%;
+  }
+  
+  /* Ensure overlays are positioned correctly above the image */
+  .mobile-image-half .frame-1410104055,
+  .mobile-image-half .frame-1410104055_01 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    height: auto;
+    background-image: none;
   }
 
   .frame-1410104063 {
@@ -1096,14 +1337,6 @@
     display: flex;
   }
 
-  .frame-1410104064 {
-    flex: 1 1 0;
-    width: 50%;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-    display: flex;
-  }
   .frame-1410104059 {
     align-self: stretch;
     justify-content: flex-start;
@@ -1118,6 +1351,53 @@
     align-items: flex-start;
     gap: 12px;
     display: inline-flex;
+  }
+
+  .book-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  /* Mobile image split container - book style */
+  .mobile-image-split {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    width: 100%;
+  }
+
+  .mobile-image-half {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 24px;
+    background: white;
+    box-shadow: -2px 10px 0px black;
+    display: flex;
+    align-items: stretch;
+  }
+
+
+  /* Base styles for split view images - must be applied to all halves */
+  .mobile-image-half .scene-main-image {
+    width: 200%;
+    max-width: 200%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  /* Split view image positioning - left half shows left 50% */
+  .mobile-image-left .scene-main-image {
+    object-position: left center;
+    margin-left: 0;
+  }
+
+  /* Split view image positioning - right half shows right 50% */
+  .mobile-image-right .scene-main-image {
+    object-position: right center;
+    margin-left: -100%;
   }
 
   .frame-1410104061 {
@@ -1152,6 +1432,17 @@
   .mobile-button-container {
     display: none;
   }
+
+  .inner-shadow{
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 -20px 10px 0 rgba(255, 255, 255);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+  }
+
   @media (max-width: 800px) {
     .mobile-share-dots-button-group {
       display: flex;
@@ -1231,7 +1522,13 @@
     .frame-1410104106 {
       flex-direction: column;
     }
-    .frame-1410104064 {
+    
+    .mobile-image-split {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .mobile-image-half {
       width: 100%;
     }
     .two-pageview_span {

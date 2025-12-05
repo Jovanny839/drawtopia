@@ -585,7 +585,6 @@
   align-items: center;
   gap: 24px;
   display: inline-flex;
-  padding: 16px;
 }
 
 /* Loading, Error, and Empty States */

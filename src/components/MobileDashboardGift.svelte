@@ -266,8 +266,6 @@
     height: 100%;
     padding-top: 24px;
     padding-bottom: 32px;
-    padding-left: 16px;
-    padding-right: 16px;
     background: white;
     overflow: hidden;
     flex-direction: column;

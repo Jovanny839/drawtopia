@@ -7,6 +7,7 @@
     import { env } from '../../../lib/env';
     import { supabase } from '../../../lib/supabase';
     import type { ChildProfile } from '../../../lib/database/childProfiles';
+    import { createStory } from '../../../lib/database/stories';
     import drawtopia from "../../../assets/logo.png";
     import shieldstar from "../../../assets/ShieldStar.svg";
     import arrowleft from "../../../assets/ArrowLeft.svg";
@@ -17,12 +18,15 @@
     import ProgressBar from "../../../components/ProgressBar.svelte";
     import MobileStepProgressBar from "../../../components/MobileStepProgressBar.svelte";
 
-    const TOTAL_TIME = 60; // 60 seconds
+    const TOTAL_TIME = 60; // 60 seconds (fallback timer)
     let timeRemaining = TOTAL_TIME;
     let completionPercent = 0;
     let intervalId: number | null = null;
     let hasNavigated = false;
     let storyGenerated = false;
+    let storyTextProgress = 0; // 0-50% for story text
+    let sceneImageProgress = 0; // 0-50% for scene images (50-100% total)
+    let totalSceneImages = 5; // Expected number of scene images
 
     // Determine which magical wand GIF to show based on completion percentage
     $: currentMagicalWand = completionPercent < 25 
@@ -31,8 +35,11 @@
         ? magicalwand1 
         : magicalwand2;
 
+    // Calculate total completion percent from story and image progress
+    $: completionPercent = Math.min(100, storyTextProgress + sceneImageProgress);
+
     // Navigate to final page when completion reaches 100%
-    $: if (completionPercent === 100 && !hasNavigated) {
+    $: if (completionPercent >= 100 && !hasNavigated && storyGenerated) {
         hasNavigated = true;
         // Small delay to ensure UI updates before navigation
         setTimeout(() => {
@@ -87,6 +94,87 @@
         return '7-10';
     }
 
+    // Save story to Supabase database
+    async function saveStoryToDatabase(
+        storyPages: Array<{ pageNumber: number; text: string; scene?: string }>,
+        sceneImages: string[]
+    ) {
+        try {
+            const storyState = get(storyCreation);
+            
+            // Validate required data
+            if (!storyState.selectedChildProfileId || storyState.selectedChildProfileId === 'undefined') {
+                console.warn('Cannot save story: No child profile selected');
+                return;
+            }
+
+            if (!storyState.characterName || !storyState.characterType || !storyState.characterStyle) {
+                console.warn('Cannot save story: Missing required character data');
+                return;
+            }
+
+            // Get original image URL from session storage or story state
+            let originalImageUrl = storyState.originalImageUrl;
+            if (!originalImageUrl && browser) {
+                originalImageUrl = sessionStorage.getItem('characterImageUrl') || 
+                                 sessionStorage.getItem('uploadedImageUrl') || '';
+            }
+
+            if (!originalImageUrl) {
+                console.warn('Cannot save story: No original image URL found');
+                return;
+            }
+
+            // Format story_content as JSON
+            // Store story pages with their text and associated scene images
+            const storyContent = {
+                pages: storyPages.map((page, index) => ({
+                    pageNumber: page.pageNumber || index + 1,
+                    text: page.text,
+                    sceneImage: page.scene || sceneImages[index] || null
+                }))
+            };
+
+            // Prepare story data
+            const storyData = {
+                child_profile_id: storyState.selectedChildProfileId,
+                character_name: storyState.characterName,
+                character_type: storyState.characterType,
+                special_ability: storyState.specialAbility || '',
+                character_style: storyState.characterStyle,
+                story_world: storyState.storyWorld || 'forest',
+                adventure_type: storyState.adventureType || 'treasure_hunt',
+                original_image_url: originalImageUrl,
+                enhanced_images: storyState.enhancedImages || [],
+                story_title: storyState.storyTitle || undefined,
+                cover_design: storyState.coverDesign || undefined,
+                story_content: JSON.stringify(storyContent),
+                scene_images: sceneImages.length > 0 ? sceneImages.map(url => url.split('?')[0]) : [],
+                status: 'completed' as const
+            };
+
+            console.log('Saving story to database:', storyData);
+
+            const result = await createStory(storyData);
+
+            if (result.success && result.data) {
+                console.log('Story saved successfully:', result.data);
+                // Store story ID in session storage and story creation store
+                if (browser && result.data.id) {
+                    sessionStorage.setItem('currentStoryId', result.data.id.toString());
+                    storyCreation.update(state => ({
+                        ...state,
+                        storyId: result.data.id.toString()
+                    }));
+                }
+            } else {
+                console.error('Failed to save story:', result.error);
+            }
+        } catch (error) {
+            console.error('Error saving story to database:', error);
+        }
+    }
+
     async function generateStory() {
         if (storyGenerated) return;
         
@@ -113,28 +201,46 @@
                 }
             }
             
+            // Get selected character enhanced image from session storage
+            let selectedCharacterEnhancedImage: string | null = null;
+            if (browser) {
+                const storedEnhancedImage = sessionStorage.getItem('selectedCharacterEnhancedImage');
+                if (storedEnhancedImage) {
+                    selectedCharacterEnhancedImage = storedEnhancedImage.split('?')[0]; // Clean URL
+                    console.log('Using selected character enhanced image:', selectedCharacterEnhancedImage);
+                } else {
+                    console.log('Selected character enhanced image not found in session storage');
+                }
+            }
+            
             // Prepare request body matching backend StoryRequest model
-            const requestBody = {
+            const requestBody: any = {
                 character_name: storyState.characterName || '',
                 character_type: mapCharacterType(storyState.characterType),
                 special_ability: storyState.specialAbility || '',
                 age_group: ageGroup,
                 story_world: mapStoryWorld(storyState.storyWorld),
                 adventure_type: mapAdventureType(storyState.adventureType),
-                occasion_theme: null // Optional field, set to null for now
+                occasion_theme: null, // Optional field, set to null for now
+                character_image_url: selectedCharacterEnhancedImage
             };
+            
+            // Add selected character enhanced image if available
+            // if (selectedCharacterEnhancedImage) {
+            //     requestBody.character_image_url = selectedCharacterEnhancedImage;
+            // }
             
             // Validate required fields
             if (!requestBody.character_name || !requestBody.character_type || !requestBody.special_ability) {
                 throw new Error('Missing required character data');
             }
             
+            // Update progress: Starting story generation (5%)
+            storyTextProgress = 5;
+            
             // Send request to generate-story endpoint
-            const apiBaseUrl = env.API_BASE_URL || 'https://image-edit-five.vercel.app';
-            const endpointUrl = apiBaseUrl.endsWith('/') 
-                ? `${apiBaseUrl}generate-story` 
-                : `${apiBaseUrl}/generate-story`;
-            const response = await fetch(endpointUrl, {
+            const storyGenerationEndpoint = 'https://image-edit-five.vercel.app';
+            const response = await fetch(`${storyGenerationEndpoint}/generate-story`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,66 +252,141 @@
                 throw new Error(`Failed to generate story: ${response.status} ${response.statusText}`);
             }
             
+            // Update progress: Story generation in progress (25%)
+            storyTextProgress = 25;
+            
             const result = await response.json();
             
-            // Extract story text for 5 pages
-            // Handle various response formats from the backend
-            let storyPages: Array<{ pageNumber: number; text: string }> = [];
+            // Update progress: Story text received (50%)
+            storyTextProgress = 50;
+            
+            // Extract story pages with text and scene images
+            // Expected format: { pages: [{ text: "...", scene: "https://..." }, ...] }
+            let storyPages: Array<{ pageNumber: number; text: string; scene?: string }> = [];
+            let sceneImages: string[] = [];
             
             if (result.pages && Array.isArray(result.pages)) {
-                // Format: { pages: [{ pageNumber: 1, text: "..." }, ...] } or { pages: ["text1", "text2", ...] }
+                // Primary format: pages array with text and scene properties
                 storyPages = result.pages.slice(0, 5).map((page: any, index: number) => {
                     if (typeof page === 'string') {
+                        // Handle string-only format (legacy)
                         return { pageNumber: index + 1, text: page };
                     } else if (page.text) {
-                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                        // Handle object format with text and scene
+                        return { 
+                            pageNumber: page.pageNumber || index + 1, 
+                            text: page.text,
+                            scene: page.scene || page.imageUrl || page.image || page.sceneUrl
+                        };
                     } else {
                         return { pageNumber: index + 1, text: String(page) };
                     }
                 });
+                
+                // Extract scene images from pages array (scene property)
+                sceneImages = storyPages
+                    .map(page => page.scene)
+                    .filter((url): url is string => !!url);
             } else if (result.storyPages && Array.isArray(result.storyPages)) {
+                // Alternative format: storyPages
                 storyPages = result.storyPages.slice(0, 5).map((page: any, index: number) => {
                     if (typeof page === 'string') {
                         return { pageNumber: index + 1, text: page };
                     } else if (page.text) {
-                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                        return { 
+                            pageNumber: page.pageNumber || index + 1, 
+                            text: page.text,
+                            scene: page.scene || page.imageUrl || page.image || page.sceneUrl
+                        };
                     } else {
                         return { pageNumber: index + 1, text: String(page) };
                     }
                 });
+                sceneImages = storyPages
+                    .map(page => page.scene)
+                    .filter((url): url is string => !!url);
             } else if (result.story && Array.isArray(result.story)) {
+                // Alternative format: story array
                 storyPages = result.story.slice(0, 5).map((page: any, index: number) => {
                     if (typeof page === 'string') {
                         return { pageNumber: index + 1, text: page };
                     } else if (page.text) {
-                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                        return { 
+                            pageNumber: page.pageNumber || index + 1, 
+                            text: page.text,
+                            scene: page.scene || page.imageUrl || page.image || page.sceneUrl
+                        };
                     } else {
                         return { pageNumber: index + 1, text: String(page) };
                     }
                 });
+                sceneImages = storyPages
+                    .map(page => page.scene)
+                    .filter((url): url is string => !!url);
             } else if (Array.isArray(result)) {
+                // Direct array format
                 storyPages = result.slice(0, 5).map((page: any, index: number) => {
                     if (typeof page === 'string') {
                         return { pageNumber: index + 1, text: page };
                     } else if (page.text) {
-                        return { pageNumber: page.pageNumber || index + 1, text: page.text };
+                        return { 
+                            pageNumber: page.pageNumber || index + 1, 
+                            text: page.text,
+                            scene: page.scene || page.imageUrl || page.image || page.sceneUrl
+                        };
                     } else {
                         return { pageNumber: index + 1, text: String(page) };
                     }
                 });
+                sceneImages = storyPages
+                    .map(page => page.scene)
+                    .filter((url): url is string => !!url);
             } else {
-                // If the response structure is different, try to extract pages from the result
+                // Fallback: try to extract from other response formats
                 console.warn('Unexpected response structure:', result);
-                // Try to find pages in the response
                 for (let i = 1; i <= 5; i++) {
-                    const pageText = result[`page${i}`] || result[`page_${i}`] || result[i];
-                    if (pageText) {
-                        storyPages.push({ pageNumber: i, text: String(pageText) });
+                    const pageData = result[`page${i}`] || result[`page_${i}`] || result[i];
+                    if (pageData) {
+                        if (typeof pageData === 'string') {
+                            storyPages.push({ pageNumber: i, text: String(pageData) });
+                        } else if (pageData.text) {
+                            storyPages.push({ 
+                                pageNumber: i, 
+                                text: pageData.text,
+                                scene: pageData.scene || pageData.imageUrl || pageData.image || pageData.sceneUrl
+                            });
+                        } else {
+                            storyPages.push({ pageNumber: i, text: String(pageData) });
+                        }
                     }
+                }
+                sceneImages = storyPages
+                    .map(page => page.scene)
+                    .filter((url): url is string => !!url);
+            }
+            
+            // Also check for separate scene arrays (fallback)
+            if (sceneImages.length === 0) {
+                if (result.sceneImages && Array.isArray(result.sceneImages)) {
+                    sceneImages = result.sceneImages.slice(0, 5);
+                } else if (result.scenes && Array.isArray(result.scenes)) {
+                    sceneImages = result.scenes.slice(0, 5).map((scene: any) => 
+                        typeof scene === 'string' ? scene : (scene.url || scene.imageUrl || scene.image || scene.scene)
+                    );
+                } else if (result.images && Array.isArray(result.images)) {
+                    sceneImages = result.images.slice(0, 5);
                 }
             }
             
-            // Save story pages to session storage
+            // Ensure scene images are extracted from storyPages if not already extracted
+            // This ensures scenes match the order of pages
+            if (sceneImages.length === 0 && storyPages.length > 0) {
+                sceneImages = storyPages
+                    .map(page => page.scene)
+                    .filter((url): url is string => !!url);
+            }
+            
+            // Save story pages with text and scenes to session storage
             if (browser && storyPages.length > 0) {
                 sessionStorage.setItem('storyPages', JSON.stringify(storyPages));
                 
@@ -215,15 +396,62 @@
                 });
                 
                 console.log('Story pages saved to session storage:', storyPages.length);
+                console.log('Story pages with scenes:', storyPages.map(p => ({ text: p.text.substring(0, 30) + '...', hasScene: !!p.scene })));
             }
+            
+            // Scene images should be included in the /generate-story response
+            // Update progress based on number of images received
+            if (sceneImages.length > 0) {
+                const validImages = sceneImages.filter(img => img).length;
+                // Each valid image contributes to progress
+                // Since images come all at once, we can set progress to 50% (complete)
+                sceneImageProgress = 50;
+            } else {
+                // No images received, set to 50% (images complete)
+                sceneImageProgress = 50;
+            }
+            
+            // Save scene images to session storage
+            // Store scenes in the same order as pages (by page number/index)
+            const cleanSceneImages: string[] = [];
+            if (browser && sceneImages.length > 0) {
+                sceneImages.forEach((imageUrl, index) => {
+                    if (imageUrl) {
+                        // Store with multiple key patterns for compatibility
+                        // Clean URL by removing query parameters for consistency
+                        const cleanUrl = imageUrl.split('?')[0];
+                        sessionStorage.setItem(`storyScene_${index + 1}`, cleanUrl);
+                        sessionStorage.setItem(`adventureScene_${index + 1}`, cleanUrl);
+                        cleanSceneImages.push(cleanUrl);
+                    }
+                });
+                
+                // Also store as an array for easier access (with clean URLs)
+                if (cleanSceneImages.length > 0) {
+                    sessionStorage.setItem('storyScenes', JSON.stringify(cleanSceneImages));
+                }
+                
+                console.log('Scene images saved to session storage:', sceneImages.length);
+                console.log('Scene URLs:', sceneImages.map(url => url.split('?')[0]));
+            } else if (browser) {
+                console.warn('No scene images found in response');
+            }
+            
+            // Save story to Supabase database
+            await saveStoryToDatabase(storyPages, cleanSceneImages);
             
             storyGenerated = true;
         } catch (error) {
             console.error('Error generating story:', error);
+            // Set progress to 100% to allow navigation even on error
+            storyTextProgress = 50;
+            sceneImageProgress = 50;
+            storyGenerated = true;
             // Don't block navigation if story generation fails
             // The user can still proceed, but story pages won't be available
         }
     }
+
 
     onMount(() => {
         // Initialize story creation store
@@ -234,13 +462,31 @@
         // Generate story immediately when page loads
         generateStory();
         
+        // Fallback timer - only used if generation takes too long
         intervalId = window.setInterval(() => {
             if (timeRemaining > 0) {
                 timeRemaining--;
-                completionPercent = ((TOTAL_TIME - timeRemaining) / TOTAL_TIME) * 100;
+                // Only update from timer if actual progress hasn't reached 100%
+                // This ensures the timer doesn't override real progress
+                if (completionPercent < 100) {
+                    const timerProgress = ((TOTAL_TIME - timeRemaining) / TOTAL_TIME) * 100;
+                    // Use timer progress only if it's higher than actual progress
+                    // This prevents the timer from slowing down real progress
+                    if (timerProgress > completionPercent) {
+                        // Don't override if we have real progress
+                        if (storyTextProgress === 0 && sceneImageProgress === 0) {
+                            storyTextProgress = timerProgress * 0.5;
+                            sceneImageProgress = timerProgress * 0.5;
+                        }
+                    }
+                }
             } else {
                 timeRemaining = 0;
-                completionPercent = 100;
+                // Only set to 100% if generation hasn't completed
+                if (completionPercent < 100 && !storyGenerated) {
+                    storyTextProgress = 50;
+                    sceneImageProgress = 50;
+                }
                 if (intervalId !== null) {
                     clearInterval(intervalId);
                     intervalId = null;

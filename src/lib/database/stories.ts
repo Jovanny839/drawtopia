@@ -19,6 +19,8 @@ export interface Story {
   story_title?: string;
   story_cover?: string;
   cover_design?: string;
+  story_content?: string | any; // JSON string or object containing story pages/text
+  scene_images?: string[]; // Array of scene image URLs
   status?: 'generating' | 'completed' | 'failed';
 }
 
@@ -36,6 +38,16 @@ export interface DatabaseResult {
 export async function createStory(story: Story): Promise<DatabaseResult> {
   console.log('Creating story:', story);
   try {
+    // Prepare story_content - convert to JSON string if it's an object
+    let storyContentValue: string | null = null;
+    if (story.story_content) {
+      if (typeof story.story_content === 'string') {
+        storyContentValue = story.story_content;
+      } else {
+        storyContentValue = JSON.stringify(story.story_content);
+      }
+    }
+
     const { data, error } = await supabase
       .from('stories')
       .insert([{
@@ -51,6 +63,8 @@ export async function createStory(story: Story): Promise<DatabaseResult> {
         story_title: story.story_title,
         story_cover: story.story_cover,
         cover_design: story.cover_design,
+        story_content: storyContentValue,
+        scene_images: story.scene_images || [],
         status: story.status || 'generating'
       }])
       .select('*')

@@ -42,17 +42,21 @@
     }
   };
 
-  // Use the base character image as before, and generated enhancement as after
-  $: currentBeforeImage= beforeImage || sampleImages[enhancementId as keyof typeof sampleImages]?.before || sampleImages.normal.before;
-  $: currentAfterImage= generatedEnhancementImage || sampleImages[enhancementId as keyof typeof sampleImages]?.after || sampleImages.normal.after;
+  // Before image: Base character image with special ability (from beforeImage prop)
+  // After image: Enhanced image generated with enhancement level and prompts
+  $: currentBeforeImage = beforeImage || sampleImages[enhancementId as keyof typeof sampleImages]?.before || sampleImages.normal.before;
+  $: currentAfterImage = generatedEnhancementImage || sampleImages[enhancementId as keyof typeof sampleImages]?.after || sampleImages.normal.after;
 
-  // Generate enhancement image when component mounts or when originalImageUrl/selectedStyle changes
-  $: if (originalImageUrl && selectedStyle) {
+  // Use beforeImage as originalImageUrl if originalImageUrl is not provided
+  $: sourceImageForEnhancement = originalImageUrl || beforeImage;
+
+  // Generate enhancement image when component mounts or when sourceImageForEnhancement/selectedStyle changes
+  $: if (sourceImageForEnhancement && selectedStyle) {
     const styleChanged = lastProcessedStyle && lastProcessedStyle !== selectedStyle;
-    const imageChanged = lastProcessedImageUrl && lastProcessedImageUrl !== originalImageUrl;
+    const imageChanged = lastProcessedImageUrl && lastProcessedImageUrl !== sourceImageForEnhancement;
     
     if (styleChanged || imageChanged || !generatedEnhancementImage) {
-      // Clear the old image if style or original image changed
+      // Clear the old image if style or source image changed
       if (styleChanged || imageChanged) {
         generatedEnhancementImage = "";
         // Clear cached images for this enhancement level
@@ -69,7 +73,7 @@
       }
       loadOrGenerateEnhancementImage();
       lastProcessedStyle = selectedStyle;
-      lastProcessedImageUrl = originalImageUrl;
+      lastProcessedImageUrl = sourceImageForEnhancement;
     }
   }
 
@@ -151,14 +155,15 @@
   };
 
   // Generate enhancement image based on the enhancement level
+  // Uses the base character image (with special ability) as the source
   const generateEnhancementImage = async () => {
-    if (!originalImageUrl || isGeneratingEnhancement) return;
+    if (!sourceImageForEnhancement || isGeneratingEnhancement) return;
     
     isGeneratingEnhancement = true;
     
     try {
       const result = await generateStyledImage({
-        imageUrl: originalImageUrl,
+        imageUrl: sourceImageForEnhancement,
         style: selectedStyle,
         quality: enhancementId as 'minimal' | 'normal' | 'high',
         saveToStorage: true,
@@ -204,12 +209,18 @@
           <div class="generating-text">Generating base character image...</div>
         </div>
       {:else}
-        <!-- Before Image (Right side) - Base character image -->
+        <!-- Before Image (Right side) - Base character image with special ability -->
         <div class="before-image">
-          <img src={currentBeforeImage} alt="Before" />
+          {#if currentBeforeImage}
+            <img src={currentBeforeImage} alt="Before - Base character with special ability" />
+          {:else}
+            <div class="placeholder-overlay">
+              <div class="placeholder-text">Base character image</div>
+            </div>
+          {/if}
         </div>
         
-        <!-- After Image (Left side, clipped) - Enhanced image -->
+        <!-- After Image (Left side, clipped) - Enhanced image with enhancement level -->
         <div 
           class="after-image" 
           style="clip-path: inset(0 {100 - sliderPosition}% 0 0);"
@@ -217,12 +228,15 @@
           {#if isGeneratingEnhancement}
             <div class="generating-overlay">
               <div class="spinner"></div>
-              <div class="generating-text">Generating...</div>
+              <div class="generating-text">Generating enhancement...</div>
             </div>
           {:else if currentAfterImage}
-            <img src={currentBeforeImage} alt="After" />
+            <img src={currentAfterImage} alt="After - Enhanced" />
           {:else}
-            <img src={currentAfterImage} alt="Before" />
+            <!-- Placeholder when enhancement image is not yet available -->
+            <div class="placeholder-overlay">
+              <div class="placeholder-text">Enhancement preview will appear here</div>
+            </div>
           {/if}
         </div>
       {/if}
@@ -409,6 +423,29 @@
     font-size: 14px;
     font-family: Quicksand;
     font-weight: 600;
+  }
+
+  .placeholder-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(248, 250, 251, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .placeholder-text {
+    color: #666d80;
+    font-size: 14px;
+    font-family: Nunito;
+    font-weight: 400;
+    text-align: center;
+    padding: 16px;
   }
 
   @keyframes spin {

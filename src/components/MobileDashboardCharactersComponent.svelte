@@ -742,7 +742,6 @@
     align-items: flex-start;
     gap: 24px;
     display: inline-flex;
-    padding: 16px;
   }
 
   .loading-message,

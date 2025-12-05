@@ -26,9 +26,28 @@
   let lastSelectedStyle = "";
   let baseCharacterImageUrl = ""; // The generated character image with special ability
   let isGeneratingBaseCharacter = false;
+  let checkInterval: ReturnType<typeof setInterval> | null = null;
 
   $: if (browser) {
     isMobile = window.innerWidth < 800;
+  }
+
+  // Watch for selected enhancement and store the enhanced image when available
+  $: if (browser && selectedEnhancement && selectedStyle) {
+    const enhancementKey = `enhancementImage_${selectedStyle}_${selectedEnhancement}`;
+    const enhancedImageUrl = sessionStorage.getItem(enhancementKey);
+    if (enhancedImageUrl) {
+      // Store the selected character enhanced image to session storage
+      const cleanedUrl = enhancedImageUrl.split('?')[0];
+      sessionStorage.setItem('selectedCharacterEnhancedImage', cleanedUrl);
+      saveSelectedImageUrl('4', cleanedUrl);
+      
+      // Clear any existing interval since we found the image
+      if (checkInterval) {
+        clearInterval(checkInterval);
+        checkInterval = null;
+      }
+    }
   }
 
   onMount(async () => {
@@ -129,6 +148,12 @@
   }
 
   function selectEnhancement(enhancement: string) {
+    // Clear any existing interval before selecting a new enhancement
+    if (checkInterval) {
+      clearInterval(checkInterval);
+      checkInterval = null;
+    }
+    
     selectedEnhancement = enhancement;
     
     // Save selected enhancement to sessionStorage
@@ -139,7 +164,33 @@
       const enhancementKey = `enhancementImage_${selectedStyle}_${enhancement}`;
       const enhancedImageUrl = sessionStorage.getItem(enhancementKey);
       if (enhancedImageUrl) {
-        saveSelectedImageUrl('4', enhancedImageUrl.split('?')[0]);
+        // Store the selected character enhanced image to session storage
+        const cleanedUrl = enhancedImageUrl.split('?')[0];
+        sessionStorage.setItem('selectedCharacterEnhancedImage', cleanedUrl);
+        saveSelectedImageUrl('4', cleanedUrl);
+      } else {
+        // If image is not yet generated, set up a watcher to store it when it becomes available
+        // Check periodically for the image (in case it's still generating)
+        checkInterval = setInterval(() => {
+          const imageUrl = sessionStorage.getItem(enhancementKey);
+          if (imageUrl) {
+            const cleanedUrl = imageUrl.split('?')[0];
+            sessionStorage.setItem('selectedCharacterEnhancedImage', cleanedUrl);
+            saveSelectedImageUrl('4', cleanedUrl);
+            if (checkInterval) {
+              clearInterval(checkInterval);
+              checkInterval = null;
+            }
+          }
+        }, 500);
+        
+        // Clear interval after 30 seconds to avoid infinite checking
+        setTimeout(() => {
+          if (checkInterval) {
+            clearInterval(checkInterval);
+            checkInterval = null;
+          }
+        }, 30000);
       }
     }
   }
