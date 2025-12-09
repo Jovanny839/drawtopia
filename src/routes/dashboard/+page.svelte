@@ -27,7 +27,6 @@
   import plus from "../../assets/Plus.svg";
   import x from "../../assets/X.svg";
   import GiftTrackingComponent from "../../components/GiftTrackingComponent.svelte";
-  import GiftSelectModal from "../../components/GiftSelectModal.svelte";
   import NotificationComponent from "../../components/NotificationComponent.svelte";
 import AccountDropdown from "../../components/AccountDropdown.svelte";
   import { storyCreation } from "../../lib/stores/storyCreation";
@@ -73,6 +72,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   let showCharacterModal = false;
   let selectedCharacter: any = null;
   let characterBooks: any[] = [];
+  let subscriptionStatus: string = "Premium Plan";
   
   // Responsive detection
   let isMobile = false;
@@ -151,6 +151,41 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
   const formatAgeLabel = (ageGroup: string) => {
     // Convert age group like "3-5" to "3-5 Years Old"
     return `${ageGroup} Years Old`;
+  };
+
+  // Function to format subscription status for display
+  const formatSubscriptionStatus = (status: string | null | undefined): string => {
+    if (!status) return "Free Plan";
+    
+    // Convert status to display format
+    const statusMap: { [key: string]: string } = {
+      'premium': 'Premium Plan',
+      'free': 'Free Plan',
+      'trial': 'Trial Plan',
+      'basic': 'Basic Plan'
+    };
+    
+    const normalizedStatus = status.toLowerCase();
+    return statusMap[normalizedStatus] || status.charAt(0).toUpperCase() + status.slice(1) + ' Plan';
+  };
+
+  // Fetch user subscription status
+  const fetchSubscriptionStatus = async (userId: string) => {
+    try {
+      const { getUserProfile } = await import("../../lib/auth");
+      const result = await getUserProfile(userId);
+      if (result.success && result.profile) {
+        const profile = Array.isArray(result.profile) ? result.profile[0] : result.profile;
+        if (profile?.subscription_status) {
+          subscriptionStatus = formatSubscriptionStatus(profile.subscription_status);
+        } else {
+          subscriptionStatus = formatSubscriptionStatus(null);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+      subscriptionStatus = "Free Plan";
+    }
   };
 
   // Function to format stories created text
@@ -297,6 +332,8 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
               story_title: story.story_title,
               user_name: story.user_name,
               child_profiles: story.child_profiles,
+              scene_images: story.scene_images,
+              story_content: story.story_content
             }),
           )
           .filter((story) => story.id); // Ensure all stories have valid ids
@@ -416,42 +453,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     return occasionMap[adventureType] || occasionMap[storyWorld] || "Adventure";
   };
 
-  // Show gift select modal only once per login session
-  const checkAndShowGiftModal = () => {
-    if (!browser) return;
-
-    // Check if modal was already shown in this session
-    const hasSeenModalThisSession = sessionStorage.getItem(
-      "giftModalShownThisSession",
-    );
-    if (!hasSeenModalThisSession) {
-      // Add a small delay to ensure the dashboard has loaded
-      setTimeout(() => {
-        showGiftSelectModal = true;
-        // Mark as shown for this session
-        sessionStorage.setItem("giftModalShownThisSession", "true");
-      }, 1000);
-    }
-  };
-
-  // Handle gift modal close
-  const handleGiftModalClose = () => {
-    showGiftSelectModal = false;
-  };
-
-  // Handle gift modal actions
-  const handleCreateStory = () => {
-    handleGiftModalClose();
-    // Navigate to create story flow
-    goto("/create-child-profile");
-  };
-
-  const handleGiveAsGift = () => {
-    handleGiftModalClose();
-    // Navigate to gift flow
-    goto("/gift/1");
-  };
-
   // Handle character preview
   const handleCharacterPreview = (event: CustomEvent) => {
     const character = event.detail;
@@ -506,6 +507,83 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
     console.log("Book clicked:", book);
   };
 
+  // Handle view book button click from BookCard
+  const handleViewBook = (event: CustomEvent) => {
+    const story = event.detail;
+    
+    if (!story || !browser) {
+      console.error("Invalid story data or browser not available");
+      return;
+    }
+
+    try {
+      // Store story data in sessionStorage for the preview page
+      if (story.story_title) {
+        sessionStorage.setItem("storyTitle", story.story_title);
+        sessionStorage.setItem("story_title", story.story_title);
+      }
+
+      
+      let storyPages = JSON.parse(story.story_content);
+      
+      storyPages = storyPages.pages.map((page: any, index: number) => {
+        return {
+          pageNumber: page.pageNumber,
+          text: page.text,
+          scene: page.sceneImage
+        }
+      });
+
+      sessionStorage.setItem('storyPages', JSON.stringify(storyPages));
+      
+      // if (story.story_content) {
+      //   console.log("-------------------------------------------------------", story.story_content)
+      //   // Parse story_content if it's a string, otherwise use as-is
+      //   let storyPages = [];
+      //   try {
+      //     const parsedContent = typeof story.story_content === 'string' 
+      //       ? JSON.parse(story.story_content) 
+      //       : story.story_content;
+          
+      //     // Check if it's an array of pages
+      //     if (Array.isArray(parsedContent)) {
+      //       storyPages = parsedContent;
+      //     } else if (parsedContent.pages && Array.isArray(parsedContent.pages)) {
+      //       storyPages = parsedContent.pages;
+      //     } else if (parsedContent.scenes && Array.isArray(parsedContent.scenes)) {
+      //       // If it's scenes format, convert to pages format
+      //       storyPages = parsedContent.scenes.map((scene: any, index: number) => ({
+      //         pageNumber: index + 1,
+      //         text: scene.text || scene.description || "",
+      //         scene: scene.scene || scene.imageUrl || scene.image,
+      //         imageUrl: scene.scene || scene.imageUrl || scene.image
+      //       }));
+      //     }
+      //   } catch (e) {
+      //     console.warn("Could not parse story_content, using scene_images instead", e);
+      //   }
+        
+      //   if (storyPages.length > 0) {
+      //     sessionStorage.setItem("storyPages", JSON.stringify(storyPages));
+      //   }
+      // }
+      
+      // if (story.scene_images && Array.isArray(story.scene_images)) {
+      //   story.scene_images.forEach((sceneUrl: string, index: number) => {
+      //     if (sceneUrl) {
+      //       sessionStorage.setItem(`storyScene_${index + 1}`, sceneUrl);
+      //     }
+      //   });
+      // }
+      
+      // Navigate to preview page
+      
+      goto("/preview/default");
+    } catch (error) {
+      console.error("Error handling view book:", error);
+    }
+  };
+
   // Fetch profiles, stories, and gifts when component mounts and user is available
   onMount(() => {
     // Check initial screen size
@@ -521,8 +599,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
         fetchChildProfiles($user.id);
         fetchStories($user.id);
         fetchGifts();
-        // Show the gift select modal only once per login session
-        checkAndShowGiftModal();
+        fetchSubscriptionStatus($user.id);
       } else {
         // Reset state if no user
         childProfiles = [];
@@ -936,7 +1013,7 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
                     </div>
                   {/if}
                   {#each stories as story (story.id)}
-                    <BookCard item={story} />
+                    <BookCard item={story} on:viewBook={handleViewBook} />
                   {/each}
                 {/if}
               {:else if libraryView === "characters"}
@@ -1295,25 +1372,6 @@ import AccountDropdown from "../../components/AccountDropdown.svelte";
 
 {#if isMobile}
 <MobileDashboardComponent />
-{/if}
-<!-- Gift Select Modal -->
-{#if showGiftSelectModal}
-  <div
-    class="modal-overlay"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="gift-modal-title"
-    on:keydown={(e) => e.key === "Escape" && handleGiftModalClose()}
-    tabindex="-1"
-  >
-    <section class="modal-container" role="document">
-      <GiftSelectModal
-        on:createStory={handleCreateStory}
-        on:giveAsGift={handleGiveAsGift}
-        on:close={handleGiftModalClose}
-      />
-    </section>
-  </div>
 {/if}
 
 <!-- Character Details Modal -->

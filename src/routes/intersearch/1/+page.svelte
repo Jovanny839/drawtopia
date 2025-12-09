@@ -107,7 +107,35 @@
       ]
     };
 
-    const characterDesc = "\n\nInclude the character from the provided reference image without changing any features. The character must have the exact same face, limbs, proportions, hair, skin tone, clothing details, and overall design as the reference. No changes to anatomy, style, or structure. The model must reproduce the character with full fidelity to the reference.";
+    // Explicit character style consistency enforcement
+    const characterConsistencyEnforcement = `\n\n=== MANDATORY CHARACTER STYLE CONSISTENCY REQUIREMENTS ===
+CRITICAL: The character from the provided reference image MUST be embedded with EXACT visual fidelity.
+
+REQUIRED CHARACTER FEATURES (DO NOT CHANGE):
+* Face: Exact same facial features, eye shape, nose, mouth, and expression style as reference
+* Limbs: Exact same proportions, length, and structure as reference
+* Body proportions: Exact same height-to-width ratio and body shape as reference
+* Hair: Exact same hair style, color, texture, and length as reference
+* Skin tone: Exact same skin color and tone as reference
+* Clothing: Exact same clothing design, colors, patterns, and details as reference
+* Overall design: Exact same character design language, style, and visual identity as reference
+* Anatomy: Exact same anatomical structure - no changes to bone structure, muscle definition, or body type
+* Style: The character's artistic style must remain consistent with the reference image
+
+STRICT PROHIBITIONS:
+* DO NOT alter the character's facial features
+* DO NOT change the character's body proportions or anatomy
+* DO NOT modify the character's hair style, color, or texture
+* DO NOT change the character's skin tone or color
+* DO NOT alter the character's clothing design, colors, or patterns
+* DO NOT modify the character's overall design or visual identity
+* DO NOT apply different artistic styles to the character than what appears in the reference
+* DO NOT distort, stretch, or resize the character in ways that change their appearance
+* DO NOT add features not present in the reference image
+* DO NOT remove features present in the reference image
+
+ENFORCEMENT:
+The character must be reproduced with pixel-perfect fidelity to the reference image. Any deviation from the reference character's appearance is strictly prohibited. The scene style may vary, but the character's appearance must remain identical to the reference image in all aspects.`;
     
     const prompts = basePrompts[world] || basePrompts["enchanted-forest"];
 
@@ -120,11 +148,11 @@
 
     const extra = difficulty ? difficultyExtras[difficulty] || "" : "";
 
-    // Style extras - different prompts for each style
+    // Style extras - different prompts for each style with explicit consistency enforcement
     const styleExtras: { [key: string]: string } = {
-      "3d": `\n\nStyle guidelines:\n* Render character and scene in a 3D Pixar/Disney animated movie style.\n* Use smooth 3D modeling, cinematic lighting, and polished textures.\n* Keep the character's likeness and visual language consistent with the supplied character image.\n* The scene should feel like a frame from a high-quality animated film.\n *Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image ratio is 16:9.`,
-      "cartoon": `\n\nStyle guidelines:\n* Render character and scene in a classic storybook cartoon style.\n* Use clean lines, bright colors, and friendly, approachable designs.\n* Keep the character's likeness and visual language consistent with the supplied character image.\n* The scene should feel warm, timeless, and perfect for a children's storybook.\n *Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image ratio is 16:9.`,
-      "anime": `\n\nStyle guidelines:\n* Render character and scene in a Japanese anime style.\n* Use expressive features, cel-shading, and dynamic anime-style coloring.\n* Keep the character's likeness and visual language consistent with the supplied character image.\n* The scene should have the distinctive look and feel of professional anime artwork.\n *Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image ratio is 16:9.`,
+      "3d": `\n\nStyle guidelines:\n* Render character and scene in a 3D Pixar/Disney animated movie style.\n* Use smooth 3D modeling, cinematic lighting, and polished textures.\n* CRITICAL: The character from the reference image must maintain EXACT visual consistency - same face, limbs, proportions, hair, skin tone, clothing, and design. Apply 3D style to the scene and environment, but the character's appearance must match the reference image exactly.\n* The scene should feel like a frame from a high-quality animated film.\n* Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image dimensions are 768x512.`,
+      "cartoon": `\n\nStyle guidelines:\n* Render character and scene in a classic storybook cartoon style.\n* Use clean lines, bright colors, and friendly, approachable designs.\n* CRITICAL: The character from the reference image must maintain EXACT visual consistency - same face, limbs, proportions, hair, skin tone, clothing, and design. Apply cartoon style to the scene and environment, but the character's appearance must match the reference image exactly.\n* The scene should feel warm, timeless, and perfect for a children's storybook.\n* Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image dimensions are 768x512.`,
+      "anime": `\n\nStyle guidelines:\n* Render character and scene in a Japanese anime style.\n* Use expressive features, cel-shading, and dynamic anime-style coloring.\n* CRITICAL: The character from the reference image must maintain EXACT visual consistency - same face, limbs, proportions, hair, skin tone, clothing, and design. Apply anime style to the scene and environment, but the character's appearance must match the reference image exactly.\n* The scene should have the distinctive look and feel of professional anime artwork.\n* Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image dimensions are 768x512.`,
     };
 
     const styleExtra = style ? styleExtras[style] || "" : "";
@@ -134,10 +162,25 @@
       if (!enhancement) return "";
       // Cast to any to bypass strict indexed access typing and possible TS parse issues inside template literal
       const enhancementValue = (originalPrompts as any)[style as any]?.[enhancement as any] ?? "";
-      return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene).`;
+      return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene, while maintaining exact character appearance consistency with the reference image).`;
     })();
   
-    const combinedExtra = `${extra}${styleExtra}${characterDesc}${enhancementExtra}`;
+    // Negative prompts to prevent style drift and enforce character consistency
+    const negativePrompts = `\n\n=== NEGATIVE PROMPTS (STRICTLY AVOID) ===
+DO NOT:
+* Alter the character's facial features, proportions, or anatomy
+* Change the character's hair style, color, or texture
+* Modify the character's skin tone or color
+* Alter the character's clothing design, colors, or patterns
+* Change the character's body proportions or structure
+* Apply different artistic styles to the character than the reference
+* Distort, stretch, or resize the character in ways that change appearance
+* Add features not present in the reference image
+* Remove features present in the reference image
+* Create variations of the character - use the exact reference character only`;
+
+    // Combine all extras with character consistency enforcement prominently placed
+    const combinedExtra = `${extra}${styleExtra}${characterConsistencyEnforcement}${enhancementExtra}${negativePrompts}`;
 
     // Return prompts augmented with difficulty extras when provided
     if (combinedExtra) {

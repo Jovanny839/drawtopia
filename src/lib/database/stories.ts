@@ -177,8 +177,6 @@ export async function getAllStoriesForParent(parentId: string): Promise<Database
       .eq('id', parentId)
       // .single();
 
-    console.log("++++++++++++++++==================", parentId, userData)
-
     // if (userError) {
     //   console.error('Error fetching user data:', userError);
     //   return {

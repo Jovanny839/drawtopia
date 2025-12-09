@@ -16,14 +16,31 @@
 
   export let avatarUrl = "https://placehold.co/40x40";
   export let userName = "Alex Smith";
-  export let userPlan = "Premium Plan";
+  export let userPlan = "Free Plan"; // Default to Free Plan instead of Premium
 
   let isOpen = false;
   let dropdownRef: HTMLElement | null = null;
   let realUserName = userName;
   let realAvatarUrl = avatarUrl;
+  let realUserPlan = "Free Plan"; // Initialize with Free Plan
   let lastFetchedUserId: string | null = null;
   
+  // Format subscription status for display
+  function formatSubscriptionStatus(status: string | null | undefined): string {
+    if (!status) return "Free Plan";
+    
+    // Convert status to display format
+    const statusMap: { [key: string]: string } = {
+      'premium': 'Premium Plan',
+      'free plan': 'Free Plan',
+      'trial': 'Trial Plan',
+      'basic': 'Basic Plan'
+    };
+    
+    const normalizedStatus = status.toLowerCase();
+    return statusMap[normalizedStatus] || status.charAt(0).toUpperCase() + status.slice(1) + ' Plan';
+  }
+
   // Load user info from localStorage
   function loadUserInfoFromStorage() {
     if (!browser) return;
@@ -41,6 +58,8 @@
         if (userInfo.user_name) {
           realUserName = userInfo.user_name;
         }
+        // Always format subscription status, even if null/undefined (will default to "Free Plan")
+        realUserPlan = formatSubscriptionStatus(userInfo.subscription_status);
       }
     } catch (error) {
       console.error("Error loading user info from localStorage:", error);
@@ -60,6 +79,7 @@
       lastFetchedUserId = null;
       realUserName = userName;
       realAvatarUrl = avatarUrl;
+      realUserPlan = userPlan;
       console.log('User info cleared from localStorage (user logged out)');
     } catch (error) {
       console.error('Error clearing user info from localStorage:', error);
@@ -108,6 +128,9 @@
               realUserName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
             }
             
+            // Get subscription status from profile (always update, even if null/undefined)
+            realUserPlan = formatSubscriptionStatus(profile.subscription_status);
+            
             // Get avatar URL from user metadata or profile
             let avatarUrlToSave = avatarUrl; // Default
             if (authState.user.user_metadata?.avatar_url) {
@@ -123,7 +146,8 @@
               user_id: authState.user.id,
               avatar_url: avatarUrlToSave,
               user_name: realUserName,
-              email: authState.user.email || profile.email || ''
+              email: authState.user.email || profile.email || '',
+              subscription_status: profile.subscription_status || null
             };
             
             try {
@@ -216,7 +240,7 @@
           <span class="alexsmith_span">{realUserName}</span>
         </div>
         <div class="premium-plan">
-          <span class="premiumplan_span">{userPlan}</span>
+          <span class="premiumplan_span">{realUserPlan}</span>
         </div>
       </div>
     </div>

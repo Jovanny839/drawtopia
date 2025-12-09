@@ -249,6 +249,7 @@
                 },
                 body: JSON.stringify(requestBody)
             });
+
             
             if (!response.ok) {
                 throw new Error(`Failed to generate story: ${response.status} ${response.statusText}`);
@@ -258,6 +259,7 @@
             storyTextProgress = 25;
             
             const result = await response.json();
+            console.log('result =========================> ', result);
             
             // Update progress: Story text received (50%)
             storyTextProgress = 50;

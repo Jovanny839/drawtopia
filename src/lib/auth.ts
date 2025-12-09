@@ -358,13 +358,11 @@ export async function signInWithGoogle(): Promise<AuthResponse> {
 export async function registerGoogleOAuthUser(user: User): Promise<{ success: boolean; error?: string }> {
   try {
     // Check if user already exists in our database
-    console.log("=============================", user.id);
 
     const { data: existingUser, error: checkError } = await supabaseAdmin.from('users')
       .select('*')
       .eq('id', user.id)
       .single();
-    console.log("=============================", existingUser);
 
     if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "not found" error
       console.error('Error checking existing user:', checkError);

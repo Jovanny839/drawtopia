@@ -185,10 +185,10 @@
   
   <div class="card-content">
     <div class="frame-16" bind:this={containerRef}>
-      <!-- Before Image (Right side) - Baseline image uploaded on step 1 -->
+      <!-- Before Image (Full background) - Baseline image uploaded on step 1 -->
       <div class="before-image">
-        {#if currentBeforeImage}
-          <img src={currentBeforeImage} alt="Before - Baseline" />
+        {#if currentAfterImage}
+          <img src={currentAfterImage} alt="After - Enhanced" />
         {:else}
           <div class="placeholder-overlay">
             <div class="placeholder-text">Baseline image</div>
@@ -196,7 +196,7 @@
         {/if}
       </div>
       
-      <!-- After Image (Left side, clipped) - Enhanced image with enhancement level -->
+      <!-- After Image (Clipped on top, revealed from left) - Enhanced image with enhancement level -->
       <div 
         class="after-image" 
         style="clip-path: inset(0 {100 - sliderPosition}% 0 0);"
@@ -206,8 +206,8 @@
             <div class="spinner"></div>
             <div class="generating-text">Generating enhancement...</div>
           </div>
-        {:else if currentAfterImage}
-          <img src={currentAfterImage} alt="After - Enhanced" />
+        {:else if currentBeforeImage}
+          <img src={currentBeforeImage} alt="Before - Baseline" />
         {:else}
           <!-- Placeholder when enhancement image is not yet available -->
           <div class="placeholder-overlay">

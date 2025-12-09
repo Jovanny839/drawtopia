@@ -16,18 +16,82 @@
   import MobileBackBtn from "../../../components/MobileBackBtn.svelte";
   import ShareStoryModal from "../../../components/ShareStoryModal.svelte";
   import StoryInfoModal from "../../../components/StoryInfoModal.svelte";
+  import StoryPreviewEnd from "../../../components/StoryPreviewEnd.svelte";
+  import PreviewLockModal from "../../../components/PreviewLockModal.svelte";
+  import { user } from "../../../lib/stores/auth";
+  import { getUserProfile } from "../../../lib/auth";
 
   let showStoryInfoModal = false;
   let showShareStoryModal = false;
+  let showStoryPreviewEndModal = false;
+  let showPreviewLockModal = false;
   
   let storyScenes: string | any[] = [];
   let storyPages: Array<{ pageNumber: number; text: string }> = [];
   let currentSceneIndex = 0;
   const totalScenes = 5;
+  
+  let storyTitle = "Luna's Adventure";
+  let pagesRead = 0;
+  let readingTime = "0:00";
+  let audioListened = "0 min";
+  let isFreePlan = true; // Default to free plan for safety
+
+  // Reactive statement to check subscription status when user changes
+  $: if (browser && $user) {
+    checkSubscriptionStatus();
+  }
+
+  // Function to check if user is on free plan
+  const checkSubscriptionStatus = async () => {
+    if (!browser) return;
+    
+    const currentUser = $user;
+    if (!currentUser) {
+      // If no user, default to free plan (show lock modal)
+      isFreePlan = true;
+      return;
+    }
+
+    try {
+      const result = await getUserProfile(currentUser.id);
+      if (result.success && result.profile) {
+        const profile = Array.isArray(result.profile) ? result.profile[0] : result.profile;
+        const subscriptionStatus = profile?.subscription_status;
+        
+        // Normalize subscription status to check if it's free plan
+        if (!subscriptionStatus) {
+          isFreePlan = true;
+        } else {
+          const normalizedStatus = subscriptionStatus.toLowerCase().trim();
+          // Check if it's free plan (could be 'free', 'free plan', null, etc.)
+          isFreePlan = normalizedStatus === 'free' || normalizedStatus === 'free plan' || normalizedStatus === '';
+        }
+      } else {
+        // If we can't fetch profile, default to free plan
+        isFreePlan = true;
+      }
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+      // On error, default to free plan (safer to show lock modal)
+      isFreePlan = true;
+    }
+  };
 
   // Load story scenes and text from session storage
   onMount(() => {
     if (browser) {
+      // Check subscription status first
+      checkSubscriptionStatus();
+      
+      // Load story title
+      const storedTitle = sessionStorage.getItem('storyTitle') || 
+                         sessionStorage.getItem('adventureTitle') ||
+                         sessionStorage.getItem('story_title');
+      if (storedTitle) {
+        storyTitle = storedTitle;
+      }
+      
       // First, try to load story pages (which may contain scenes)
       const storedStoryPages = sessionStorage.getItem('storyPages');
       if (storedStoryPages) {
@@ -43,6 +107,7 @@
           if (scenesFromPages.length > 0) {
             storyScenes = scenesFromPages.map((url: string) => url.split("?")[0]);
             currentSceneIndex = 0;
+            pagesRead = storyScenes.length;
           }
         } catch (error) {
           console.error('Error parsing story pages from session storage:', error);
@@ -70,6 +135,7 @@
         if (loadedScenes.length > 0) {
           storyScenes = loadedScenes;
           currentSceneIndex = 0;
+          pagesRead = storyScenes.length;
         }
       }
       
@@ -84,6 +150,7 @@
         }
         if (pages.length > 0) {
           storyPages = pages;
+          pagesRead = pages.length;
         }
       }
     }
@@ -96,15 +163,64 @@
   }
 
   function nextScene() {
+    // Check if trying to go beyond page 2 (index 1)
+    // If on page 2 (index 1) and trying to go to page 3 (index 2), show lock modal
+    // But only if user is on free plan
+    if (currentSceneIndex >= 1 && isFreePlan) {
+      // Show the preview lock modal for free plan users
+      showPreviewLockModal = true;
+      return;
+    }
+    
+    // Allow navigation from page 1 (index 0) to page 2 (index 1)
+    // Or allow all navigation for paid users
     if (currentSceneIndex < storyScenes.length - 1) {
       currentSceneIndex++;
     }
+    
+    // Note: StoryPreviewEnd modal logic removed since we lock after page 2
+  }
+  
+  function handleCloseStoryPreviewEnd() {
+    showStoryPreviewEndModal = false;
+  }
+  
+  function handleReadAgain() {
+    showStoryPreviewEndModal = false;
+    currentSceneIndex = 0;
+  }
+  
+  function handleDownloadPDF() {
+    // TODO: Implement PDF download functionality
+    console.log('Download PDF clicked');
+  }
+  
+  function handleCreateNewBook() {
+    showStoryPreviewEndModal = false;
+    goto('/create-character/1');
   }
 
   function goToScene(index: number) {
+    // Prevent navigation to pages beyond page 2 (index 1) for free plan users
+    if (index > 1 && isFreePlan) {
+      showPreviewLockModal = true;
+      return;
+    }
+    
+    // Allow navigation for paid users or to pages 1-2 for free users
     if (index >= 0 && index < storyScenes.length) {
       currentSceneIndex = index;
     }
+  }
+  
+  function handleClosePreviewLockModal() {
+    showPreviewLockModal = false;
+  }
+  
+  function handleUnlockPreview() {
+    // Navigate to pricing page when unlock button is clicked
+    showPreviewLockModal = false;
+    goto('/pricing');
   }
 
   // Update page counter text
@@ -132,6 +248,7 @@
     </div>
   </div>
   <MobileBackBtn />
+  {#if !showStoryPreviewEndModal}
   <div class="frame-1410103818">
     <div class="frame-13">
       <div class="frame-1410103946">
@@ -354,6 +471,7 @@
                       class="number_02" 
                       class:active={currentSceneIndex === idx}
                       on:click={() => goToScene(idx)}
+                      class:locked={idx > 1}
                     >
                       <div class="text-1"><span class="f_span">{idx + 1}</span></div>
                     </div>
@@ -381,7 +499,7 @@
                 </div>
               {/if}
             </div>
-            <div class="button_03" on:click={nextScene} class:disabled={currentSceneIndex === storyScenes.length - 1 || storyScenes.length === 0}>
+            <div class="button_03" on:click={nextScene} class:disabled={storyScenes.length === 0}>
               <div class="next"><span class="next_span">Next</span></div>
               <div class="arrowleft_01">
                 <img src={ArrowRight} alt="arrow" />
@@ -397,7 +515,7 @@
                 <span class="previous_span">Previous</span>
               </div>
             </div>
-            <div class="mobile-button_03" on:click={nextScene} class:disabled={currentSceneIndex === storyScenes.length - 1 || storyScenes.length === 0}>
+            <div class="mobile-button_03" on:click={nextScene} class:disabled={storyScenes.length === 0}>
               <div class="next"><span class="next_span">Next</span></div>
               <div class="arrowleft_01">
                 <img src={ArrowRight} alt="arrow" />
@@ -432,11 +550,42 @@
       </div>
     </div>
   </div>
+  {/if}
   {#if showStoryInfoModal}
     <StoryInfoModal />
   {/if}
   {#if showShareStoryModal}
     <ShareStoryModal />
+  {/if}
+  {#if showStoryPreviewEndModal}
+    <div
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      on:click|self={handleCloseStoryPreviewEnd}
+      on:keydown={(e) => e.key === "Escape" && handleCloseStoryPreviewEnd()}
+      tabindex="-1"
+    >
+      <div class="modal-container" on:click|stopPropagation>
+        <StoryPreviewEnd
+          {storyTitle}
+          {pagesRead}
+          {readingTime}
+          {audioListened}
+          on:close={handleCloseStoryPreviewEnd}
+          on:readAgain={handleReadAgain}
+          on:downloadPDF={handleDownloadPDF}
+          on:createNewBook={handleCreateNewBook}
+        />
+      </div>
+    </div>
+  {/if}
+  {#if showPreviewLockModal}
+    <PreviewLockModal
+      characterName={storyTitle.split("'")[0] || "Emma"}
+      on:close={handleClosePreviewLockModal}
+      on:unlock={handleUnlockPreview}
+    />
   {/if}
 </div>
 
@@ -870,8 +1019,14 @@
 
   .number:hover:not(.active),
   .number_01:hover:not(.active),
-  .number_02:hover:not(.active) {
+  .number_02:hover:not(.active):not(.locked) {
     background: #a8b5d0;
+  }
+  
+  /* Locked pages should show cursor not-allowed */
+  .number_02.locked {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 
   .button_03 {
@@ -1443,7 +1598,43 @@
     z-index: 2;
   }
 
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .modal-container {
+    max-width: min(95vw, 800px);
+    max-height: min(95vh, 900px);
+    width: 100%;
+    overflow: auto;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    background: white;
+  }
+
   @media (max-width: 800px) {
+    .modal-overlay {
+      padding: 10px;
+    }
+
+    .modal-container {
+      min-width: 100vw;
+      min-height: 100vh;
+      border-radius: 0;
+    }
+
     .mobile-share-dots-button-group {
       display: flex;
       width: 100%;

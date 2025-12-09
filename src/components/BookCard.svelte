@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import vectorBook from "../assets/vectorBook.svg";
   import vectorSearch from "../assets/vectorSearch.svg";
   import greenCheck from "../assets/GreenCheck.svg";
@@ -12,6 +13,8 @@
   import simplesharenetwork from "../assets/BlackShareNetwork.svg";
 
   export let item: any;
+  
+  const dispatch = createEventDispatcher();
 
   // Determine the card type based on item status
   const getCardType = () => {
@@ -98,6 +101,13 @@
     // Prefer created_at (raw date) over createdDate (pre-formatted string)
     return formatDate(item?.created_at || item?.createdDate);
   };
+
+  // Handle view book button click
+  const handleViewBook = () => {
+    if (item?.status === "completed" || item?.status === "generating") {
+      dispatch("viewBook", item);
+    }
+  };
 </script>
 
 <div class="cardd">
@@ -149,7 +159,13 @@
   </div>
   <div class="rectangle-263"></div>
   <div class="frame-1410104166">
-    <div class="frame-1410104245">
+    <div 
+      class="frame-1410104245"
+      on:click={handleViewBook}
+      on:keydown={(e) => (e.key === "Enter" || e.key === " ") && handleViewBook()}
+      role="button"
+      tabindex="0"
+    >
       <div class="ellipse-1415"></div>
       <div class="pencilsimple">
         <img src={actionButton.icon} alt={actionButton.text} class="action-icon" />

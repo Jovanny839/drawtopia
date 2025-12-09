@@ -174,9 +174,7 @@ const createStoryCreationStore = () => {
     // Clear all data
     clear: () => {
       set({});
-      console.log("=================clearing")
       if (browser) {
-        console.log("=================removed")
         sessionStorage.removeItem('selectedChildProfileId');
         sessionStorage.removeItem('selectedChildProfileName');
         sessionStorage.removeItem('characterName');

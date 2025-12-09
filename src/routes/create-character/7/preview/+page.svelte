@@ -92,7 +92,6 @@
   // Handle complete story creation button click
   const handleCompleteStoryCreation = async () => {
     try {
-      console.log("=========1==========")
 
       // Get current story state
       let currentState;
@@ -101,13 +100,10 @@
         currentState = state;
       });
       unsubscribe();
-      console.log("=========2==========")
       if (currentState) {
-      console.log("=========3==========",currentState)
 
         // Create story in database
         const storyData = storyCreation.toStoryObject(currentState);
-        console.log("=========4==========")
 
         const result = await createStory(storyData as any);
         
@@ -120,7 +116,6 @@
           // Navigate to dashboard or success page
           goto('/dashboard');
         } else {
-          console.log("=========4==========")
 
           console.error('Failed to create story:', result.error);
           alert('Failed to create story. Please try again.');

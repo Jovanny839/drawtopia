@@ -19,6 +19,7 @@ export interface UserProfile {
   last_name?: string;
   full_name?: string;
   role?: string;
+  subscription_status?: string;
   created_at: string;
   updated_at: string;
 }
