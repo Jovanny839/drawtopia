@@ -113,16 +113,20 @@
       const result = await signInWithGoogle();
       
       if (result.success) {
-        console.log("Google login successful:", result.user);
+        console.log("Google login initiated, redirecting to Google...");
         // The redirect will be handled by Supabase OAuth flow
         // User will be redirected to /dashboard after successful authentication
+        // Note: isLoading will remain true since we're redirecting away
       } else {
+        console.error("Google login failed:", result.error);
         errors.general = result.error || "Google login failed. Please try again.";
         isLoading = false;
       }
     } catch (error) {
       console.error("Google login error:", error);
-      errors.general = "An unexpected error occurred with Google login. Please try again.";
+      errors.general = error instanceof Error 
+        ? error.message 
+        : "An unexpected error occurred with Google login. Please try again.";
       isLoading = false;
     }
   };

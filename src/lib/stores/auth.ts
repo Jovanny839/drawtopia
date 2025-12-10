@@ -27,18 +27,84 @@ export const auth = writable<AuthState>(initialState);
 
 // Initialize auth state and listen for changes
 export function initAuth() {
-  // Get initial session
+  // Get initial session - this is important for OAuth callbacks
   console.log("initAuth");
-  supabase.auth.getSession().then(({ data: { session } }) => {
+  
+  // Handle OAuth callback by checking for hash fragments
+  const handleOAuthCallback = async () => {
+    try {
+      // Check if we're coming back from an OAuth redirect
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const hasAccessToken = hashParams.get('access_token');
+      const hasError = hashParams.get('error');
+      
+      if (hasAccessToken || hasError) {
+        console.log('OAuth callback detected, processing...', {
+          hasAccessToken: !!hasAccessToken,
+          hasError: !!hasError,
+          error: hasError
+        });
+        
+        // Clear the hash from URL after processing
+        if (hasAccessToken) {
+          // Wait a bit for Supabase to process the callback
+          await new Promise(resolve => setTimeout(resolve, 100));
+          // Clear hash from URL
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+    } catch (error) {
+      console.error('Error handling OAuth callback:', error);
+    }
+  };
+
+  // Process OAuth callback if needed
+  if (typeof window !== 'undefined') {
+    handleOAuthCallback();
+  }
+
+  // Get session - retry once if no session found (for OAuth callbacks)
+  const getSessionWithRetry = async (retryCount = 0) => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error) {
+      console.error('Error getting session:', error);
+    }
+    
     console.log("session", session);
     console.log("user", session?.user);
+    
+    // If no session but we have OAuth hash params, retry once after a short delay
+    if (!session && retryCount === 0 && typeof window !== 'undefined') {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      if (hashParams.get('access_token')) {
+        console.log('OAuth callback detected but no session yet, retrying...');
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return getSessionWithRetry(1);
+      }
+    }
+    
+    // If we have a session with a Google user, check if they need registration
+    if (session?.user) {
+      const isGoogleProvider = 
+        session.user.app_metadata?.provider === 'google' ||
+        session.user.identities?.some(identity => identity.provider === 'google');
+      
+      if (isGoogleProvider) {
+        console.log('Google OAuth user found in initial session check');
+        // The auth state change listener will handle registration
+      }
+    }
+    
     auth.update(state => ({
       ...state,
       session,
       user: session?.user ?? null,
       loading: false
     }));
-  });
+  };
+
+  getSessionWithRetry();
 
   // Listen for auth state changes
   const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -50,8 +116,18 @@ export function initAuth() {
         const user = session.user;
         
         // Check if this is a Google OAuth sign-in
-        if (user.app_metadata?.provider === 'google') {
+        // Check both app_metadata and user_metadata for provider info
+        const isGoogleProvider = 
+          user.app_metadata?.provider === 'google' ||
+          user.identities?.some(identity => identity.provider === 'google');
+        
+        if (isGoogleProvider) {
           console.log('Google OAuth user detected, registering to database...');
+          console.log('User metadata:', {
+            app_metadata: user.app_metadata,
+            user_metadata: user.user_metadata,
+            identities: user.identities
+          });
           
           try {
             // Check for pending signup data from sessionStorage
