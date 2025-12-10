@@ -91,18 +91,8 @@ export function initAuth() {
         session.user.identities?.some(identity => identity.provider === 'google');
       
       if (isGoogleProvider) {
-        console.log('Google OAuth user found in initial session check, ensuring registration...');
-        // Ensure user is registered in database (idempotent - won't duplicate if already exists)
-        try {
-          const result = await registerGoogleOAuthUser(session.user);
-          if (result.success) {
-            console.log('Google OAuth user registered/verified in database');
-          } else {
-            console.error('Failed to register Google OAuth user on initial check:', result.error);
-          }
-        } catch (error) {
-          console.error('Error registering Google OAuth user on initial check:', error);
-        }
+        console.log('Google OAuth user found in initial session check');
+        // The auth state change listener will handle registration
       }
     }
     

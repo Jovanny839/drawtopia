@@ -372,18 +372,10 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
       };
     }
 
-    // If user already exists, no need to register again
-    if (existingUser) {
-      return { success: true };
-    }
-    console.log(user);
     // Extract user data from Google OAuth response
     const googleId = user.user_metadata?.provider_id || user.id;
-    // Safely extract first and last name from user metadata
-    const fullName = user.user_metadata?.full_name || '';
-    const nameParts = fullName ? fullName.split(' ') : [];
-    const firstName = user.user_metadata?.given_name || nameParts[0] || '';
-    const lastName = user.user_metadata?.family_name || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '') || '';
+    const firstName = user.user_metadata?.given_name || user.user_metadata?.full_name?.split(' ')[0] || '';
+    const lastName = user.user_metadata?.family_name || user.user_metadata?.full_name?.split(' ')[1] || '';
     const email = user.email || '';
 
     console.log('Google OAuth user data:', {
@@ -395,7 +387,56 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
       user_metadata: user.user_metadata
     });
 
-    // Create user data object
+    // Prepare user metadata for auth.users
+    const userMetadata = {
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
+      full_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+      google_id: googleId,
+      ...user.user_metadata // Preserve existing metadata
+    };
+
+    // Update user in supabase.auth.users using admin API
+    const { data: updatedAuthUser, error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(
+      user.id,
+      {
+        user_metadata: userMetadata
+      }
+    );
+
+    if (authUpdateError) {
+      console.error('Error updating auth user:', authUpdateError);
+      // Don't fail completely, but log the error
+    } else {
+      console.log('Auth user updated successfully:', updatedAuthUser);
+    }
+
+    // If user already exists in our database, update it
+    if (existingUser) {
+      const { error: updateError } = await supabaseAdmin
+        .from('users')
+        .update({
+          email: email.toLowerCase().trim(),
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          google_id: googleId,
+          updated_at: new Date()
+        })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Error updating user profile:', updateError);
+        return {
+          success: false,
+          error: updateError.message
+        };
+      }
+
+      console.log('Google OAuth user updated successfully');
+      return { success: true };
+    }
+
+    // Create user data object for new user
     const userData = {
       id: user.id,
       google_id: googleId,
@@ -742,12 +783,57 @@ export async function registerUser(userData: any): Promise<{ success: boolean; p
       };
     }
 
-    // If user already exists, return success with existing profile
+    // If this is a Google OAuth user (has google_id), update auth.users
+    if (userData.google_id) {
+      const userMetadata = {
+        first_name: userData.first_name || '',
+        last_name: userData.last_name || '',
+        full_name: `${userData.first_name || ''} ${userData.last_name || ''}`.trim(),
+        google_id: userData.google_id
+      };
+
+      // Update user in supabase.auth.users using admin API
+      const { data: updatedAuthUser, error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(
+        userData.id,
+        {
+          user_metadata: userMetadata
+        }
+      );
+
+      if (authUpdateError) {
+        console.error('Error updating auth user:', authUpdateError);
+        // Don't fail completely, but log the error
+      } else {
+        console.log('Auth user updated successfully:', updatedAuthUser);
+      }
+    }
+
+    // If user already exists, update it
     if (existingUser) {
-      console.log('User already exists in database');
+      const { error: updateError } = await supabaseAdmin
+        .from('users')
+        .update({
+          email: userData.email,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          role: userData.role,
+          google_id: userData.google_id,
+          updated_at: new Date()
+        })
+        .eq('id', userData.id);
+
+      if (updateError) {
+        console.error('Error updating user profile:', updateError);
+        return {
+          success: false,
+          error: updateError.message
+        };
+      }
+
+      console.log('User updated successfully');
       return { 
         success: true, 
-        profile: existingUser 
+        profile: { ...existingUser, ...userData }
       };
     }
 
