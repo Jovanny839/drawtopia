@@ -379,10 +379,8 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
     console.log(user);
     // Extract user data from Google OAuth response
     const googleId = user.user_metadata?.provider_id || user.id;
-    const fullName = user.user_metadata?.full_name || '';
-    const nameParts = fullName ? fullName.split(' ') : [];
-    const firstName = user.user_metadata?.given_name || nameParts[0] || '';
-    const lastName = user.user_metadata?.family_name || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '') || '';
+    const firstName = user.user_metadata?.given_name || user.user_metadata?.full_name.split(' ')[0] || '';
+    const lastName = user.user_metadata?.family_name || user.user_metadata?.full_name.split(' ')[1] || '';
     const email = user.email || '';
 
     console.log('Google OAuth user data:', {
@@ -703,10 +701,8 @@ export async function verifyPhone(phone: string, token: string): Promise<{ succe
  */
 export function formatGoogleUserData(user: any): any {
   const googleId = user.user_metadata?.provider_id || user.id;
-  const fullName = user.user_metadata?.full_name || '';
-  const nameParts = fullName ? fullName.split(' ') : [];
-  const firstName = user.user_metadata?.given_name || nameParts[0] || '';
-  const lastName = user.user_metadata?.family_name || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : '') || '';
+  const firstName = user.user_metadata?.given_name || user.user_metadata?.full_name?.split(' ')[0] || '';
+  const lastName = user.user_metadata?.family_name || user.user_metadata?.full_name?.split(' ')[1] || '';
   const email = user.email || '';
 
   return {

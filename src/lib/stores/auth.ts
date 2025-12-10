@@ -63,67 +63,6 @@ export function initAuth() {
     handleOAuthCallback();
   }
 
-  // Helper function to register Google OAuth user
-  const registerGoogleUserIfNeeded = async (user: any) => {
-    try {
-      // Check if this is a Google OAuth user
-      const isGoogleProvider = 
-        user.app_metadata?.provider === 'google' ||
-        user.identities?.some((identity: any) => identity.provider === 'google');
-      
-      if (!isGoogleProvider) {
-        return;
-      }
-
-      console.log('Google OAuth user detected, ensuring registration to database...');
-      
-      // Check for pending signup data from sessionStorage
-      const pendingSignupData = typeof window !== 'undefined' 
-        ? sessionStorage.getItem('pendingGoogleSignup') 
-        : null;
-      
-      let result;
-
-      if (pendingSignupData) {
-        // User came from signup page with form data
-        const formData = JSON.parse(pendingSignupData);
-        const userData = {
-          id: user.id,
-          email: user.email?.toLowerCase().trim(),
-          first_name: formData.firstName?.trim(),
-          last_name: formData.lastName?.trim(),
-          role: formData.accountType || 'adult',
-          google_id: user.user_metadata?.provider_id || user.id,
-          created_at: new Date(),
-          updated_at: new Date()
-        };
-        
-        // Clear the pending data
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('pendingGoogleSignup');
-        }
-        
-        console.log('Registering user with signup form data:', userData);
-        result = await registerUser(userData);
-      } else {
-        // No pending signup data - user signed in directly with Google
-        // Register them using data from Google OAuth response
-        console.log('No pending signup data found - registering with Google OAuth data');
-        result = await registerGoogleOAuthUser(user);
-      }
-
-      console.log('User registration result:', result);
-      
-      if (result.success) {
-        console.log('Google OAuth user successfully registered to database');
-      } else {
-        console.error('Failed to register Google OAuth user:', result.error);
-      }
-    } catch (error) {
-      console.error('Error during Google OAuth user registration:', error);
-    }
-  };
-
   // Get session - retry once if no session found (for OAuth callbacks)
   const getSessionWithRetry = async (retryCount = 0) => {
     const { data: { session }, error } = await supabase.auth.getSession();
@@ -145,9 +84,16 @@ export function initAuth() {
       }
     }
     
-    // If we have a session with a Google user, ensure they are registered
+    // If we have a session with a Google user, check if they need registration
     if (session?.user) {
-      await registerGoogleUserIfNeeded(session.user);
+      const isGoogleProvider = 
+        session.user.app_metadata?.provider === 'google' ||
+        session.user.identities?.some(identity => identity.provider === 'google');
+      
+      if (isGoogleProvider) {
+        console.log('Google OAuth user found in initial session check');
+        // The auth state change listener will handle registration
+      }
     }
     
     auth.update(state => ({
@@ -166,9 +112,65 @@ export function initAuth() {
       console.log('Auth state changed:', event, session);
       
       // Handle Google OAuth user registration
-      // Register on SIGNED_IN event, and also on TOKEN_REFRESHED to catch any missed registrations
-      if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
-        await registerGoogleUserIfNeeded(session.user);
+      if (event === 'SIGNED_IN' && session?.user) {
+        const user = session.user;
+        
+        // Check if this is a Google OAuth sign-in
+        // Check both app_metadata and user_metadata for provider info
+        const isGoogleProvider = 
+          user.app_metadata?.provider === 'google' ||
+          user.identities?.some(identity => identity.provider === 'google');
+        
+        if (isGoogleProvider) {
+          console.log('Google OAuth user detected, registering to database...');
+          console.log('User metadata:', {
+            app_metadata: user.app_metadata,
+            user_metadata: user.user_metadata,
+            identities: user.identities
+          });
+          
+          try {
+            // Check for pending signup data from sessionStorage
+            const pendingSignupData = sessionStorage.getItem('pendingGoogleSignup');
+            let result;
+
+            if (pendingSignupData) {
+              // User came from signup page with form data
+              const formData = JSON.parse(pendingSignupData);
+              const userData = {
+                id: user.id,
+                email: user.email?.toLowerCase().trim(),
+                first_name: formData.firstName?.trim(),
+                last_name: formData.lastName?.trim(),
+                role: formData.accountType,
+                google_id: user.user_metadata?.provider_id || user.id,
+                created_at: new Date(),
+                updated_at: new Date()
+              };
+              
+              // Clear the pending data
+              sessionStorage.removeItem('pendingGoogleSignup');
+              
+              console.log('Registering user with signup form data:', userData);
+              result = await registerUser(userData);
+            } else {
+              // No pending signup data - user signed in directly with Google
+              // Register them using data from Google OAuth response
+              console.log('No pending signup data found - registering with Google OAuth data');
+              result = await registerGoogleOAuthUser(user);
+            }
+
+            console.log('User registration result:', result);
+            
+            if (result.success) {
+              console.log('Google OAuth user successfully registered to database');
+            } else {
+              console.error('Failed to register Google OAuth user:', result.error);
+            }
+          } catch (error) {
+            console.error('Error during Google OAuth user registration:', error);
+          }
+        }
       }
       
       auth.update(state => ({
