@@ -91,45 +91,8 @@ export function initAuth() {
         session.user.identities?.some(identity => identity.provider === 'google');
       
       if (isGoogleProvider) {
-        console.log('Google OAuth user found in initial session check, verifying registration...');
-        // Check if user exists in our database and register if needed
-        try {
-          const pendingSignupData = sessionStorage.getItem('pendingGoogleSignup');
-          let result;
-
-          if (pendingSignupData) {
-            // User came from signup page with form data
-            const formData = JSON.parse(pendingSignupData);
-            const userData = {
-              id: session.user.id,
-              email: session.user.email?.toLowerCase().trim(),
-              first_name: formData.firstName?.trim(),
-              last_name: formData.lastName?.trim(),
-              role: formData.accountType,
-              google_id: session.user.user_metadata?.provider_id || session.user.id,
-              created_at: new Date(),
-              updated_at: new Date()
-            };
-            
-            // Clear the pending data
-            sessionStorage.removeItem('pendingGoogleSignup');
-            
-            console.log('Registering user with signup form data:', userData);
-            result = await registerUser(userData);
-          } else {
-            // No pending signup data - register using data from Google OAuth response
-            console.log('Registering with Google OAuth data from initial session');
-            result = await registerGoogleOAuthUser(session.user);
-          }
-
-          if (result.success) {
-            console.log('Google OAuth user successfully registered to database (initial session)');
-          } else {
-            console.error('Failed to register Google OAuth user (initial session):', result.error);
-          }
-        } catch (error) {
-          console.error('Error during Google OAuth user registration (initial session):', error);
-        }
+        console.log('Google OAuth user found in initial session check');
+        // The auth state change listener will handle registration
       }
     }
     
