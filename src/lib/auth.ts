@@ -411,6 +411,13 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
       .select('*')
       .single();
 
+    // Also insert into supabase.from('users')
+    const { data: userProfileClient, error: profileErrorClient } = await supabase
+      .from('users')
+      .insert([userData])
+      .select('*')
+      .single();
+
     if (profileError) {
       console.error('Error creating user profile:', profileError);
       return {
@@ -418,19 +425,6 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
         error: profileError.message
       };
     }
-    
-    const { data: updateUser, error: updateError } = await supabase
-    .from('users')
-    .insert([{
-      first_name: firstName,
-      last_name: lastName,
-      email: email.toLowerCase().trim(),
-      google_id: googleId,
-      role: 'adult',
-      created_at: new Date(),
-      updated_at: new Date()
-    }])
-    .single();
 
     console.log('Google OAuth user registered successfully:', userProfile);
     return { success: true };
