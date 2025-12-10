@@ -117,6 +117,14 @@ export function initAuth() {
     async (event, session) => {
       console.log('Auth state changed:', event, session);
       
+      // Update auth state for ALL events (including INITIAL_SESSION on page refresh)
+      auth.update(state => ({
+        ...state,
+        session,
+        user: session?.user ?? null,
+        loading: false
+      }));
+      
       // Handle both SIGNED_IN and TOKEN_REFRESHED events
       if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
         const user = session.user;
@@ -178,13 +186,6 @@ export function initAuth() {
           }
         }
       }
-      
-      auth.update(state => ({
-        ...state,
-        session,
-        user: session?.user ?? null,
-        loading: false
-      }));
     }
   );
 
