@@ -5,7 +5,7 @@
 
 import { writable } from 'svelte/store';
 import { supabase } from '../supabase';
-import { registerUser } from '../auth';
+import { registerUser, formatGoogleUserData } from '../auth';
 import type { User, Session } from '@supabase/supabase-js';
 
 // Auth state interface
@@ -29,9 +29,26 @@ export const auth = writable<AuthState>(initialState);
 export function initAuth() {
   // Get initial session
   console.log("initAuth");
-  supabase.auth.getSession().then(({ data: { session } }) => {
+  supabase.auth.getSession().then(async ({ data: { session } }) => {
     console.log("session", session);
     console.log("user", session?.user);
+    
+    // Register Google OAuth user if they're already signed in
+    if (session?.user && session.user.app_metadata?.provider === 'google') {
+      try {
+        const userData = formatGoogleUserData(session.user);
+        console.log('Registering existing Google OAuth user:', userData);
+        const result = await registerUser(userData);
+        if (result.success) {
+          console.log('Existing Google OAuth user registered to database');
+        } else {
+          console.error('Failed to register existing Google OAuth user:', result.error);
+        }
+      } catch (error) {
+        console.error('Error registering existing Google OAuth user:', error);
+      }
+    }
+    
     auth.update(state => ({
       ...state,
       session,
@@ -54,7 +71,7 @@ export function initAuth() {
           console.log('Google OAuth user detected, registering to database...');
           
           try {
-            // Check for pending signup data from sessionStorage
+            // Check for pending signup data from sessionStorage (from signup page)
             const pendingSignupData = sessionStorage.getItem('pendingGoogleSignup');
             let userData;
 
@@ -75,12 +92,10 @@ export function initAuth() {
               // Clear the pending data
               sessionStorage.removeItem('pendingGoogleSignup');
             } else {
-              // No pending signup data - user didn't come from signup page
-              // Don't register them yet, they need to complete signup form first
-              console.warn('No pending signup data found - user must complete signup form with first name, last name, and account type');
-              
-              // Skip registration and let them complete the signup process
-              return;
+              // No pending signup data - user is signing in (not signing up)
+              // Format user data from Google OAuth metadata
+              userData = formatGoogleUserData(user);
+              console.log('Formatting Google OAuth user data for sign-in:', userData);
             }
 
             console.log('Registering user with data:', userData);
