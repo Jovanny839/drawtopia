@@ -437,11 +437,6 @@
 </div>
 
 <style>
-.arrowleft-icon {
-    width: 18px;
-    height: 15px;
-}
-
 .accountsettings_01_span {
     color: black;
     font-size: 18px;
@@ -752,14 +747,7 @@
 }
 
 .icon-list {
-    width: 32px;
-    height: 32px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: opacity 0.2s;
+    display: none;
 }
 
 .icon-list:hover {
@@ -777,8 +765,7 @@
 
 .navbar {
     align-self: stretch;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding: 12px 24px;
     border-radius: 20px;
     border: 1px solid #DCDCDC;
     justify-content: space-between;
@@ -958,6 +945,17 @@
         padding-right: 12px;
     }
 
+    .icon-list {
+        width: 32px;
+        height: 32px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
     .logo-text-full {
         width: 140px;
         height: 26px;
@@ -1102,8 +1100,8 @@
     }
 
     .arrowleft-icon {
-        width: 16px;
-        height: 14px;
+        width: auto;
+        height: auto;
     }
 
     .rectangle-39,

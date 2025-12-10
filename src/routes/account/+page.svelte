@@ -289,10 +289,6 @@
 </div>
 
 <style>
-.arrowleft-icon {
-    width: 18px;
-    height: 15px;
-}
 
 .edit-icon {
     width: 20px;
@@ -1154,8 +1150,8 @@
     }
 
     .arrowleft-icon {
-        width: 16px;
-        height: 14px;
+        width: auto;
+        height: auto;
     }
 
     .action-buttons {
