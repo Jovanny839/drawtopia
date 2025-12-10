@@ -5,7 +5,7 @@
 
 import { writable } from 'svelte/store';
 import { supabase } from '../supabase';
-import { registerUser, formatGoogleUserData } from '../auth';
+import { registerUser } from '../auth';
 import type { User, Session } from '@supabase/supabase-js';
 
 // Auth state interface
@@ -29,26 +29,9 @@ export const auth = writable<AuthState>(initialState);
 export function initAuth() {
   // Get initial session
   console.log("initAuth");
-  supabase.auth.getSession().then(async ({ data: { session } }) => {
+  supabase.auth.getSession().then(({ data: { session } }) => {
     console.log("session", session);
     console.log("user", session?.user);
-    
-    // Register Google OAuth user if they're already signed in
-    if (session?.user && session.user.app_metadata?.provider === 'google') {
-      try {
-        const userData = formatGoogleUserData(session.user);
-        console.log('Registering existing Google OAuth user:', userData);
-        const result = await registerUser(userData);
-        if (result.success) {
-          console.log('Existing Google OAuth user registered to database');
-        } else {
-          console.error('Failed to register existing Google OAuth user:', result.error);
-        }
-      } catch (error) {
-        console.error('Error registering existing Google OAuth user:', error);
-      }
-    }
-    
     auth.update(state => ({
       ...state,
       session,
@@ -63,7 +46,8 @@ export function initAuth() {
       console.log('Auth state changed:', event, session);
       
       // Handle Google OAuth user registration
-      if (event === 'SIGNED_IN' && session?.user) {
+      // Handle both SIGNED_IN and INITIAL_SESSION events to catch users on app load
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
         const user = session.user;
         
         // Check if this is a Google OAuth sign-in
@@ -71,7 +55,7 @@ export function initAuth() {
           console.log('Google OAuth user detected, registering to database...');
           
           try {
-            // Check for pending signup data from sessionStorage (from signup page)
+            // Check for pending signup data from sessionStorage
             const pendingSignupData = sessionStorage.getItem('pendingGoogleSignup');
             let userData;
 
@@ -92,10 +76,32 @@ export function initAuth() {
               // Clear the pending data
               sessionStorage.removeItem('pendingGoogleSignup');
             } else {
-              // No pending signup data - user is signing in (not signing up)
-              // Format user data from Google OAuth metadata
-              userData = formatGoogleUserData(user);
-              console.log('Formatting Google OAuth user data for sign-in:', userData);
+              // No pending signup data - user signed in from login page
+              // Extract user data from Google OAuth response
+              const googleId = user.user_metadata?.provider_id || user.id;
+              const firstName = user.user_metadata?.given_name || user.user_metadata?.full_name?.split(' ')[0] || '';
+              const lastName = user.user_metadata?.family_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '';
+              const email = user.email || '';
+
+              console.log('Extracting Google OAuth user data:', {
+                id: user.id,
+                googleId,
+                firstName,
+                lastName,
+                email,
+                user_metadata: user.user_metadata
+              });
+
+              userData = {
+                id: user.id,
+                email: email.toLowerCase().trim(),
+                first_name: firstName.trim() || null,
+                last_name: lastName.trim() || null,
+                role: 'adult', // Default role for login users
+                google_id: googleId,
+                created_at: new Date(),
+                updated_at: new Date()
+              };
             }
 
             console.log('Registering user with data:', userData);
