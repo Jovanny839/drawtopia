@@ -20,54 +20,58 @@
     let userLanguage = "English";
     let userAvatarUrl = "https://placehold.co/40x40";
     let userProfilePicture = "https://placehold.co/120x120";
-    let subscriptionPlan = "Family Subscription";
+    let subscriptionPlan = "Free Plan";
     let lastFetchedUserId: string | null = null;
     
     // Form state
-    let firstName = "Drawtopia";
-    let lastName = "Kids";
-    let email = "Drawtopia@gmail.com";
+    let firstName = "";
+    let lastName = "";
+    let email = "";
     let accountLanguage = "English";
     let isSaving = false;
     let isUploading = false;
     let uploadProgress = 0;
     let fileInput: HTMLInputElement | null = null;
 
-    // Load user info from localStorage
-    function loadUserInfoFromStorage() {
+    // Get name and email from auth session (stored in localStorage by Supabase)
+    function getAuthInfo() {
         if (!browser) return;
         
-        try {
-            const savedUserInfo = localStorage.getItem('userInfo');
-            if (savedUserInfo) {
-                const userInfo = JSON.parse(savedUserInfo);
-                if (userInfo.user_name) {
-                    userName = userInfo.user_name;
-                    // Try to split name into first and last
-                    const nameParts = userInfo.user_name.split(' ');
-                    if (nameParts.length > 0) {
-                        firstName = nameParts[0];
-                        lastName = nameParts.slice(1).join(' ') || '';
-                    }
+        const authState = get(auth);
+        if (authState.user) {
+            // Get email from auth user
+            userEmail = authState.user.email || "";
+            email = authState.user.email || "";
+            
+            // Get name from user_metadata or construct from metadata
+            if (authState.user.user_metadata?.full_name) {
+                userName = authState.user.user_metadata.full_name;
+                const nameParts = authState.user.user_metadata.full_name.split(' ');
+                if (nameParts.length > 0) {
+                    firstName = nameParts[0];
+                    lastName = nameParts.slice(1).join(' ') || '';
                 }
-                if (userInfo.email) {
-                    userEmail = userInfo.email;
-                    email = userInfo.email;
+            } else if (authState.user.user_metadata?.name) {
+                userName = authState.user.user_metadata.name;
+                const nameParts = authState.user.user_metadata.name.split(' ');
+                if (nameParts.length > 0) {
+                    firstName = nameParts[0];
+                    lastName = nameParts.slice(1).join(' ') || '';
                 }
-                if (userInfo.avatar_url) {
-                    userAvatarUrl = userInfo.avatar_url;
-                    userProfilePicture = userInfo.avatar_url;
-                }
-                if (userInfo.user_id) {
-                    lastFetchedUserId = userInfo.user_id;
-                }
+            } else if (authState.user.user_metadata?.first_name || authState.user.user_metadata?.last_name) {
+                firstName = authState.user.user_metadata.first_name || '';
+                lastName = authState.user.user_metadata.last_name || '';
+                userName = `${firstName} ${lastName}`.trim();
+            } else {
+                // Fallback to email username if no name available
+                userName = authState.user.email?.split('@')[0] || "Alex Smith";
+                firstName = userName;
+                lastName = "";
             }
-        } catch (error) {
-            console.error("Error loading user info from localStorage:", error);
         }
     }
 
-    // Fetch user profile data
+    // Fetch user data from users table (avatar_url, subscription_status, etc.)
     async function fetchUserData() {
         if (!browser) return;
 
@@ -82,7 +86,7 @@
                         : result.profile;
                     
                     if (profile) {
-                        // Set first and last name
+                        // Set first and last name from users table if available
                         if (profile.first_name) {
                             firstName = profile.first_name;
                         }
@@ -97,23 +101,17 @@
                                 lastName = nameParts.slice(1).join(' ') || '';
                             }
                         }
-                        
-                        // Get email
-                        if (authState.user.email) {
-                            userEmail = authState.user.email;
-                            email = authState.user.email;
-                        } else if (profile.email) {
-                            userEmail = profile.email;
-                            email = profile.email;
-                        }
 
-                        // Get avatar URL
+                        // Get avatar URL from users table or user metadata
                         if (authState.user.user_metadata?.avatar_url) {
                             userAvatarUrl = authState.user.user_metadata.avatar_url;
                             userProfilePicture = authState.user.user_metadata.avatar_url;
                         } else if (authState.user.user_metadata?.picture) {
                             userAvatarUrl = authState.user.user_metadata.picture;
                             userProfilePicture = authState.user.user_metadata.picture;
+                        } else {
+                            userAvatarUrl = "https://placehold.co/40x40";
+                            userProfilePicture = "https://placehold.co/120x120";
                         }
                     }
                 }
@@ -124,17 +122,20 @@
     }
 
     // Reactive statement to update user data when auth state changes
-    $: if (browser && $auth.user && !$auth.loading && $auth.user.id !== lastFetchedUserId) {
-        fetchUserData();
+    $: if (browser && $auth.user && !$auth.loading) {
+        getAuthInfo();
+        if ($auth.user.id !== lastFetchedUserId) {
+            fetchUserData();
+        }
     }
 
     onMount(() => {
         if (!browser) return;
         
-        // Load saved user info from localStorage first
-        loadUserInfoFromStorage();
+        // Get auth info from session (stored in localStorage by Supabase)
+        getAuthInfo();
         
-        // Fetch user data if authenticated
+        // Fetch user data from users table (avatar_url, subscription_status, etc.)
         if ($auth.user && !$auth.loading) {
             fetchUserData();
         }
@@ -170,15 +171,6 @@
                 console.error("Error updating profile:", error);
                 alert("Failed to save changes. Please try again.");
             } else {
-                // Update localStorage
-                const userInfo = {
-                    user_id: authState.user.id,
-                    avatar_url: userAvatarUrl,
-                    user_name: `${firstName} ${lastName}`.trim(),
-                    email: email
-                };
-                localStorage.setItem('userInfo', JSON.stringify(userInfo));
-                
                 // Navigate back to account page
                 goto("/account");
             }
@@ -245,16 +237,6 @@
                     } catch (err) {
                         // Non-fatal
                         console.warn('Could not update auth user metadata:', err);
-                    }
-
-                    // Update localStorage cache
-                    try {
-                        const saved = localStorage.getItem('userInfo');
-                        const parsed = saved ? JSON.parse(saved) : {};
-                        parsed.avatar_url = result.url;
-                        localStorage.setItem('userInfo', JSON.stringify(parsed));
-                    } catch (err) {
-                        console.warn('Failed to update localStorage userInfo:', err);
                     }
                 }
             }
