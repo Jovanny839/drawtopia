@@ -117,17 +117,17 @@ export function initAuth() {
     async (event, session) => {
       console.log('Auth state changed:', event, session);
       
-      // Handle Google OAuth user registration
-      if (event === 'SIGNED_IN' && session?.user) {
+      // Handle both SIGNED_IN and TOKEN_REFRESHED events
+      if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
         const user = session.user;
         
         // Check if this is a Google OAuth sign-in
-        // Check both app_metadata and user_metadata for provider info
         const isGoogleProvider = 
           user.app_metadata?.provider === 'google' ||
           user.identities?.some(identity => identity.provider === 'google');
         
-        if (isGoogleProvider) {
+        if (isGoogleProvider && event === 'SIGNED_IN') {
+          // Only register on SIGNED_IN, not on TOKEN_REFRESHED
           console.log('Google OAuth user detected, registering to database...');
           console.log('User metadata:', {
             app_metadata: user.app_metadata,
