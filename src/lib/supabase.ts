@@ -7,7 +7,19 @@ import { createClient } from '@supabase/supabase-js';
 
 
 // Create Supabase client
-export const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL, 
+  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      persistSession: true,        // Default: true - stores session in localStorage
+      autoRefreshToken: true,      // Default: true - automatically refreshes tokens
+      detectSessionInUrl: true,    // Default: true - detects OAuth callbacks
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined, // Default: localStorage
+      storageKey: 'sb-auth-token'  // Default: 'sb-<project-ref>-auth-token'
+    }
+  }
+);
 export const supabaseAdmin = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY);
 // Database types (you can expand these based on your schema)
 export interface UserProfile {
