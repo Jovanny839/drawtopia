@@ -21,6 +21,7 @@
   let isOpen = false;
   let dropdownRef: HTMLElement | null = null;
   let realUserName = userName;
+  let realUserEmail = "";
   let realAvatarUrl = avatarUrl;
   let realUserPlan = "Free Plan"; // Initialize with Free Plan
   let lastFetchedUserId: string | null = null;
@@ -41,49 +42,45 @@
     return statusMap[normalizedStatus] || status.charAt(0).toUpperCase() + status.slice(1) + ' Plan';
   }
 
-  // Load user info from localStorage
-  function loadUserInfoFromStorage() {
+  // Get name and email from auth session (stored in localStorage by Supabase)
+  function getAuthInfo() {
     if (!browser) return;
     
-    try {
-      const savedUserInfo = localStorage.getItem('userInfo');
-      if (savedUserInfo) {
-        const userInfo = JSON.parse(savedUserInfo);
-        if (userInfo.user_id) {
-          lastFetchedUserId = userInfo.user_id;
-        }
-        if (userInfo.avatar_url) {
-          realAvatarUrl = userInfo.avatar_url;
-        }
-        if (userInfo.user_name) {
-          realUserName = userInfo.user_name;
-        }
-        // Always format subscription status, even if null/undefined (will default to "Free Plan")
-        realUserPlan = formatSubscriptionStatus(userInfo.subscription_status);
+    const authState = get(auth);
+    if (authState.user) {
+      // Get email from auth user
+      realUserEmail = authState.user.email || "";
+      
+      // Get name from user_metadata or construct from metadata
+      if (authState.user.user_metadata?.full_name) {
+        realUserName = authState.user.user_metadata.full_name;
+      } else if (authState.user.user_metadata?.name) {
+        realUserName = authState.user.user_metadata.name;
+      } else if (authState.user.user_metadata?.first_name || authState.user.user_metadata?.last_name) {
+        realUserName = `${authState.user.user_metadata.first_name || ''} ${authState.user.user_metadata.last_name || ''}`.trim();
+      } else {
+        // Fallback to email username if no name available
+        realUserName = authState.user.email?.split('@')[0] || userName;
       }
-    } catch (error) {
-      console.error("Error loading user info from localStorage:", error);
     }
   }
   
   // Reactive statement to update user data when auth state changes
-  $: if (browser && $auth.user && !$auth.loading && $auth.user.id !== lastFetchedUserId) {
-    lastFetchedUserId = $auth.user.id;
-    fetchUserData();
+  $: if (browser && $auth.user && !$auth.loading) {
+    getAuthInfo();
+    if ($auth.user.id !== lastFetchedUserId) {
+      lastFetchedUserId = $auth.user.id;
+      fetchUserData();
+    }
   }
   
-  // Clear localStorage when user logs out
+  // Reset when user logs out
   $: if (browser && !$auth.loading && !$auth.user && lastFetchedUserId) {
-    try {
-      localStorage.removeItem('userInfo');
-      lastFetchedUserId = null;
-      realUserName = userName;
-      realAvatarUrl = avatarUrl;
-      realUserPlan = userPlan;
-      console.log('User info cleared from localStorage (user logged out)');
-    } catch (error) {
-      console.error('Error clearing user info from localStorage:', error);
-    }
+    lastFetchedUserId = null;
+    realUserName = userName;
+    realUserEmail = "";
+    realAvatarUrl = avatarUrl;
+    realUserPlan = userPlan;
   }
 
   const toggleDropdown = () => {
@@ -106,7 +103,7 @@
     }
   };
 
-  // Fetch real user data
+  // Fetch user data from users table (avatar_url, subscription_status, etc.)
   async function fetchUserData() {
     if (!browser) return;
 
@@ -121,40 +118,19 @@
             : result.profile;
           
           if (profile) {
-            // Use full_name if available, otherwise combine first_name and last_name
-            if (profile.full_name) {
-              realUserName = profile.full_name;
-            } else if (profile.first_name || profile.last_name) {
-              realUserName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
-            }
-            
-            // Get subscription status from profile (always update, even if null/undefined)
+            // Get subscription status from users table
             realUserPlan = formatSubscriptionStatus(profile.subscription_status);
             
-            // Get avatar URL from user metadata or profile
-            let avatarUrlToSave = avatarUrl; // Default
+            // Get avatar URL from users table or user metadata
+            // Note: avatar_url should be in users table, but check metadata as fallback
             if (authState.user.user_metadata?.avatar_url) {
-              avatarUrlToSave = authState.user.user_metadata.avatar_url;
-              realAvatarUrl = avatarUrlToSave;
+              realAvatarUrl = authState.user.user_metadata.avatar_url;
             } else if (authState.user.user_metadata?.picture) {
-              avatarUrlToSave = authState.user.user_metadata.picture;
-              realAvatarUrl = avatarUrlToSave;
-            }
-            
-            // Save user info to localStorage
-            const userInfo = {
-              user_id: authState.user.id,
-              avatar_url: avatarUrlToSave,
-              user_name: realUserName,
-              email: authState.user.email || profile.email || '',
-              subscription_status: profile.subscription_status || null
-            };
-            
-            try {
-              localStorage.setItem('userInfo', JSON.stringify(userInfo));
-              console.log('User info saved to localStorage:', userInfo);
-            } catch (storageError) {
-              console.error('Error saving user info to localStorage:', storageError);
+              realAvatarUrl = authState.user.user_metadata.picture;
+            } else {
+              // If avatar_url is in users table, you can add it here
+              // For now, keep default or metadata value
+              realAvatarUrl = avatarUrl;
             }
           }
         }
@@ -197,11 +173,13 @@
   onMount(() => {
     if (!browser) return;
 
-    // Load saved user info from localStorage first
-    loadUserInfoFromStorage();
+    // Get auth info from session (stored in localStorage by Supabase)
+    getAuthInfo();
 
-    // Fetch user data (will update localStorage if user is authenticated)
-    fetchUserData();
+    // Fetch user data from users table (avatar_url, subscription_status, etc.)
+    if ($auth.user && !$auth.loading) {
+      fetchUserData();
+    }
 
     const handleClickOutside = (event: MouseEvent) => {
       if (!isOpen || !dropdownRef) return;
