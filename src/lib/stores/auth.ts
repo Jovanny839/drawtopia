@@ -45,12 +45,18 @@ export function initAuth() {
           error: hasError
         });
         
-        // Clear the hash from URL after processing
+        // Wait longer for Supabase to process the callback
+        // Don't clear hash immediately - let Supabase handle it first
         if (hasAccessToken) {
-          // Wait a bit for Supabase to process the callback
-          await new Promise(resolve => setTimeout(resolve, 100));
-          // Clear hash from URL
-          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          // Wait for Supabase to process the session
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Verify session was created before clearing hash
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            // Clear hash from URL only after session is confirmed
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
         }
       }
     } catch (error) {

@@ -268,6 +268,7 @@ export async function signOut(): Promise<{ success: boolean; error?: string }> {
  */
 export async function getCurrentUser(): Promise<User | null> {
   try {
+    console.log("getCurrentUser========================================");
     const { data: { user } } = await supabase.auth.getUser();
     return user;
   } catch (error) {

@@ -66,7 +66,7 @@
                 userName = `${authState.user.user_metadata.first_name || ''} ${authState.user.user_metadata.last_name || ''}`.trim();
             } else {
                 // Fallback to email username if no name available
-                userName = authState.user.email?.split('@')[0] || "Alex Smith";
+                userName = authState.user.email?.split('@')[0] || "Singh Smith";
             }
         }
     }
