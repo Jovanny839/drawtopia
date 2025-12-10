@@ -374,14 +374,37 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
 
     // If user already exists, no need to register again
     if (existingUser) {
+      console.log('User already exists in database');
       return { success: true };
     }
-    console.log(user);
+
+    console.log('Registering new Google OAuth user:', user);
+    
     // Extract user data from Google OAuth response
-    const googleId = user.user_metadata?.provider_id || user.id;
-    const firstName = user.user_metadata?.given_name || user.user_metadata?.full_name.split(' ')[0] || '';
-    const lastName = user.user_metadata?.family_name || user.user_metadata?.full_name.split(' ')[1] || '';
+    const googleId = user.user_metadata?.provider_id || user.identities?.find(id => id.provider === 'google')?.id || user.id;
+    
+    // Safely extract first and last name
+    let firstName = user.user_metadata?.given_name || '';
+    let lastName = user.user_metadata?.family_name || '';
+    
+    // If names are not in user_metadata, try to extract from full_name
+    if (!firstName && !lastName && user.user_metadata?.full_name) {
+      const nameParts = user.user_metadata.full_name.split(' ');
+      firstName = nameParts[0] || '';
+      lastName = nameParts.slice(1).join(' ') || '';
+    }
+    
+    // If still no names, try to extract from email or use empty strings
     const email = user.email || '';
+    
+    // Validate that we have at least an email or user id
+    if (!email && !user.id) {
+      console.error('Missing required user data: email and id');
+      return {
+        success: false,
+        error: 'Missing required user information'
+      };
+    }
 
     console.log('Google OAuth user data:', {
       id: user.id,
@@ -389,30 +412,24 @@ export async function registerGoogleOAuthUser(user: User): Promise<{ success: bo
       firstName,
       lastName,
       email,
-      user_metadata: user.user_metadata
+      user_metadata: user.user_metadata,
+      identities: user.identities
     });
 
-    // Create user data object
+    // Create user data object (similar to signUpWithEmail and signUpWithPhone)
     const userData = {
       id: user.id,
       google_id: googleId,
-      email: email.toLowerCase().trim(),
-      first_name: firstName.trim(),
-      last_name: lastName.trim(),
+      email: email ? email.toLowerCase().trim() : null,
+      first_name: firstName ? firstName.trim() : null,
+      last_name: lastName ? lastName.trim() : null,
       role: 'adult',
       created_at: new Date(),
       updated_at: new Date()
     };
 
-    // Insert user data into database
+    // Insert user data into database using supabaseAdmin (same as email/phone signup)
     const { data: userProfile, error: profileError } = await supabaseAdmin
-      .from('users')
-      .insert([userData])
-      .select('*')
-      .single();
-
-    // Also insert into supabase.from('users')
-    const { data: userProfileClient, error: profileErrorClient } = await supabase
       .from('users')
       .insert([userData])
       .select('*')
