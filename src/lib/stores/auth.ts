@@ -5,7 +5,7 @@
 
 import { writable } from 'svelte/store';
 import { supabase } from '../supabase';
-import { registerUser } from '../auth';
+import { registerUser, registerGoogleOAuthUser } from '../auth';
 import type { User, Session } from '@supabase/supabase-js';
 
 // Auth state interface
@@ -46,8 +46,7 @@ export function initAuth() {
       console.log('Auth state changed:', event, session);
       
       // Handle Google OAuth user registration
-      // Handle both SIGNED_IN and INITIAL_SESSION events to catch users on app load
-      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+      if (event === 'SIGNED_IN' && session?.user) {
         const user = session.user;
         
         // Check if this is a Google OAuth sign-in
@@ -57,12 +56,12 @@ export function initAuth() {
           try {
             // Check for pending signup data from sessionStorage
             const pendingSignupData = sessionStorage.getItem('pendingGoogleSignup');
-            let userData;
+            let result;
 
             if (pendingSignupData) {
               // User came from signup page with form data
               const formData = JSON.parse(pendingSignupData);
-              userData = {
+              const userData = {
                 id: user.id,
                 email: user.email?.toLowerCase().trim(),
                 first_name: formData.firstName?.trim(),
@@ -75,37 +74,16 @@ export function initAuth() {
               
               // Clear the pending data
               sessionStorage.removeItem('pendingGoogleSignup');
+              
+              console.log('Registering user with signup form data:', userData);
+              result = await registerUser(userData);
             } else {
-              // No pending signup data - user signed in from login page
-              // Extract user data from Google OAuth response
-              const googleId = user.user_metadata?.provider_id || user.id;
-              const firstName = user.user_metadata?.given_name || user.user_metadata?.full_name?.split(' ')[0] || '';
-              const lastName = user.user_metadata?.family_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '';
-              const email = user.email || '';
-
-              console.log('Extracting Google OAuth user data:', {
-                id: user.id,
-                googleId,
-                firstName,
-                lastName,
-                email,
-                user_metadata: user.user_metadata
-              });
-
-              userData = {
-                id: user.id,
-                email: email.toLowerCase().trim(),
-                first_name: firstName.trim() || null,
-                last_name: lastName.trim() || null,
-                role: 'adult', // Default role for login users
-                google_id: googleId,
-                created_at: new Date(),
-                updated_at: new Date()
-              };
+              // No pending signup data - user signed in directly with Google
+              // Register them using data from Google OAuth response
+              console.log('No pending signup data found - registering with Google OAuth data');
+              result = await registerGoogleOAuthUser(user);
             }
 
-            console.log('Registering user with data:', userData);
-            const result = await registerUser(userData);
             console.log('User registration result:', result);
             
             if (result.success) {
