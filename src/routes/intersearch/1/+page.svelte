@@ -18,6 +18,8 @@
   import arrowleft from '../../../assets/ArrowLeft.svg';
   import originalPrompts from '../../../lib/prompt.json';
   import { enhance } from "$app/forms";
+  import { env } from '../../../lib/env';
+  import { buildIntersearchScenePrompt } from '../../../lib/promptBuilder';
 
   let activePage = 1;
   const totalPages = 5;
@@ -30,6 +32,10 @@
   let characterImageUrl: string | null = null;
   let selectedStyle: string | null = null;
   let selectedEnhancement: string | null = null;
+  let characterName: string | null = null;
+  let characterType: string | null = null;
+  let specialAbility: string | null = null;
+  let storyTitle: string | null = null;
 
   // Drag selection state
   let imageWrapperRef: HTMLDivElement | null = null;
@@ -82,6 +88,104 @@
       "The Victory Celebration",
     ],
   };
+
+
+  // Get scene-specific information for prompts
+  function getSceneInfo(world: string, sceneIndex: number): {
+    sceneDescription: string;
+    characterAction: string;
+    characterEmotion: string;
+    storyContext: string;
+  } {
+    const sceneInfo: { [key: string]: Array<{
+      sceneDescription: string;
+      characterAction: string;
+      characterEmotion: string;
+      storyContext: string;
+    }> } = {
+      "enchanted-forest": [
+        {
+          sceneDescription: "A magical forest filled with ancient trees, glowing mushrooms, and mystical creatures. Sunlight filters through the canopy, creating dappled patterns on the forest floor.",
+          characterAction: "Waving cheerfully to other forest creatures",
+          characterEmotion: "Happy and welcoming",
+          storyContext: "The adventure begins as the character enters the enchanted forest, ready to explore its magical wonders."
+        },
+        {
+          sceneDescription: "An enchanted castle with towering spires, magical windows, and floating elements. The castle is surrounded by a mystical garden with talking flowers.",
+          characterAction: "Running excitedly through the castle grounds",
+          characterEmotion: "Excited and curious",
+          storyContext: "The character discovers the enchanted castle and begins their quest to find hidden treasures."
+        },
+        {
+          sceneDescription: "A crystal cave with sparkling walls, glowing crystals, and magical light reflections. The cave is filled with hidden passages and mysterious artifacts.",
+          characterAction: "Hiding playfully behind crystal formations",
+          characterEmotion: "Playful and mischievous",
+          storyContext: "Deep in the crystal cave, the character searches for clues while playing hide and seek with magical creatures."
+        },
+        {
+          sceneDescription: "A rainbow meadow with colorful flowers, butterflies, and a magical rainbow arching overhead. The meadow is filled with celebrating creatures.",
+          characterAction: "Celebrating with a victory pose",
+          characterEmotion: "Triumphant and joyful",
+          storyContext: "The character has completed their quest and celebrates with all the magical friends they met along the way."
+        }
+      ],
+      "outer-space": [
+        {
+          sceneDescription: "A cosmic space station with floating platforms, alien technology, and stars visible through windows. Space creatures and robots move about.",
+          characterAction: "Waving to friendly aliens and space creatures",
+          characterEmotion: "Happy and welcoming",
+          storyContext: "The character arrives at the cosmic station, beginning their space adventure among the stars."
+        },
+        {
+          sceneDescription: "An alien planet with strange vegetation, floating rocks, and multiple moons in the sky. Colorful alien creatures explore the landscape.",
+          characterAction: "Running and exploring the alien landscape",
+          characterEmotion: "Excited and curious",
+          storyContext: "The character lands on an alien planet and begins exploring its unique and wondrous environment."
+        },
+        {
+          sceneDescription: "An asteroid field with floating rocks, space debris, and cosmic particles. Spaceships navigate through the dangerous but beautiful field.",
+          characterAction: "Hiding behind asteroids while navigating",
+          characterEmotion: "Playful and adventurous",
+          storyContext: "The character navigates through the asteroid field, using their skills to avoid obstacles and find the path forward."
+        },
+        {
+          sceneDescription: "A nebula garden with swirling cosmic colors, floating space flowers, and a beautiful starry backdrop. Space creatures gather for celebration.",
+          characterAction: "Celebrating with a victory pose among the stars",
+          characterEmotion: "Triumphant and joyful",
+          storyContext: "The character completes their space mission and celebrates in the beautiful nebula garden with all their cosmic friends."
+        }
+      ],
+      "underwater-kingdom": [
+        {
+          sceneDescription: "A vibrant coral reef with colorful fish, sea plants, and bioluminescent creatures. Sunlight filters through the water creating beautiful light patterns.",
+          characterAction: "Waving to friendly sea creatures",
+          characterEmotion: "Happy and welcoming",
+          storyContext: "The character enters the underwater kingdom and begins their aquatic adventure among the coral reefs."
+        },
+        {
+          sceneDescription: "A sunken palace with ancient architecture, glowing pearls, and underwater gardens. Mermaids and sea creatures swim around the magnificent structure.",
+          characterAction: "Swimming excitedly through the palace corridors",
+          characterEmotion: "Excited and curious",
+          storyContext: "The character discovers the sunken palace and begins exploring its underwater wonders and hidden treasures."
+        },
+        {
+          sceneDescription: "A pearl cave with glowing pearls, crystal formations, and magical underwater light. The cave is filled with hidden treasures and sea creatures.",
+          characterAction: "Hiding playfully behind pearl formations",
+          characterEmotion: "Playful and mischievous",
+          storyContext: "Deep in the pearl cave, the character searches for the legendary pearl while playing with friendly sea creatures."
+        },
+        {
+          sceneDescription: "A kelp forest with swaying seaweed, colorful fish, and bioluminescent plants. The forest is alive with celebrating sea creatures.",
+          characterAction: "Celebrating with a victory pose underwater",
+          characterEmotion: "Triumphant and joyful",
+          storyContext: "The character has found the treasure and celebrates in the kelp forest with all their underwater friends."
+        }
+      ]
+    };
+
+    const worldScenes = sceneInfo[world] || sceneInfo["enchanted-forest"];
+    return worldScenes[sceneIndex] || worldScenes[0];
+  }
 
   // Get prompts for each scene based on world and difficulty
   function getScenePrompts(world: string, difficulty?: string, style?: string, enhancement?: string): string[] {
@@ -197,14 +301,54 @@ DO NOT:
     generatedImages = [];
 
     try {
-      const prompts = getScenePrompts(
-        selectedWorld!,
-        selectedDifficulty ?? undefined,
-        selectedStyle ?? undefined,
-        selectedEnhancement ?? undefined
-      );
-      const promises = prompts.map(async (prompt, index) => {
-        // Generate image using the prompt directly via API
+      // Load character and story data from sessionStorage
+      const charName = characterName || sessionStorage.getItem('characterName') || 'Character';
+      const charType = characterType || sessionStorage.getItem('selectedCharacterType') || 'person';
+      const ability = specialAbility || sessionStorage.getItem('specialAbility') || '';
+      const title = storyTitle || sessionStorage.getItem('storyTitle') || 'Adventure Story';
+      const style = selectedStyle || 'cartoon';
+      const ageGroup = sessionStorage.getItem('ageGroup') || '7-10';
+
+      // Get scene information for each scene (1-4)
+      const scenePrompts: string[] = [];
+      for (let sceneNum = 1; sceneNum <= 4; sceneNum++) {
+        const sceneIndex = sceneNum - 1;
+        const sceneInfo = getSceneInfo(selectedWorld!, sceneIndex);
+        const sceneTitle = sceneTitles[selectedWorld!]?.[sceneIndex] || `Scene ${sceneNum}`;
+
+        // Build the intersearch scene prompt using the promptBuilder function
+        const scenePrompt = buildIntersearchScenePrompt({
+          sceneNumber: sceneNum,
+          storyTitle: title,
+          storyWorld: selectedWorld!,
+          characterName: charName,
+          characterType: charType,
+          characterStyle: style,
+          specialAbility: ability,
+          ageGroup: ageGroup,
+          sceneTitle: sceneTitle,
+          sceneDescription: sceneInfo.sceneDescription,
+          characterActionForScene: sceneInfo.characterAction,
+          characterEmotionForScene: sceneInfo.characterEmotion,
+          storyContinuationForThisScene: sceneInfo.storyContext
+        });
+
+        // Get the base image generation prompt
+        const basePrompts = getScenePrompts(
+          selectedWorld!,
+          selectedDifficulty ?? undefined,
+          selectedStyle ?? undefined,
+          selectedEnhancement ?? undefined
+        );
+        const basePrompt = basePrompts[sceneIndex] || '';
+
+        // Combine the intersearch scene prompt with the base image generation prompt
+        const combinedPrompt = `${scenePrompt}\n\n${basePrompt}`;
+        scenePrompts.push(combinedPrompt);
+      }
+
+      const promises = scenePrompts.map(async (prompt, index) => {
+        // Generate image using the combined prompt via API
         const response = await fetch(
           'https://image-edit-five.vercel.app/edit-image',
           {
@@ -292,6 +436,11 @@ DO NOT:
       // Also retrieve selected style and enhancement from character creation
       selectedStyle = sessionStorage.getItem('selectedStyle');
       selectedEnhancement = sessionStorage.getItem('selectedEnhancement');
+      // Load character and story data
+      characterName = sessionStorage.getItem('characterName');
+      characterType = sessionStorage.getItem('selectedCharacterType');
+      specialAbility = sessionStorage.getItem('specialAbility');
+      storyTitle = sessionStorage.getItem('storyTitle');
 
       // Check if we need to regenerate scenes (from Play Again button)
       const shouldRegenerate = sessionStorage.getItem("intersearch_regenerate") === "true";

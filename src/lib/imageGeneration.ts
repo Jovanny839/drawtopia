@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import prompts from "./prompt.json";
+import { buildEnhancementPrompt } from "./promptBuilder";
 
 export interface ImageGenerationResult {
   success: boolean;
@@ -13,13 +14,26 @@ export interface ImageGenerationOptions {
   quality?: 'initial' | 'minimal' | 'normal' | 'high' | 'forest' | 'underwater' | 'outerspace' | string;
   saveToStorage?: boolean;
   storageKey?: string;
+  // Optional character details for enhancement prompts
+  characterName?: string;
+  characterType?: 'person' | 'animal' | 'magical';
+  specialAbility?: string;
 }
 
 /**
  * Generate a styled image using the image editing API
  */
 export async function generateStyledImage(options: ImageGenerationOptions): Promise<ImageGenerationResult> {
-  const { imageUrl, style, quality = 'normal', saveToStorage = true, storageKey } = options;
+  const { 
+    imageUrl, 
+    style, 
+    quality = 'normal', 
+    saveToStorage = true, 
+    storageKey,
+    characterName,
+    characterType,
+    specialAbility
+  } = options;
   
   if (!imageUrl) {
     return { success: false, error: 'No image URL provided' };
@@ -28,7 +42,43 @@ export async function generateStyledImage(options: ImageGenerationOptions): Prom
   try {
     let prompt: string;
     
-    if (style === 'environment') {
+    // Check if this is a character enhancement (minimal/normal/high with 3d/cartoon/anime style)
+    const isCharacterEnhancement = 
+      (quality === 'minimal' || quality === 'normal' || quality === 'high') &&
+      (style === '3d' || style === 'cartoon' || style === 'anime');
+    
+    if (isCharacterEnhancement) {
+      // Use prompt1.json for character enhancements
+      // Get character details from options or sessionStorage
+      let charName = characterName;
+      let charType = characterType;
+      let ability = specialAbility;
+      
+      if (browser && (!charName || !charType || !ability)) {
+        // Try to load from sessionStorage if not provided
+        charName = charName || sessionStorage.getItem('characterName') || 'Character';
+        const storedType = characterType || sessionStorage.getItem('selectedCharacterType') || 'person';
+        // Map stored type to prompt1.json format (handle both 'magical' and 'magical_creature')
+        if (storedType === 'magical_creature' || storedType === 'magical') {
+          charType = 'magical';
+        } else if (storedType === 'animal') {
+          charType = 'animal';
+        } else {
+          charType = 'person';
+        }
+        ability = ability || sessionStorage.getItem('specialAbility') || '';
+      }
+      
+      // Build prompt using prompt1.json
+      prompt = buildEnhancementPrompt({
+        characterName: charName || 'Character',
+        characterType: charType || 'person',
+        characterStyle: style as '3d' | 'cartoon' | 'anime',
+        specialAbility: ability || '',
+        enhancementLevel: quality as 'minimal' | 'normal' | 'high',
+        uploadedImageUrl: imageUrl
+      });
+    } else if (style === 'environment') {
       // Handle environment prompts
       const environmentPrompts = prompts.environment as any;
       prompt = environmentPrompts[quality] || environmentPrompts.forest;
@@ -38,7 +88,7 @@ export async function generateStyledImage(options: ImageGenerationOptions): Prom
       const [world, adventureType] = (quality as string).split('_');
       prompt = adventurePrompts[world]?.[adventureType] || adventurePrompts.forest?.treasurehunt || prompts.cartoon.normal;
     } else {
-      // Handle style prompts
+      // Handle other style prompts (fallback to old prompt.json)
       const stylePrompts = prompts[style as keyof typeof prompts];
       prompt = (stylePrompts && quality in stylePrompts) 
         ? stylePrompts[quality as keyof typeof stylePrompts] 

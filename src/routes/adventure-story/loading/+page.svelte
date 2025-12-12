@@ -8,6 +8,7 @@
     import { supabase } from '../../../lib/supabase';
     import type { ChildProfile } from '../../../lib/database/childProfiles';
     import { createStory } from '../../../lib/database/stories';
+    import { buildStoryTextPrompt, buildStoryScenePrompt } from '../../../lib/promptBuilder';
     import drawtopia from "../../../assets/logo.png";
     import shieldstar from "../../../assets/ShieldStar.svg";
     import arrowleft from "../../../assets/ArrowLeft.svg";
@@ -215,27 +216,82 @@
                 }
             }
             
-            // Prepare request body matching backend StoryRequest model
-            const requestBody: any = {
-                character_name: storyState.characterName || '',
-                character_type: mapCharacterType(storyState.characterType) || sessionStorage.getItem('selectedCharacterType'),
-                special_ability: storyState.specialAbility || '',
-                age_group: ageGroup,
-                story_world: mapStoryWorld(storyState.storyWorld) || sessionStorage.getItem('selectedWorld'),
-                adventure_type: mapAdventureType(storyState.adventureType) || sessionStorage.getItem('selectedAdventure'),
-                occasion_theme: null, // Optional field, set to null for now
-                character_image_url: selectedCharacterEnhancedImage
-            };
+            // Get all required data for prompt building
+            const characterName = storyState.characterName || '';
+            const characterType = storyState.characterType || sessionStorage.getItem('selectedCharacterType') || 'person';
+            const specialAbility = storyState.specialAbility || '';
+            const characterStyle = storyState.characterStyle || sessionStorage.getItem('selectedStyle') || 'cartoon';
+            const storyWorld = mapStoryWorld(storyState.storyWorld) || sessionStorage.getItem('selectedWorld') || 'the Enchanted Forest';
+            const adventureType = mapAdventureType(storyState.adventureType) || sessionStorage.getItem('selectedAdventure') || 'treasure hunt';
+            const storyTitle = storyState.storyTitle || sessionStorage.getItem('selectedTitle') || 'The Great Adventure';
+            const occasionTheme = storyState.occasionTheme || sessionStorage.getItem('occasionTheme') || 'general';
             
-            // Add selected character enhanced image if available
-            // if (selectedCharacterEnhancedImage) {
-            //     requestBody.character_image_url = selectedCharacterEnhancedImage;
-            // }
+            // Get reading level (default to developing_reader if not available)
+            let readingLevel = 'developing_reader';
+            if (ageGroup === '3-6') {
+                readingLevel = 'early_reader';
+            } else if (ageGroup === '7-10') {
+                readingLevel = 'developing_reader';
+            } else if (ageGroup === '11-12') {
+                readingLevel = 'independent_reader';
+            }
             
             // Validate required fields
-            if (!requestBody.character_name || !requestBody.character_type || !requestBody.special_ability) {
+            if (!characterName || !characterType || !specialAbility) {
                 throw new Error('Missing required character data');
             }
+            
+            // Build story text prompt using prompt builder
+            const storyTextPrompt = buildStoryTextPrompt({
+                characterName,
+                characterType: characterType === 'magical_creature' ? 'magical_creature' : characterType,
+                specialAbility,
+                characterStyle: characterStyle as '3d' | 'cartoon' | 'anime',
+                storyWorld,
+                adventureType,
+                occasionTheme,
+                ageGroup,
+                readingLevel,
+                storyTitle,
+                pageNumber: 1 // Main prompt for the whole story
+            });
+            
+            // Build scene prompts for each of the 5 pages
+            const scenePrompts: string[] = [];
+            for (let pageNum = 1; pageNum <= 5; pageNum++) {
+                // For now, we'll build a basic scene prompt for each page
+                // The actual page text will be filled in after story generation
+                const scenePrompt = buildStoryScenePrompt({
+                    characterName,
+                    characterType: characterType === 'magical_creature' ? 'magical_creature' : characterType,
+                    specialAbility,
+                    characterStyle: characterStyle as '3d' | 'cartoon' | 'anime',
+                    storyWorld,
+                    adventureType,
+                    ageGroup,
+                    storyTitle,
+                    pageNumber: pageNum,
+                    pageText: `[Page ${pageNum} text will be inserted here after story generation]`,
+                    characterImageUrl: selectedCharacterEnhancedImage || undefined
+                });
+                scenePrompts.push(scenePrompt);
+            }
+            
+            // Prepare request body matching backend StoryRequest model
+            const requestBody: any = {
+                character_name: characterName,
+                character_type: mapCharacterType(characterType),
+                special_ability: specialAbility,
+                age_group: ageGroup,
+                story_world: storyWorld,
+                adventure_type: adventureType,
+                occasion_theme: occasionTheme,
+                character_image_url: selectedCharacterEnhancedImage,
+                story_text_prompt: storyTextPrompt,
+                scene_prompts: scenePrompts,
+                reading_level: readingLevel,
+                story_title: storyTitle
+            };
             
             // Update progress: Starting story generation (5%)
             storyTextProgress = 5;
