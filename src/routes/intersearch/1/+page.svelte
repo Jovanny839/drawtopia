@@ -16,10 +16,9 @@
   import dotsThreeOutline from '../../../assets/DotsThreeOutline.svg';
   import zoomIcon from '../../../assets/zoomIcon.svg';
   import arrowleft from '../../../assets/ArrowLeft.svg';
-  import originalPrompts from '../../../lib/prompt.json';
   import { enhance } from "$app/forms";
   import { env } from '../../../lib/env';
-  import { buildIntersearchScenePrompt } from '../../../lib/promptBuilder';
+  import { buildIntersearchScenePrompt, buildIntersearchSearchAdventurePrompt } from '../../../lib/promptBuilder';
 
   let activePage = 1;
   const totalPages = 5;
@@ -187,112 +186,6 @@
     return worldScenes[sceneIndex] || worldScenes[0];
   }
 
-  // Get prompts for each scene based on world and difficulty
-  function getScenePrompts(world: string, difficulty?: string, style?: string, enhancement?: string): string[] {
-    // Upgraded prompts for hidden-object puzzle illustration
-    const basePrompts: { [key: string]: string[] } = {
-      "enchanted-forest": [
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied enchanted forest environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied enchanted castle environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied crystal cave environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied rainbow meadow environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-      ],
-      "outer-space": [
-        `An extremely crowded, chaotic Zero-Gravity Playground hidden-object scene filled with drifting kids, aliens, robots, and space pets flying, flipping, tumbling, and bouncing around. The environment includes colorful anti-gravity equipment, floating platforms, neon rings, wormhole slides, asteroid climbing rocks, hover-swings, floating toys, anti-gravity balls, glowing particles, hologram signs, and drifting backpacks. Nearly every inch of the scene is packed—overlapping characters, lively interactions, comedic moments, and visual chaos everywhere, similar to an ultra-dense Where’s Waldo parade. All characters—children, aliens, robots, and space pets—must be fully formed, with clean outlines, distinct faces, complete limbs, and no blurry or distorted shapes. Foreground and background characters must remain clearly readable despite the density of the scene.`,
-        `An extremely crowded, chaotic Zero-Gravity Playground hidden-object scene filled with drifting kids, aliens, robots, and space pets flying, flipping, tumbling, and bouncing around. The environment includes colorful anti-gravity equipment, floating platforms, neon rings, wormhole slides, asteroid climbing rocks, hover-swings, floating toys, anti-gravity balls, glowing particles, hologram signs, and drifting backpacks. Nearly every inch of the scene is packed—overlapping characters, lively interactions, comedic moments, and visual chaos everywhere, similar to an ultra-dense Where’s Waldo parade.`,
-        `An extremely crowded, chaotic Robot Repair Shop hidden-object scene filled with hundreds of fully drawn robots, mechanics, alien engineers, and automated tools moving everywhere. The space is overflowing with activity: malfunctioning robots running wild, floating robot parts, conveyor belts carrying heads and limbs, sparks flying from welding machines, robotic arms grabbing tools, giant circuit boards, repair tables covered in wires, glowing battery chargers, floating hologram manuals, aliens tightening bolts, tiny robot pets wandering, workers arguing, and comedic mechanical failures in every corner. The scene should have no empty spaces, with overlapping interactions, micro-stories, and dense visual depth in a Where’s Waldo–style layout.`,
-        `An extremely crowded, chaotic Intergalactic School hidden-object scene filled with hundreds of alien students, human students, robot classmates, floating teachers, hologram projectors, cosmic chalkboards, science experiments exploding, anti-gravity classroom desks drifting, space pets running between hallways, floating books, glowing orbs, tiny spaceships used as school buses, lockers shaped like planets, kids riding hover-desks, cafeteria trays levitating, and comedic micro-stories everywhere. The environment must be filled to every edge with overlapping crowds, busy classroom chaos, and high-density playground energy similar to a Where’s Waldo parade scene, with no empty spaces anywhere. Every character and background element must be fully drawn with complete faces, limbs, and clothing, with clean outlines and readable expressions.`,
-      ],
-      "underwater-kingdom": [
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied coral reef environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied sunken palace environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied pearl cave environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-        `Generate a hidden-object puzzle illustration.\n\nPrimary requirements:\n* Base background: use the supplied kelp forest environment image\n\nTarget Character Rules:\n* Embed the supplied character image exactly once\n* No distortions\n* Position within a moderately busy area\n* Partial occlusion allowed (objects/people overlapping)\n* Character must remain findable but not obvious\n\nVisual Complexity:\n* Add clutter, patterns, repeated items, color overlaps\n* Use variations of red/white/striped elements to increase challenge\n\nOutput:\nA high-resolution final illustration designed for a “find the character” game.`,
-      ]
-    };
-
-    // Explicit character style consistency enforcement
-    const characterConsistencyEnforcement = `\n\n=== MANDATORY CHARACTER STYLE CONSISTENCY REQUIREMENTS ===
-CRITICAL: The character from the provided reference image MUST be embedded with EXACT visual fidelity.
-
-REQUIRED CHARACTER FEATURES (DO NOT CHANGE):
-* Face: Exact same facial features, eye shape, nose, mouth, and expression style as reference
-* Limbs: Exact same proportions, length, and structure as reference
-* Body proportions: Exact same height-to-width ratio and body shape as reference
-* Hair: Exact same hair style, color, texture, and length as reference
-* Skin tone: Exact same skin color and tone as reference
-* Clothing: Exact same clothing design, colors, patterns, and details as reference
-* Overall design: Exact same character design language, style, and visual identity as reference
-* Anatomy: Exact same anatomical structure - no changes to bone structure, muscle definition, or body type
-* Style: The character's artistic style must remain consistent with the reference image
-
-STRICT PROHIBITIONS:
-* DO NOT alter the character's facial features
-* DO NOT change the character's body proportions or anatomy
-* DO NOT modify the character's hair style, color, or texture
-* DO NOT change the character's skin tone or color
-* DO NOT alter the character's clothing design, colors, or patterns
-* DO NOT modify the character's overall design or visual identity
-* DO NOT apply different artistic styles to the character than what appears in the reference
-* DO NOT distort, stretch, or resize the character in ways that change their appearance
-* DO NOT add features not present in the reference image
-* DO NOT remove features present in the reference image
-
-ENFORCEMENT:
-The character must be reproduced with pixel-perfect fidelity to the reference image. Any deviation from the reference character's appearance is strictly prohibited. The scene style may vary, but the character's appearance must remain identical to the reference image in all aspects.`;
-    
-    const prompts = basePrompts[world] || basePrompts["enchanted-forest"];
-
-    // Difficulty modifiers appended to each prompt
-    const difficultyExtras: { [key: string]: string } = {
-      easy: `\n\nDifficulty modifiers:\n* Character 15-20% Visible\n* 5-8 other characters or other elements\n* Age 3-6 (Recommended)`,
-      medium: `\n\nDifficulty modifiers:\n* Character 10-15% Visible\n* 10-15 other characters or other elements\n* Age 7-10 (Recommended)`,
-      hard: `\n\nDifficulty modifiers:\n* Character 8-12% Visible\n* 15-25 other characters or other elements\n* Age 11-12 (Recommended)`,
-    };
-
-    const extra = difficulty ? difficultyExtras[difficulty] || "" : "";
-
-    // Style extras - different prompts for each style with explicit consistency enforcement
-    const styleExtras: { [key: string]: string } = {
-      "3d": `\n\nStyle guidelines:\n* Render character and scene in a 3D Pixar/Disney animated movie style.\n* Use smooth 3D modeling, cinematic lighting, and polished textures.\n* CRITICAL: The character from the reference image must maintain EXACT visual consistency - same face, limbs, proportions, hair, skin tone, clothing, and design. Apply 3D style to the scene and environment, but the character's appearance must match the reference image exactly.\n* The scene should feel like a frame from a high-quality animated film.\n* Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image dimensions are 768x512.`,
-      "cartoon": `\n\nStyle guidelines:\n* Render character and scene in a classic storybook cartoon style.\n* Use clean lines, bright colors, and friendly, approachable designs.\n* CRITICAL: The character from the reference image must maintain EXACT visual consistency - same face, limbs, proportions, hair, skin tone, clothing, and design. Apply cartoon style to the scene and environment, but the character's appearance must match the reference image exactly.\n* The scene should feel warm, timeless, and perfect for a children's storybook.\n* Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image dimensions are 768x512.`,
-      "anime": `\n\nStyle guidelines:\n* Render character and scene in a Japanese anime style.\n* Use expressive features, cel-shading, and dynamic anime-style coloring.\n* CRITICAL: The character from the reference image must maintain EXACT visual consistency - same face, limbs, proportions, hair, skin tone, clothing, and design. Apply anime style to the scene and environment, but the character's appearance must match the reference image exactly.\n* The scene should have the distinctive look and feel of professional anime artwork.\n* Ultra-clean 4K rendering, high clarity, and fully readable tiny details in even the densest areas. All characters must be large enough to clearly see eyes, expressions, antennas, robot details, and outfits. The scene image dimensions are 768x512.`,
-    };
-
-    const styleExtra = style ? styleExtras[style] || "" : "";
-  
-    // Safely resolve enhancement text from prompt data (avoid complex keyof indexing in template)
-    const enhancementExtra = (() => {
-      if (!enhancement) return "";
-      // Cast to any to bypass strict indexed access typing and possible TS parse issues inside template literal
-      const enhancementValue = (originalPrompts as any)[style as any]?.[enhancement as any] ?? "";
-      return `\n\nEnhancement level:\n* ${enhancementValue} (apply corresponding level of detail and polish to the character and scene, while maintaining exact character appearance consistency with the reference image).`;
-    })();
-  
-    // Negative prompts to prevent style drift and enforce character consistency
-    const negativePrompts = `\n\n=== NEGATIVE PROMPTS (STRICTLY AVOID) ===
-DO NOT:
-* Alter the character's facial features, proportions, or anatomy
-* Change the character's hair style, color, or texture
-* Modify the character's skin tone or color
-* Alter the character's clothing design, colors, or patterns
-* Change the character's body proportions or structure
-* Apply different artistic styles to the character than the reference
-* Distort, stretch, or resize the character in ways that change appearance
-* Add features not present in the reference image
-* Remove features present in the reference image
-* Create variations of the character - use the exact reference character only`;
-
-    // Combine all extras with character consistency enforcement prominently placed
-    const combinedExtra = `${extra}${styleExtra}${characterConsistencyEnforcement}${enhancementExtra}${negativePrompts}`;
-
-    // Return prompts augmented with difficulty extras when provided
-    if (combinedExtra) {
-      return prompts.map((p) => p + combinedExtra);
-    }
-
-    return prompts;
-  }
 
   async function generateAllImages() {
     if (!characterImageUrl || !selectedWorld) return;
@@ -333,17 +226,21 @@ DO NOT:
           storyContinuationForThisScene: sceneInfo.storyContext
         });
 
-        // Get the base image generation prompt
-        const basePrompts = getScenePrompts(
-          selectedWorld!,
-          selectedDifficulty ?? undefined,
-          selectedStyle ?? undefined,
-          selectedEnhancement ?? undefined
-        );
-        const basePrompt = basePrompts[sceneIndex] || '';
+        // Build the search adventure prompt using prompt1.json
+        const searchAdventurePrompt = buildIntersearchSearchAdventurePrompt({
+          characterName: charName,
+          characterType: charType,
+          characterStyle: style as '3d' | 'cartoon' | 'anime',
+          specialAbility: ability,
+          storyWorld: selectedWorld!,
+          ageGroup: ageGroup,
+          difficulty: selectedDifficulty || 'medium',
+          sceneNumber: sceneNum,
+          characterReferenceImage: characterImageUrl || undefined
+        });
 
-        // Combine the intersearch scene prompt with the base image generation prompt
-        const combinedPrompt = `${scenePrompt}\n\n${basePrompt}`;
+        // Combine the intersearch scene prompt with the search adventure prompt
+        const combinedPrompt = `${scenePrompt}\n\n${searchAdventurePrompt}`;
         scenePrompts.push(combinedPrompt);
       }
 

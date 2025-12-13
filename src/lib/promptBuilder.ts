@@ -268,48 +268,147 @@ function getAdventureTypeDisplayName(adventureType: string): string {
 }
 
 /**
- * Builds a story text generation prompt for the entire 5-page story
+ * Maps world values to prompt1.json keys for story text
  */
-export function buildStoryTextPrompt(options: StoryTextPromptOptions): string {
+function getStoryWorldKey(world: string): string {
+  const worldMapping: { [key: string]: string } = {
+    "forest": "enchantedForest",
+    "enchanted-forest": "enchantedForest",
+    "enchanted_forest": "enchantedForest",
+    "outerspace": "outerSpace",
+    "outer-space": "outerSpace",
+    "outer_space": "outerSpace",
+    "underwater": "underwaterKingdom",
+    "underwater-kingdom": "underwaterKingdom",
+    "underwater_kingdom": "underwaterKingdom"
+  };
+  return worldMapping[world.toLowerCase()] || "enchantedForest";
+}
+
+/**
+ * Maps adventure type to prompt1.json keys
+ */
+function getAdventureTypeKey(adventureType: string): string {
+  const normalized = adventureType.toLowerCase();
+  if (normalized.includes('treasure') || normalized.includes('hunt')) {
+    return 'treasureHunt';
+  }
+  if (normalized.includes('help') || normalized.includes('friend')) {
+    return 'helpingFriend';
+  }
+  return 'treasureHunt'; // default
+}
+
+/**
+ * Maps occasion theme to prompt1.json keys
+ */
+function getOccasionThemeKey(occasionTheme: string): string {
+  const normalized = occasionTheme.toLowerCase();
+  if (normalized === 'birthday') return 'birthday';
+  if (normalized === 'graduation') return 'graduation';
+  if (normalized === 'first_day_school' || normalized === 'firstdayofschool') return 'firstDayOfSchool';
+  if (normalized === 'new_sibling' || normalized === 'newsibling') return 'newSibling';
+  return ''; // general or other themes don't have specific prompts
+}
+
+/**
+ * Replaces placeholders in story text prompts
+ */
+function replaceStoryTextPlaceholders(
+  template: string,
+  options: StoryTextPromptOptions
+): string {
+  let result = template;
   const worldDisplay = getStoryWorldDisplayName(options.storyWorld);
   const adventureDisplay = getAdventureTypeDisplayName(options.adventureType);
   
-  let prompt = `Create a personalized 5-page children's storybook.
+  result = result.replace(/\{character_name\}/g, options.characterName);
+  result = result.replace(/\{character_type\}/g, options.characterType);
+  result = result.replace(/\{special_ability\}/g, options.specialAbility);
+  result = result.replace(/\{character_style\}/g, options.characterStyle);
+  result = result.replace(/\{age_group\}/g, options.ageGroup);
+  result = result.replace(/\{story_world\}/g, worldDisplay);
+  result = result.replace(/\{adventure_type\}/g, adventureDisplay);
+  result = result.replace(/\{adventure_objective\}/g, adventureDisplay.toLowerCase());
+  
+  return result;
+}
 
-CHARACTER INFORMATION:
-- Character Name: ${options.characterName}
-- Character Type: ${options.characterType} (person/animal/magical_creature)
-- Special Ability: ${options.specialAbility}
-- Character Description: As uploaded/described by child
-- Art Style (for visual context): ${options.characterStyle}
+/**
+ * Builds a story text generation prompt for the entire 5-page story using prompt1.json
+ * 
+ * Combines:
+ * 1. basePrompt from generateStoryText
+ * 2. ageRequirement based on age group
+ * 3. storyStructures for all 5 pages
+ * 4. thematicRequirements based on adventure type
+ * 5. occasionThemes if applicable
+ * 6. worldSpecific based on story world
+ * 7. characterConsistencyRequirements
+ */
+export function buildStoryTextPrompt(options: StoryTextPromptOptions): string {
+  const storyText = (prompt1Data as any).generateStoryText;
+  if (!storyText) {
+    throw new Error('generateStoryText not found in prompt1.json');
+  }
 
-STORY CONFIGURATION:
-- Story World: ${worldDisplay} (Enchanted Forest / Outer Space / Underwater Kingdom)
-- Adventure Type: ${adventureDisplay} (Treasure Hunt / Helping a Friend)
-- Occasion Theme: ${options.occasionTheme} (birthday/graduation/first_day_school/new_sibling/holiday/general)
-- Target Age Group: ${options.ageGroup} (3-6 / 7-10 / 11-12)
-- Reading Level: ${options.readingLevel} (early_reader / developing_reader / independent_reader)
+  const promptParts: string[] = [];
 
-BOOK & PAGE INFORMATION:
-- Book Title: "${options.storyTitle}"
-- World: ${worldDisplay} (Enchanted Forest / Outer Space / Underwater Kingdom)
-- Adventure Type: ${adventureDisplay} (Treasure Hunt / Helping a Friend)
-- Target Age Group: ${options.ageGroup}
+  // 1. Base prompt
+  const basePrompt = storyText.basePrompt || '';
+  if (basePrompt && basePrompt.trim().length > 0) {
+    promptParts.push(replaceStoryTextPlaceholders(basePrompt, options));
+  }
 
-CHARACTER INFORMATION:
-- Character Name: ${options.characterName}
-- Character Type: ${options.characterType}
-- Special Ability: ${options.specialAbility}
-- Art Style: ${options.characterStyle}
-- Character Visual Reference: [Based on enhancement image]
+  // 2. Age requirements based on age group
+  const ageReq = storyText.ageRequirement?.[options.ageGroup];
+  if (ageReq && ageReq.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryTextPlaceholders(ageReq, options)}`);
+  }
 
-Generate a complete 5-page story following this structure:
-- PAGE 1: Introduce ${options.characterName} and reveal their special ability
-- PAGE 2: ${options.characterName} discovers/enters ${worldDisplay}
-- PAGE 3: The ${adventureDisplay.toLowerCase()} adventure begins
-- PAGE 4: ${options.characterName} faces a challenge and uses their special ability
-- PAGE 5: Resolution and positive ending
+  // 3. Story structures for all 5 pages
+  const storyStructures = storyText.storyStructures;
+  if (storyStructures) {
+    for (let pageNum = 1; pageNum <= 5; pageNum++) {
+      const pageKey = `page${pageNum}` as keyof typeof storyStructures;
+      const pageStructure = storyStructures[pageKey];
+      if (pageStructure && pageStructure.trim().length > 0) {
+        promptParts.push(`\n\n${replaceStoryTextPlaceholders(pageStructure, options)}`);
+      }
+    }
+  }
 
+  // 4. Thematic requirements based on adventure type
+  const adventureKey = getAdventureTypeKey(options.adventureType);
+  const thematicReq = storyText.thematicRequirements?.[adventureKey];
+  if (thematicReq && thematicReq.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryTextPlaceholders(thematicReq, options)}`);
+  }
+
+  // 5. Occasion themes if applicable
+  const occasionKey = getOccasionThemeKey(options.occasionTheme);
+  if (occasionKey) {
+    const occasionTheme = storyText.occasionThemes?.[occasionKey];
+    if (occasionTheme && occasionTheme.trim().length > 0) {
+      promptParts.push(`\n\n${replaceStoryTextPlaceholders(occasionTheme, options)}`);
+    }
+  }
+
+  // 6. World-specific storytelling
+  const worldKey = getStoryWorldKey(options.storyWorld);
+  const worldSpecific = storyText.worldSpecific?.[worldKey];
+  if (worldSpecific && worldSpecific.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryTextPlaceholders(worldSpecific, options)}`);
+  }
+
+  // 7. Character consistency requirements
+  const consistencyReq = storyText.characterConsistencyRequirements;
+  if (consistencyReq && consistencyReq.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryTextPlaceholders(consistencyReq, options)}`);
+  }
+
+  // 8. Output format instructions
+  promptParts.push(`\n\nOUTPUT FORMAT:
 Format the output as:
 PAGE 1:
 [content]
@@ -324,9 +423,12 @@ PAGE 4:
 [content]
 
 PAGE 5:
-[content]`;
+[content]`);
 
-  return prompt;
+  // Combine all parts
+  const finalPrompt = promptParts.join('');
+
+  return finalPrompt;
 }
 
 /**
@@ -351,97 +453,251 @@ export interface StoryScenePromptOptions {
 }
 
 /**
- * Builds a story scene image generation prompt
+ * Interface for intersearch search adventure prompt options
+ */
+export interface IntersearchSearchAdventurePromptOptions {
+  characterName: string;
+  characterType: string;
+  characterStyle: '3d' | 'cartoon' | 'anime';
+  specialAbility: string;
+  storyWorld: string; // 'enchanted-forest' | 'outer-space' | 'underwater-kingdom'
+  ageGroup: string; // '3-6' | '7-10' | '11-12'
+  difficulty: string; // 'easy' | 'medium' | 'hard'
+  sceneNumber: number; // 1-4
+  characterReferenceImage?: string;
+}
+
+/**
+ * Maps world values to prompt1.json keys
+ */
+function getWorldKey(world: string): string {
+  const worldMapping: { [key: string]: string } = {
+    "enchanted-forest": "enchantedForest",
+    "outer-space": "outerSpace",
+    "underwater-kingdom": "underwaterKingdom"
+  };
+  return worldMapping[world.toLowerCase()] || "enchantedForest";
+}
+
+/**
+ * Maps difficulty to prompt1.json keys
+ */
+function getDifficultyKey(difficulty: string): string {
+  const normalized = difficulty.toLowerCase();
+  if (normalized === 'easy' || normalized === '3-6') return 'easy';
+  if (normalized === 'medium' || normalized === '7-10') return 'medium';
+  if (normalized === 'hard' || normalized === '11-12') return 'hard';
+  return 'medium'; // default
+}
+
+/**
+ * Maps scene number to prompt1.json keys
+ */
+function getSceneKey(sceneNumber: number): string {
+  return `scene${sceneNumber}`;
+}
+
+/**
+ * Replaces placeholders in intersearch prompts
+ */
+function replaceIntersearchPlaceholders(
+  template: string,
+  options: IntersearchSearchAdventurePromptOptions
+): string {
+  let result = template;
+  const worldDisplay = getWorldDisplayName(options.storyWorld);
+  
+  result = result.replace(/\{character_name\}/g, options.characterName);
+  result = result.replace(/\{character_type\}/g, options.characterType);
+  result = result.replace(/\{special_ability\}/g, options.specialAbility);
+  result = result.replace(/\{character_style\}/g, options.characterStyle);
+  result = result.replace(/\{age_group\}/g, options.ageGroup);
+  result = result.replace(/\{story_world\}/g, worldDisplay);
+  result = result.replace(/\{character_reference_image\}/g, options.characterReferenceImage || '[REFERENCE IMAGE]');
+  
+  return result;
+}
+
+/**
+ * Builds an intersearch search adventure prompt from prompt1.json
+ * 
+ * Combines:
+ * 1. basePrompt from generateSearchAdventure
+ * 2. complexityRequirements based on difficulty
+ * 3. styleSpecifications based on character style
+ * 4. characterActions based on scene number
+ * 5. worldSpecific based on world and scene number
+ */
+export function buildIntersearchSearchAdventurePrompt(
+  options: IntersearchSearchAdventurePromptOptions
+): string {
+  const searchAdventure = (prompt1Data as any).generateSearchAdventure;
+  if (!searchAdventure) {
+    throw new Error('generateSearchAdventure not found in prompt1.json');
+  }
+
+  const promptParts: string[] = [];
+
+  // 1. Base prompt
+  const basePrompt = searchAdventure.basePrompt || '';
+  if (basePrompt && basePrompt.trim().length > 0) {
+    promptParts.push(replaceIntersearchPlaceholders(basePrompt, options));
+  }
+
+  // 2. Complexity requirements based on difficulty
+  const difficultyKey = getDifficultyKey(options.difficulty);
+  const complexityReq = searchAdventure.complexityRequirements?.[difficultyKey];
+  if (complexityReq && complexityReq.trim().length > 0) {
+    promptParts.push(`\n\n${complexityReq}`);
+  }
+
+  // 3. Style specifications based on character style
+  const styleKey = options.characterStyle === '3d' ? '3d' : 
+                   options.characterStyle === 'cartoon' ? 'cartoon' : 
+                   options.characterStyle === 'anime' ? 'anime' : 'base';
+  const styleSpecs = searchAdventure.styleSpecifications?.[styleKey] || 
+                     searchAdventure.styleSpecifications?.base;
+  if (styleSpecs && styleSpecs.trim().length > 0) {
+    promptParts.push(`\n\n${replaceIntersearchPlaceholders(styleSpecs, options)}`);
+  }
+
+  // 4. Character actions based on scene number
+  const sceneKey = getSceneKey(options.sceneNumber);
+  const characterAction = searchAdventure.characterActions?.[sceneKey];
+  if (characterAction && characterAction.trim().length > 0) {
+    promptParts.push(`\n\n${characterAction}`);
+  }
+
+  // 5. World-specific scene description
+  const worldKey = getWorldKey(options.storyWorld);
+  const worldSpecific = searchAdventure.worldSpecific?.[worldKey];
+  if (worldSpecific) {
+    const worldSceneDesc = worldSpecific[sceneKey];
+    if (worldSceneDesc && worldSceneDesc.trim().length > 0) {
+      promptParts.push(`\n\nWORLD-SPECIFIC SCENE:\n${worldSceneDesc}`);
+    }
+  }
+
+  // Combine all parts
+  const finalPrompt = promptParts.join('');
+
+  return finalPrompt;
+}
+
+/**
+ * Replaces placeholders in story scene prompts
+ */
+function replaceStoryScenePlaceholders(
+  template: string,
+  options: StoryScenePromptOptions
+): string {
+  let result = template;
+  const worldDisplay = getStoryWorldDisplayName(options.storyWorld);
+  
+  result = result.replace(/\{character_name\}/g, options.characterName);
+  result = result.replace(/\{character_type\}/g, options.characterType);
+  result = result.replace(/\{special_ability\}/g, options.specialAbility);
+  result = result.replace(/\{character_style\}/g, options.characterStyle);
+  result = result.replace(/\{age_group\}/g, options.ageGroup);
+  result = result.replace(/\{story_world\}/g, worldDisplay);
+  result = result.replace(/\{page_number\}/g, options.pageNumber.toString());
+  result = result.replace(/\{story_page_text\}/g, options.pageText);
+  
+  return result;
+}
+
+/**
+ * Builds a story scene image generation prompt using prompt1.json
+ * 
+ * Combines:
+ * 1. basePrompt from generateStoryScene
+ * 2. characterConsistencyEnforcement
+ * 3. negativePrompts
+ * 4. styleKeywords
+ * 5. characterStyleSpecifications based on character style
+ * 6. worldSpecific based on world and page number
+ * 7. pageSpecificRequirements
  */
 export function buildStoryScenePrompt(options: StoryScenePromptOptions): string {
-  const worldDisplay = getStoryWorldDisplayName(options.storyWorld);
-  const adventureDisplay = getAdventureTypeDisplayName(options.adventureType);
-  
-  let prompt = `Create a beautiful, colorful children's storybook illustration for this story page.
+  const storyScene = (prompt1Data as any).generateStoryScene;
+  if (!storyScene) {
+    throw new Error('generateStoryScene not found in prompt1.json');
+  }
 
-STORY PAGE TEXT (Page ${options.pageNumber}):
-${options.pageText}
-- Embed this story page text into the image naturally.
+  const promptParts: string[] = [];
 
-BOOK & PAGE INFORMATION:
-- Book Title: "${options.storyTitle}"
-- Page Number: ${options.pageNumber} of 5
-- World: ${worldDisplay} (Enchanted Forest / Outer Space / Underwater Kingdom)
-- Adventure Type: ${adventureDisplay} (Treasure Hunt / Helping a Friend)
-- Target Age Group: ${options.ageGroup}
+  // 1. Base prompt
+  const basePrompt = storyScene.basePrompt || '';
+  if (basePrompt && basePrompt.trim().length > 0) {
+    promptParts.push(replaceStoryScenePlaceholders(basePrompt, options));
+  }
 
-CHARACTER INFORMATION:
-- Character Name: ${options.characterName}
-- Character Type: ${options.characterType}
-- Special Ability: ${options.specialAbility}
-- Art Style: ${options.characterStyle}
-- Character Visual Reference: [Based on enhancement image]`;
+  // 2. Character consistency enforcement
+  const consistencyEnforcement = storyScene.characterConsistencyEnforcement;
+  if (consistencyEnforcement && consistencyEnforcement.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryScenePlaceholders(consistencyEnforcement, options)}`);
+  }
 
+  // 3. Style specifications based on character style
+  const styleKey = options.characterStyle === '3d' ? '3d' : 
+                   options.characterStyle === 'cartoon' ? 'cartoon' : 
+                   options.characterStyle === 'anime' ? 'anime' : 'cartoon';
+  const styleSpecs = storyScene.characterStyleSpecifications?.[styleKey];
+  if (styleSpecs && styleSpecs.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryScenePlaceholders(styleSpecs, options)}`);
+  }
+
+  // 4. World-specific environment details based on page number
+  const worldKey = getStoryWorldKey(options.storyWorld);
+  const worldSpecific = storyScene.worldSpecific?.[worldKey];
+  if (worldSpecific) {
+    const pageKey = `page${options.pageNumber}` as keyof typeof worldSpecific;
+    const worldPageDesc = worldSpecific[pageKey];
+    if (worldPageDesc && worldPageDesc.trim().length > 0) {
+      promptParts.push(`\n\n${replaceStoryScenePlaceholders(worldPageDesc, options)}`);
+    }
+  }
+
+  // 5. Page-specific requirements
+  const pageSpecificReq = storyScene.pageSpecificRequirements;
+  if (pageSpecificReq && pageSpecificReq.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryScenePlaceholders(pageSpecificReq, options)}`);
+  }
+
+  // 6. Additional context if provided
   if (options.pageSceneDescription) {
-    prompt += `\n\nSCENE DESCRIPTION: ${options.pageSceneDescription}`;
+    promptParts.push(`\n\nADDITIONAL SCENE DESCRIPTION: ${options.pageSceneDescription}`);
   }
   
   if (options.pageCharacterAction) {
-    prompt += `\n\nCHARACTER ACTION: ${options.pageCharacterAction}`;
+    promptParts.push(`\n\nCHARACTER ACTION: ${options.pageCharacterAction}`);
   }
   
   if (options.pageEmotion) {
-    prompt += `\n\nCHARACTER EMOTION: ${options.pageEmotion}`;
+    promptParts.push(`\n\nCHARACTER EMOTION: ${options.pageEmotion}`);
   }
   
   if (options.companionCharacters) {
-    prompt += `\n\nCOMPANION CHARACTERS: ${options.companionCharacters}`;
+    promptParts.push(`\n\nCOMPANION CHARACTERS: ${options.companionCharacters}`);
   }
 
+  // 7. Character reference image instructions
   if (options.characterImageUrl) {
-    prompt += `\n\nCHARACTER REFERENCE:
-- A reference image of ${options.characterName} is provided below
+    promptParts.push(`\n\nCHARACTER REFERENCE IMAGE:
+- A reference image of ${options.characterName} is provided
 - Use this reference image to maintain consistent character appearance across all scenes
 - The character in the scene must match the appearance, style, and features shown in the reference image
-- Keep the character's visual identity consistent with the reference image
-
-=== MANDATORY CHARACTER STYLE CONSISTENCY REQUIREMENTS ===
-CRITICAL: The character from the provided reference image MUST be embedded with EXACT visual fidelity.
-
-REQUIRED CHARACTER FEATURES (DO NOT CHANGE):
-* Face: Exact same facial features, eye shape, nose, mouth, and expression style as reference
-* Limbs: Exact same proportions, length, and structure as reference
-* Body proportions: Exact same height-to-width ratio and body shape as reference
-* Hair: Exact same hair style, color, texture, and length as reference
-* Skin tone: Exact same skin color and tone as reference
-* Clothing: Exact same clothing design, colors, patterns, and details as reference
-* Overall design: Exact same character design language, style, and visual identity as reference
-* Anatomy: Exact same anatomical structure - no changes to bone structure, muscle definition, or body type
-* Style: The character's artistic style must remain consistent with the reference image
-
-=== NEGATIVE PROMPTS (STRICTLY AVOID) ===
-DO NOT:
-* Alter the character's facial features, proportions, or anatomy
-* Change the character's hair style, color, or texture
-* Modify the character's skin tone or color
-* Alter the character's clothing design, colors, or patterns
-* Change the character's body proportions or structure
-* Apply different artistic styles to the character than the reference
-* Distort, stretch, or resize the character in ways that change appearance
-* Add features not present in the reference image
-* Remove features present in the reference image
-* Create variations of the character - use the exact reference character only`;
+- Keep the character's visual identity consistent with the reference image`);
   }
 
-  prompt += `\n\nILLUSTRATION REQUIREMENTS:
-1. Create a vibrant, age-appropriate children's book illustration
-2. Include the main character (${options.characterName}) as a ${options.characterType} - ${options.characterName} is the clear hero of this story
-3. CHARACTER PROMINENCE: The character (${options.characterName}) must occupy 60-70% of the composition. The character should be the dominant visual element, clearly visible and prominent in the scene
-4. Match the mood, setting, and events from the story text
-5. Use bright, cheerful colors suitable for children
-6. Make it visually appealing and engaging
-7. Ensure the scene is positive and appropriate for children
-8. Include relevant details about the setting and characters
-9. Style should be like a professional children's book illustration
-10. IMPORTANT: The image must be in 768x512 dimensions
-${options.characterImageUrl ? '11. CRITICAL: The character must match the appearance shown in the reference image provided' : ''}
+  // 8. Negative prompts
+  const negativePrompts = storyScene.negativePrompts;
+  if (negativePrompts && negativePrompts.trim().length > 0) {
+    promptParts.push(`\n\n${replaceStoryScenePlaceholders(negativePrompts, options)}`);
+  }
 
-Generate a high-quality illustration that perfectly captures this story moment in 768x512 dimensions.`;
+  // Combine all parts
+  const finalPrompt = promptParts.join('');
 
-  return prompt;
+  return finalPrompt;
 }

@@ -59,25 +59,39 @@
         return typeMap[type.toLowerCase()] || 'a person';
     }
 
-    // Helper function to map story world enum to descriptive string
+    // Helper function to map story world enum to prompt builder format
+    // The prompt builder expects: 'enchanted-forest', 'outer-space', or 'underwater-kingdom'
     function mapStoryWorld(world: string | undefined): string {
-        if (!world) return 'the Enchanted Forest';
+        if (!world) return 'enchanted-forest';
         const worldMap: { [key: string]: string } = {
-            'forest': 'the Enchanted Forest',
-            'space': 'Outer Space',
-            'underwater': 'the Underwater Kingdom'
+            'forest': 'enchanted-forest',
+            'enchanted-forest': 'enchanted-forest',
+            'enchanted_forest': 'enchanted-forest',
+            'space': 'outer-space',
+            'outer-space': 'outer-space',
+            'outer_space': 'outer-space',
+            'outerspace': 'outer-space',
+            'underwater': 'underwater-kingdom',
+            'underwater-kingdom': 'underwater-kingdom',
+            'underwater_kingdom': 'underwater-kingdom'
         };
-        return worldMap[world.toLowerCase()] || 'the Enchanted Forest';
+        return worldMap[world.toLowerCase()] || 'enchanted-forest';
     }
 
-    // Helper function to map adventure type enum to descriptive string
+    // Helper function to map adventure type enum to prompt builder format
+    // The prompt builder expects: 'Treasure Hunt' or 'Helping a Friend'
     function mapAdventureType(adventure: string | undefined): string {
-        if (!adventure) return 'treasure hunt';
+        if (!adventure) return 'Treasure Hunt';
         const adventureMap: { [key: string]: string } = {
-            'treasure_hunt': 'treasure hunt',
-            'helping_friend': 'helping a friend'
+            'treasure_hunt': 'Treasure Hunt',
+            'treasure-hunt': 'Treasure Hunt',
+            'treasure': 'Treasure Hunt',
+            'helping_friend': 'Helping a Friend',
+            'helping-a-friend': 'Helping a Friend',
+            'helping': 'Helping a Friend',
+            'helpfriend': 'Helping a Friend'
         };
-        return adventureMap[adventure.toLowerCase()] || 'treasure hunt';
+        return adventureMap[adventure.toLowerCase()] || 'Treasure Hunt';
     }
 
     // Helper function to normalize age group to backend format
@@ -221,10 +235,12 @@
             const characterType = storyState.characterType || sessionStorage.getItem('selectedCharacterType') || 'person';
             const specialAbility = storyState.specialAbility || '';
             const characterStyle = storyState.characterStyle || sessionStorage.getItem('selectedStyle') || 'cartoon';
-            const storyWorld = mapStoryWorld(storyState.storyWorld) || sessionStorage.getItem('selectedWorld') || 'the Enchanted Forest';
-            const adventureType = mapAdventureType(storyState.adventureType) || sessionStorage.getItem('selectedAdventure') || 'treasure hunt';
+            // Map to prompt builder format (e.g., 'enchanted-forest' instead of 'the Enchanted Forest')
+            const storyWorld = mapStoryWorld(storyState.storyWorld) || mapStoryWorld(sessionStorage.getItem('selectedWorld') || undefined) || 'enchanted-forest';
+            const adventureType = mapAdventureType(storyState.adventureType) || mapAdventureType(sessionStorage.getItem('selectedAdventure') || undefined) || 'Treasure Hunt';
             const storyTitle = storyState.storyTitle || sessionStorage.getItem('selectedTitle') || 'The Great Adventure';
-            const occasionTheme = storyState.occasionTheme || sessionStorage.getItem('occasionTheme') || 'general';
+            // Get occasion theme from sessionStorage (not in StoryCreationState)
+            const occasionTheme = browser ? (sessionStorage.getItem('occasionTheme') || 'general') : 'general';
             
             // Get reading level (default to developing_reader if not available)
             let readingLevel = 'developing_reader';
@@ -257,10 +273,9 @@
             });
             
             // Build scene prompts for each of the 5 pages
+            // Note: The backend will replace the placeholder text with actual story text after generation
             const scenePrompts: string[] = [];
             for (let pageNum = 1; pageNum <= 5; pageNum++) {
-                // For now, we'll build a basic scene prompt for each page
-                // The actual page text will be filled in after story generation
                 const scenePrompt = buildStoryScenePrompt({
                     characterName,
                     characterType: characterType === 'magical_creature' ? 'magical_creature' : characterType,
@@ -271,7 +286,8 @@
                     ageGroup,
                     storyTitle,
                     pageNumber: pageNum,
-                    pageText: `[Page ${pageNum} text will be inserted here after story generation]`,
+                    // Placeholder text - backend will replace with actual story text after generation
+                    pageText: `[Story text for page ${pageNum} will be inserted here by the backend after story generation]`,
                     characterImageUrl: selectedCharacterEnhancedImage || undefined
                 });
                 scenePrompts.push(scenePrompt);
